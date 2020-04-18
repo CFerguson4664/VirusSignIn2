@@ -1,10 +1,10 @@
-//****************************************************  IMPORTS *************************************************
+//**************************************************** IMPORTS **************************************************
 
 //Requires the GeneralSQL utility.
 const SQL = require("../Utils/GeneralSql");
 
 //Requires Express Node.js framework
-var express = require('express');
+const express = require('express');
 
 //***************************************************** SETUP ***************************************************
 

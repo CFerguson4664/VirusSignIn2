@@ -1,6 +1,15 @@
 const crypto = require('crypto');
 const SQL = require('./GeneralSql');
 
+
+//Sets the session lifetime in minutes.
+var sessionLifetime = 30 //minutes
+
+//Function to remove old sessions after a given number of minutes
+setInterval(function() {
+    
+}, sessionLifetime * 60 * 1000);
+
 //Gets a new valid session Id for the provided access level.
 exports.getNewSessionId = function(level, callback) {
     valid = false;
@@ -36,6 +45,13 @@ exports.sessionIdValid = function(sessionId, level, callback) {
     idExistsAtLevel(sessionId, level, function(exists) {
         callback(exists);
     });
+}
+
+function insertId(id, level, callback) {
+    var table = 'sessions';
+    var columns = ['sessionId'];
+    var params = ['sessionId'];
+    var values = [`${id}`];
 }
 
 //Querys the database to see if the sessionId exists
