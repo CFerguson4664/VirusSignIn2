@@ -61,7 +61,7 @@ exports.select = function(table, columns, params, values, callback) {
         }
         
         // return data constructed from sql query
-        callback(null,data);
+        callback(undefined, data);
     });
 }
 
@@ -112,7 +112,7 @@ exports.selectExtra = function(table, columns, params, values, extra, useLike, c
         }
         
         // return data constructed from sql query
-        callback(null,data);
+        callback(undefined, data);
     });
 }
 
@@ -142,7 +142,7 @@ exports.insert = function(table, columns, values, callback) {
         if (err) return callback(err,false);
         
         // return true is successful
-        callback(null,true);
+        callback(undefined, true);
     });
 }
 
@@ -164,7 +164,7 @@ exports.delete = function(table, params, values, callback) {
         if (err) return callback(err,false);
         
         // return true is successful
-        callback(null,true);
+        callback(undefined, true);
     });
 }
 
@@ -193,7 +193,7 @@ exports.update = function(table, columns, colValues, params, parValues, callback
         if (err) return callback(err,false);
         
         // return true is successful
-        callback(null,true);
+        callback(undefined, true);
     });
 }
 

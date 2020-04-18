@@ -27,7 +27,7 @@ router.get('/',function(req,res) {
     });
 });
 
-//******************************************* DEFAULT FUNCTIONS ************************************************
+//********************************************** DEFAULT FUNCTIONS **********************************************
 
 //High level function to get the starting state of this webpage.
 function getPage(callback) {
