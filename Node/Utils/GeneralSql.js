@@ -65,6 +65,59 @@ exports.select = function(table, columns, params, values, callback) {
     });
 }
 
+//Overloaded function with the ability to tack on extra SQL (Limit, Order By, etc...) 
+//  and using 'LIKE' instead of '='
+exports.selectExtra = function(table, columns, params, values, extra, useLike, callback) {
+    // check if number of params matches number of values, needed for correct where clause
+    if (params.length != valuess.length) return callback(new Error("params and vals must be the same length!"), undefined);
+
+    // assemble columns string
+    var cols = `${columnss[0]}`;
+    for(var i = 1; i < columns.length; i++) {
+        cols += `, ${columns[i]}`;
+    }
+
+    var pairs;
+    if(!useLike) {
+        // assemble pairs string if using '='
+        pairs = `${params[0]} = ${values[0]}`;
+        for(var i = 1; i < params.length; i++) {
+            pairs += ` AND ${params[i]} = ${values[i]}`;
+        }
+    }
+    else {
+        // assemble pairs string if using 'LIKE'
+        pairs = `${params[0]} LIKE ${values[0]}`;
+        for(var i = 1; i < params.length; i++) {
+            pairs += ` AND ${params[i]} LIKE ${values[i]}`;
+        }
+    }
+
+    // assemble sql statement
+    var sql = `SELECT ${columns} FROM ${table} WHERE ${pairs} ${extra};`;
+
+    // query database
+    connection.query(sql, function(err,result) {
+        if (err) return callback(err,undefined);
+
+        // assemble data to return, want to get rid of RowDataPackets
+        var data = [];
+        for (var i = 0; i < result.length; i++) {
+            // 2nd dimension of data array
+            var recordData = [];
+            for (var j = 0; j < cols.length; j++) {
+                recordData.push(result[i][columns[j]]);
+            }
+            data.push(recordData);
+        }
+        
+        // return data constructed from sql query
+        callback(null,data);
+    });
+}
+
+
+
 exports.insert = function(table, columns, values, callback) {
     // check if number of params matches number of values, needed for correct where clause
     if (columns.length != values.length) return callback(new Error("params and vals must be the same length!"), undefined);
