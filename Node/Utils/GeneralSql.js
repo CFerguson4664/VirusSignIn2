@@ -111,7 +111,7 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
 
 exports.insert = function(table, columns, values, callback) {
     // check if number of params matches number of values, needed for correct where clause
-    if (columns.length != values.length) return callback(new Error("params and vals must be the same length!"), undefined);
+    if (columns.length != values.length) return callback(new Error("params and vals must be the same length!"), false);
 
     // assemble columns string
     var cols = `${columns[0]}`;
@@ -139,7 +139,7 @@ exports.insert = function(table, columns, values, callback) {
 
 exports.delete = function(table, params, values, callback) {
     // check if number of params matches number of values, needed for correct where clause
-    if (params.length != values.length) return callback(new Error("params and vals must be the same length!"), undefined);
+    if (params.length != values.length) return callback(new Error("params and vals must be the same length!"), false);
 
     // assemble pairs string
     var pairs = `${params[0]} = ${values[0]}`;
@@ -161,7 +161,7 @@ exports.delete = function(table, params, values, callback) {
 
 exports.deleteExtra = function(table, params, operators, values, extraSQL, callback) {
     // check if number of params matches number of values, needed for correct where clause
-    if (params.length != values.length) return callback(new Error("params and vals must be the same length!"), undefined);
+    if (params.length != values.length || params.length != operators.length) return callback(new Error("params and vals must be the same length!"), false);
 
     // assemble pairs string
     var pairs = `${params[0]} ${operators[0]} ${values[0]}`;
@@ -183,8 +183,8 @@ exports.deleteExtra = function(table, params, operators, values, extraSQL, callb
 
 exports.update = function(table, columns, colValues, params, parValues, callback) {
     // check if number of params matches number of values, needed for correct where clause
-    if (columns.length != colValues.length) return callback(new Error("params and vals must be the same length!"), undefined);
-    if (params.length != parValues.length) return callback(new Error("params and vals must be the same length!"), undefined);
+    if (columns.length != colValues.length) return callback(new Error("params and vals must be the same length!"), false);
+    if (params.length != parValues.length) return callback(new Error("params and vals must be the same length!"), false);
 
     // assemble column pairs string
     var colPairs = `${columns[0]} = ${colValues[0]}`;
@@ -210,10 +210,10 @@ exports.update = function(table, columns, colValues, params, parValues, callback
     });
 }
 
-exports.updateExtra = function(table, columns, colValues, params, operators, parValues, callback) {
+exports.updateExtra = function(table, columns, colValues, params, operators, parValues, extraSQL, callback) {
     // check if number of params matches number of values, needed for correct where clause
-    if (columns.length != colValues.length) return callback(new Error("params and vals must be the same length!"), undefined);
-    if (params.length != parValues.length) return callback(new Error("params and vals must be the same length!"), undefined);
+    if (columns.length != colValues.length) return callback(new Error("params and vals must be the same length!"), false);
+    if (params.length != parValues.length || params.length != operators.length) return callback(new Error("params and vals must be the same length!"), false);
 
     // assemble column pairs string
     var colPairs = `${columns[0]} = ${colValues[0]}`;
@@ -222,9 +222,9 @@ exports.updateExtra = function(table, columns, colValues, params, operators, par
     }
 
     // assemble parameter pairs string
-    var parPairs = `${params[0]} = ${parValues[0]}`;
+    var parPairs = `${params[0]} ${operators[0]} ${parValues[0]}`;
     for(var i = 1; i < params.length; i++) {
-        parPairs += ` AND ${params[i]} = ${parValues[i]}`;
+        parPairs += ` AND ${params[i]} ${operators[i]} ${parValues[i]}`;
     }
 
     // assemble sql statement

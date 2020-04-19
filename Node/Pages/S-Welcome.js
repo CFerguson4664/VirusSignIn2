@@ -4,7 +4,13 @@
 const express = require('express');
 
 //Reqires the SessionMan Utility
-const session = require('../Utils/SessionMan');
+const sessionMan = require('../Utils/SessionMan');
+
+//Requries the TimeUtils utilty
+const time = require('../Utils/TimeUtils');
+
+//Requires the GeneralSQL utility
+const SQL = require('../Utils/GeneralSql');
 
 //***************************************************** SETUP ***************************************************
 
@@ -17,13 +23,19 @@ exports.router = router;
 //********************************************* GET / POST Requests *********************************************
 
 //Handles the get request for the starting form of this page
-router.get('/',function(req,res) {
-    //Get a session id so that we can track this user's progress through the application
-    session.getNewSessionId(1, function(sessionId) {
+router.get('/', function(req,res) {
+
+    //Headers to try to prevent the page from being cached 
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+
+    //Create a new session for the new client
+    createSession(function(sessionId) {
         //Get the starting form of the webpage
         getPage(function(HTML) {
             //Send the session Id to the client
-            res.cookie('SignIn', sessionId, { httpOnly: true });
+            res.cookie('SignInLvl1', sessionId, { httpOnly: true });
             //Send the HTML to the client
             res.write(HTML);
             //End our response to the client
@@ -34,7 +46,7 @@ router.get('/',function(req,res) {
 
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
-exports.getPage = function(callback) {
+function getPage(callback) {
     callback(Template());
 }
 
@@ -77,3 +89,23 @@ function Template()
 }
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
+
+function createSession() {
+    //Get the current time to use as the session's creation time
+    var sessionTime = time.getTime();
+
+    //Get a new session id to use for the session
+    sessionMan.getNewSessionId(1, function(sessionId) {
+
+        var table = 'sessionData';
+        var columns = ['sessionId','sessionDatetime'];
+        var values = [`${sessionId}`,`${sessionTime}`];
+
+        //Insert the session id and creation time into the database
+        SQL.insert(table, columns, values, function(err, success) {
+            
+            //callback the session id so it can be sent to the client
+            callback(sessionId);
+        });
+    });
+}

@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const SQL = require('./GeneralSql');
+const time = require('./TimeUtils')
 
 
 //Sets the session lifetime in minutes.
@@ -7,7 +8,8 @@ var sessionLifetime = 30 //minutes
 
 //Function to remove old sessions after a given number of minutes
 setInterval(function() {
-    
+    //Every sessionLifetime delete the old sessions from the database.
+    deleteOldSessions(function(success) {});
 }, sessionLifetime * 60 * 1000);
 
 //Gets a new valid session Id for the provided access level.
@@ -30,8 +32,11 @@ exports.getNewSessionId = function(level, callback) {
                     //End the loop
                     valid = true;
 
-                    //callback with the valid id
-                    return callback(id);
+                    //Insert the id into the database
+                    insertId(id, level, function(success){
+                        //callback with the valid id
+                        return callback(id);
+                    });
                 }
             });
         });
@@ -47,11 +52,35 @@ exports.sessionIdValid = function(sessionId, level, callback) {
     });
 }
 
+function deleteOldSessions() {
+    //Get the current time minus the session lifetime to use in database query
+    var deleteTime = time.getTime(0,0,0,0,(-1 * sessionLifetime),0);
+
+    var table = 'sessions'
+    var params = ['creationTime']
+    var operators = ['<']
+    var values = [`${deleteTime}`]
+    var extraSQL = '';
+
+    //Delete any sessions older than deleteTime
+    SQL.deleteExtra(table, params, operators, values, extraSQL, function(err,res){ 
+
+        //Calls back with true if successful or false if not
+        callback(res);
+    })
+}
+
 function insertId(id, level, callback) {
+    //Get the current time to use as the session's creation time
+    var currentTime = time.getTime()
+
     var table = 'sessions';
-    var columns = ['sessionId'];
-    var params = ['sessionId'];
-    var values = [`${id}`];
+    var columns = ['sessionId','level','creationTime'];
+    var values = [`${id}`,`${level}`,`${currentTime}`];
+
+    SQL.insert(table,columns,values,function(err,success) {
+        callback(success);
+    })
 }
 
 //Querys the database to see if the sessionId exists
