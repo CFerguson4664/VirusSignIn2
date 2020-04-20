@@ -12,7 +12,7 @@ const express = require('express');
 var router = express.Router();
 
 //Export the router so that Main can access it and our GET/POST functions
-exports.router = router;
+module.exports = router;
 
 //********************************************* GET / POST Requests *********************************************
 

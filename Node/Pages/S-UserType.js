@@ -6,13 +6,19 @@ const express = require('express');
 //Reqires the SessionMan Utility
 const sessionMan = require('../Utils/SessionMan');
 
+//Requires the TimeUtils utility
+const time = require('../Utils/TimeUtils');
+
+//Requires the GeneralSQL utility
+const SQL = require('../Utils/GeneralSql');
+
 //***************************************************** SETUP ***************************************************
 
 //router to handle moving the get/post requests around
 var router = express.Router();
 
 //Export the router so that Main can access it and our GET/POST functions
-exports.router = router;
+module.exports = router;
 
 //********************************************* GET / POST Requests *********************************************
 
@@ -24,39 +30,29 @@ router.get('/', function(req,res) {
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
 
-    //This cookie is the session id stored on welcome page
-    var cookie = req.cookie.signInLvl1;
-
-    //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(vaild) {
-        //If the client is valid prepare the page
-        if(valid) {
-            //Get the starting form of the webpage
-            getPage(function(HTML) {
-                //Send the HTML to the client
-                res.write(HTML);
-                //End our response to the client
-                res.end();
-            });
-        }
-        //Otherwise redirect them to the timeout page
-        else {
-            res.send('/timeout');
+    //Get a new session id to represent this client
+    createSession(function(sessionId) {
+        //Get the starting form of the webpage
+        getPage(function(HTML) {
+            //Send the seesion id to the client
+            res.cookie('SignInLvl1',sessionId, { httpOnly: true });
+            //Send the HTML to the client
+            res.write(HTML);
+            //End our response to the client
             res.end();
-        }
+        });
     });
 });
 
-app.post('/data',function(req,res) {
-
+router.post('/data',function(req,res) {
     //This cookie is the session id stored on welcome page
-    var cookie = req.cookie.signInLvl1;
+    var cookie = req.cookies.SignInLvl1;
 
     //Store the data sent by the client
     var data = req.body.response
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(vaild) {
+    sessionMan.sessionIdValid(cookie, 1, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             if(data == 0) {
@@ -116,3 +112,66 @@ function Template() {
 }
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
+
+//Creates a new session and sessionData entry
+function createSession(callback) {
+    //Get the current time to use as the session's creation time
+    var sessionTime = time.getTime();
+
+    //Get a new session id to use for the session
+    sessionMan.getNewSessionId(1, function(sessionId) {
+
+        var table = 'sessionData';
+        var columns = ['sessionId','sessionDatetime'];
+        var values = [`'${sessionId}'`,`'${sessionTime}'`];
+
+        //Insert the session id and creation time into the database
+        SQL.insert(table, columns, values, function(err, success) {
+            //callback the session id so it can be sent to the client
+            callback(sessionId);
+        });
+    });
+}
+
+exports.deleteOldSessionData = function() {
+    //Get all of the sessionData entries out of the database
+    var table = 'sessiondata';
+    var columns = ['sessionId'];
+    var params = [];
+    var values = [];
+
+    SQL.select(table,columns,params,values,function(err,data) {
+        if(data.length > 0) {
+            //Delete the data if it is old
+            deleteOnId(data, function(done) {
+
+            });
+        }
+    });
+};
+
+
+//Delete the session data entry for any sessionIds that are no longer in the sessions table
+function deleteOnId(data, callback) {
+    var current = data.shift();
+    var sessionId = current[0];
+    sessionMan.sessionIdValid(sessionId, 1, function(valid) {
+        if(!valid) {
+            var table = 'sessiondata';
+            var params = ['sessionId'];
+            var values = [`'${sessionId}'`];
+
+            SQL.delete(table,params,values, function(err,success) {
+            });
+        }
+    });
+
+    if(data.length > 0) {
+        deleteOnId(data, function(done) {
+            callback(done);
+        })
+    }
+    else {
+        callback(true);
+    }
+}

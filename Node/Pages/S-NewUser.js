@@ -6,13 +6,19 @@ const express = require('express');
 //Reqires the SessionMan Utility
 const sessionMan = require('../Utils/SessionMan');
 
+//Requires the GeneralSQL utility
+const SQL = require('../Utils/GeneralSql');
+
+//Requires the TimeUtils utility
+const time = require('../Utils/TimeUtils');
+
 //***************************************************** SETUP ***************************************************
 
 //router to handle moving the get/post requests around
 var router = express.Router();
 
 //Export the router so that Main can access it and our GET/POST functions
-exports.router = router;
+module.exports = router;
 
 //********************************************* GET / POST Requests *********************************************
 
@@ -25,10 +31,10 @@ router.get('/', function(req,res) {
     res.header('Pragma', 'no-cache');
 
     //This cookie is the session id stored on welcome page
-    var cookie = req.cookie.signInLvl1;
+    var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(vaild) {
+    sessionMan.sessionIdValid(cookie, 1, function(valid) {
         //If the client is valid prepare the page
         if(valid) {
             //Get the starting form of the webpage
@@ -47,26 +53,26 @@ router.get('/', function(req,res) {
     });
 });
 
-app.post('/data',function(req,res) {
+router.post('/data',function(req,res) {
 
     //This cookie is the session id stored on welcome page
-    var cookie = req.cookie.signInLvl1;
+    var cookie = req.cookies.SignInLvl1;
 
     //Store the data sent by the client
     var data = req.body.response
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(vaild) {
+    sessionMan.sessionIdValid(cookie, 1, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            if(data == 0) {
-                res.send('/new');
-                res.end();
-            }
-            else if(data == 1) {
-                res.send('/returning');
-                res.end();
-            }
+            var fname = req.body.fname;
+            var lname = req.body.lname;
+            var email = req.body.email.toLowerCase();
+            var nNumber = req.body.nNumber;
+            console.log(fname);
+            console.log(lname);
+            console.log(email);
+            console.log(nNumber);
         }
         //Otherwise redirect them to the timeout page
         else {
@@ -138,5 +144,77 @@ function Template() {
     </html>`;
 
     return html;
+}
+
+//*********************************************** SPECIAL FUNCTIONS *********************************************
+
+//Adds a new user to the database
+function addNewUser(lName,fName,email,nNumber,callback) {
+    
+    //Check to see if this email already exists
+    checkIfEmailExists(email, function(exists,userId) {
+        if(exists) {
+            return callback(userId)
+        }
+        else {
+            //Get the current time to use as the signup datetime
+            var currentTime = time.getTime();
+
+            var table = 'users';
+            var columns = ['lname','fname','email','nNumber','signUpDatetime'];
+            var values = [`'${lName}'`,`'${fName}'`,`'${email}'`,`'${nNumber}'`,`'${currentTime}'`];
+
+            //Add the new user to the database
+            SQL.insert(table,columns,values, function(err,done) {
+
+                //Now we need to get the userid of the newly created user
+                var table = 'users';
+                var columns = ['userId'];
+                var params = ['lName','fName','email'];
+                var values = [`'${lName}'`,`'${fName}'`,`'${email}'`];
+                
+                //Select the userId from the database
+                SQL.select(table,columns,params,values,function(err,data) {
+                    return callback(data[0][0])
+                })
+            })
+        }
+    })
+
+}
+
+
+//callsback with true or false on whether the email exists, inclues the userId of the email if it exists
+function checkIfEmailExists(email, callback) {
+    //Get all emails from the database
+    var table = 'users';
+    var columns = ['userId'];
+    var params = ['email'];
+    var values = [`'${email}'`];
+
+    //Try to select the email from the database
+    SQL.select(table,columns,params,values,function(err,data) {
+
+        //If we have the email return the corresponding userId otherwise return false
+        if(data.lenght > 0) {
+            return callback(true);
+        }
+        else {
+            return callback(false);
+        }
+    })
+}
+
+function addTempUser(lName,fName,email,nNumber,callback) {
+    //Get the current time to use as the signup datetime
+    var currentTime = time.getTime();
+
+    var table = 'tempusers';
+    var columns = ['lname','fname','email','nNumber','signUpDatetime','existsInUsers'];
+    var values = [`'${lName}'`,`'${fName}'`,`'${email}'`,`'${nNumber}'`,`'${currentTime}'`,'0'];
+
+    SQL.insert(table,columns,values, function(err,done) { 
+        callback(done);
+    });
 }
 

@@ -1,49 +1,41 @@
-const myql = require("mysql");
+const mysql = require("mysql");
 const fs = require("fs");
 
 var connection = undefined;
 
-exports.init = function(credentialFilename, callback) {
-    // read credentials from credentialFilename
-    fs.readFile(credentialFilename, function(err, content) {
-        // if error when reading file, log to console
-        if (err) return console.log("Error loading setup file:\n" + err);
-
-        // parse json file
-        var creds = JSON.parse(content);
-
-        // create connection pool using json credentials
-        connection = mysql.createPool({
-            connectionLimit : 50,
-            host            : creds.database_host,
-            user            : creds.database_user,
-            password        : creds.database_password,
-            database        : creds.database_name
-        });
-        
-        // return server port from crednetials
-        callback(cred.server_port);
+exports.init = function(callback) {
+    connection = mysql.createPool({
+        connectionLimit : 50,
+        host            : 'localhost',
+        user            : 'root',
+        password        : 'Password01',
+        database        : 'virussignin2'
     });
+
+    callback('done')
 }
 
 exports.select = function(table, columns, params, values, callback) {
     // check if number of params matches number of values, needed for correct where clause
-    if (params.length != valuess.length) return callback(new Error("params and vals must be the same length!"), undefined);
+    if (params.length != values.length) return callback(new Error("params and vals must be the same length!"), undefined);
 
     // assemble columns string
-    var cols = `${columnss[0]}`;
+    var cols = `${columns[0]}`;
     for(var i = 1; i < columns.length; i++) {
         cols += `, ${columns[i]}`;
     }
 
-    // assemble pairs string
-    var pairs = `${params[0]} = ${values[0]}`;
-    for(var i = 1; i < params.length; i++) {
-        pairs += ` AND ${params[i]} = ${values[i]}`;
+    var pairs = '';
+    if(params.length > 0) {
+        // assemble pairs string
+        pairs = `WHERE ${params[0]} = ${values[0]}`;
+        for(var i = 1; i < params.length; i++) {
+            pairs += ` AND ${params[i]} = ${values[i]}`;
+        }
     }
 
     // assemble sql statement
-    var sql = `SELECT ${columns} FROM ${table} WHERE ${pairs};`;
+    var sql = `SELECT ${columns} FROM ${table} ${pairs};`;
 
     // query database
     connection.query(sql, function(err,result) {
@@ -54,12 +46,12 @@ exports.select = function(table, columns, params, values, callback) {
         for (var i = 0; i < result.length; i++) {
             // 2nd dimension of data array
             var recordData = [];
-            for (var j = 0; j < cols.length; j++) {
+            for (var j = 0; j < columns.length; j++) {
                 recordData.push(result[i][columns[j]]);
             }
             data.push(recordData);
         }
-        
+
         // return data constructed from sql query
         callback(undefined, data);
     });
@@ -69,23 +61,27 @@ exports.select = function(table, columns, params, values, callback) {
 //  and using 'LIKE' instead of '='
 exports.selectExtra = function(table, columns, params, operators, values, extraSQL, callback) {
     // check if number of params matches number of values, needed for correct where clause
-    if (params.length != valuess.length || params.length != operators.length) return callback(new Error("params and vals must be the same length!"), undefined);
+    if (params.length != values.length || params.length != operators.length) return callback(new Error("params and vals must be the same length!"), undefined);
 
     // assemble columns string
-    var cols = `${columnss[0]}`;
+    var cols = `${columns[0]}`;
     for(var i = 1; i < columns.length; i++) {
         cols += `, ${columns[i]}`;
     }
 
     
-    // assemble pairs string
-    pairs = `${params[0]} ${operators[0]} ${values[0]}`;
-    for(var i = 1; i < params.length; i++) {
-        pairs += ` AND ${params[i]} ${operators[i]} ${values[i]}`;
+    
+    var pairs = '';
+    if(params.length > 0) {
+        // assemble pairs string
+        pairs = `WHERE ${params[0]} ${operators[0]} ${values[0]}`;
+        for(var i = 1; i < params.length; i++) {
+            pairs += ` AND ${params[i]} ${operators[i]} ${values[i]}`;
+        }
     }
-
+    
     // assemble sql statement
-    var sql = `SELECT ${columns} FROM ${table} WHERE ${pairs} ${extraSQL};`;
+    var sql = `SELECT ${columns} FROM ${table} ${pairs} ${extraSQL};`;
 
     // query database
     connection.query(sql, function(err,result) {
@@ -96,7 +92,7 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
         for (var i = 0; i < result.length; i++) {
             // 2nd dimension of data array
             var recordData = [];
-            for (var j = 0; j < cols.length; j++) {
+            for (var j = 0; j < columns.length; j++) {
                 recordData.push(result[i][columns[j]]);
             }
             data.push(recordData);
@@ -175,6 +171,8 @@ exports.deleteExtra = function(table, params, operators, values, extraSQL, callb
     // query database
     connection.query(sql, function(err,result) {
         if (err) return callback(err,false);
+        
+        
         
         // return true is successful
         callback(undefined, true);
