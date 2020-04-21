@@ -14,6 +14,11 @@ Date.prototype.toISONormString = function() {
         ':' + pad(this.getSeconds());
     };
 
+
+exports.formatTime = function(Date) {
+    return Date.toISONormString()
+}
+
 exports.getTime = function(yearOffset=0,monthOffset=0,dayOffset=0,hourOffset=0,minuteOffset=0,secondOffset=0) {
     //Get the current date
     var date = new Date();

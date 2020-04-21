@@ -65,14 +65,19 @@ router.post('/data',function(req,res) {
     sessionMan.sessionIdValid(cookie, 1, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            var fname = req.body.fname;
-            var lname = req.body.lname;
+            var fName = req.body.fname;
+            var lName = req.body.lname;
             var email = req.body.email.toLowerCase();
             var nNumber = req.body.nNumber;
-            console.log(fname);
-            console.log(lname);
+            console.log(fName);
+            console.log(lName);
             console.log(email);
             console.log(nNumber);
+
+            addNewUser(lName, fName, email, nNumber, cookie, function(success,userId) {
+                console.log(`success: ${success}`);
+                console.log(`userId: ${userId}`);
+            })
         }
         //Otherwise redirect them to the timeout page
         else {
@@ -148,13 +153,35 @@ function Template() {
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
 
-//Adds a new user to the database
-function addNewUser(lName,fName,email,nNumber,callback) {
+//Adds a new user to the database. Return true and the userid if user could be added or false if not
+function addNewUser(lName,fName,email,nNumber,sessionId,callback) {
     
     //Check to see if this email already exists
     checkIfEmailExists(email, function(exists,userId) {
+
+        //If it does
         if(exists) {
-            return callback(userId)
+
+            //See if the name also matches
+            checkForNameMatch(userId, lName, fName, function(exists) {
+                if(exists) {
+                    //If the name also matches then use the existing user
+                    return callback(true, userId);
+                }
+                else {
+                    //If the name doesnt match prepare temp users so that the user can be prompted
+
+                    //Duplicate the user from users to temp users
+                    duplicateUser(userId, sessionId, function(done) {
+                        //Add the newly created user to temp users
+                        addTempUser(userId, lName, fName, email, nNumber, sessionId, function(done) {
+                            //Callback false because the user could not be added
+                            console.log('Done')
+                            return callback(false,undefined)
+                        });
+                    });
+                }
+            });
         }
         else {
             //Get the current time to use as the signup datetime
@@ -175,7 +202,7 @@ function addNewUser(lName,fName,email,nNumber,callback) {
                 
                 //Select the userId from the database
                 SQL.select(table,columns,params,values,function(err,data) {
-                    return callback(data[0][0])
+                    return callback(true, data[0][0])
                 })
             })
         }
@@ -183,6 +210,23 @@ function addNewUser(lName,fName,email,nNumber,callback) {
 
 }
 
+function checkForNameMatch(userId, lName, fName, callback) {
+    var table = 'users';
+    var columns = ['userId'];
+    var params = ['userId','lName','fName'];
+    var values = [`'${userId}'`,`'${lName}'`,`'${fName}'`];
+
+    //Select will only return data if the userId has the specified name
+    SQL.select(table,columns,params,values, function(err,data) {
+        console.log(err);
+        if(data.length > 0) {
+            return callback(true);
+        }
+        else {
+            return callback(false);
+        }
+    })
+}
 
 //callsback with true or false on whether the email exists, inclues the userId of the email if it exists
 function checkIfEmailExists(email, callback) {
@@ -196,23 +240,47 @@ function checkIfEmailExists(email, callback) {
     SQL.select(table,columns,params,values,function(err,data) {
 
         //If we have the email return the corresponding userId otherwise return false
-        if(data.lenght > 0) {
-            return callback(true);
+        if(data.length > 0) {
+            return callback(true, data[0][0]);
         }
         else {
-            return callback(false);
+            return callback(false, undefined);
         }
     })
 }
 
-function addTempUser(lName,fName,email,nNumber,callback) {
+function duplicateUser(userId, sessionId, callback) {
+    var table = 'users';
+    var columns = ['lName','fName','email','nNumber','signUpDatetime'];
+    var params = ['userId'];
+    var values = [`${userId}`];
+
+    //Select the data from users
+    SQL.select(table,columns,params,values,function(err,data) {
+        console.log(err);
+        data = data[0];
+
+        var table = 'tempusers';
+        var columns = ['lname','fname','email','nNumber','signUpDatetime','userId','sessionId'];
+        var values = [`'${data[0]}'`,`'${data[1]}'`,`'${data[2]}'`,`'${data[3]}'`,`'${time.formatTime(data[4])}'`,`${userId}`,`'${sessionId}'`];
+
+        //Add it to tempusers
+        SQL.insert(table,columns,values, function(err,done) {
+            console.log(err);
+            callback(done);
+        })
+    })
+}
+
+function addTempUser(userId, lName,fName,email,nNumber, sessionId, callback) {
     //Get the current time to use as the signup datetime
     var currentTime = time.getTime();
 
     var table = 'tempusers';
-    var columns = ['lname','fname','email','nNumber','signUpDatetime','existsInUsers'];
-    var values = [`'${lName}'`,`'${fName}'`,`'${email}'`,`'${nNumber}'`,`'${currentTime}'`,'0'];
+    var columns = ['lname','fname','email','nNumber','signUpDatetime','userId','sessionId'];
+    var values = [`'${lName}'`,`'${fName}'`,`'${email}'`,`'${nNumber}'`,`'${currentTime}'`,`'${userId}'`,`'${sessionId}'`];
 
+    //Add the new user to tempusers
     SQL.insert(table,columns,values, function(err,done) { 
         callback(done);
     });
