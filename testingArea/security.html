@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+            <link rel="stylesheet" type="text/css" href="style.css">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>NSCC Sign In</title>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script src="security.js"></script>
+        </head>
+        <header class="bg-dark">
+            <div class="logo">
+                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+            </div>
+        </header>
+        <header class="bg-dark-header">
+        </header>
+        <main class="bg-light">
+
+            <div class="button-like">
+                <h2 class="label text-center">Visitor identification:</h2>
+                <input type="text" name="identification" id="identification" autocomplete="off" class="text2" maxlength="50">
+            </div>
+            <div class="button-like">
+                <h2 class="label text-center">Visitor allowed entry?</h2>
+                <div class="sidenav-open">
+                    <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
+                    <button name="student" onclick="button_click(this)" data-choiceId="0" id='' class="">No</button>
+                </div>
+            </div>
+        </main>
+        <footer class="bg-dark-float-off" id="subFoot">
+            <button id="submit-event" class="not-ready">Submit</button>
+        </footer>
+        <footer class="bg-dark">
+            <div id="social-icons">
+            </div>
+        </footer>
+    </html>
