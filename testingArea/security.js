@@ -69,7 +69,33 @@ $(document).ready(function ()  {
     // });
 
     $('#identification').on('input',function(event) {
-        checkStudent(); 
+        if (checkStudent()) {
+            $.ajax({
+                global: false,
+                type: 'POST',
+                url: '/security/data', //The url to post to on the server
+                dataType: 'html',
+
+                //The data to send to the server
+                data: { 
+                    id : visitorIdentification,
+                    idType : typeOfIdentification,
+                    allowed : isEntryAllowed
+                },
+
+                //The response from the server
+                success: function (result) { 
+                    // window.location.replace(result);
+                    document.getElementById('submit').className = 'selected';
+                },
+
+                //Handle any errors
+                error: function (request, status, error) { 
+                    document.getElementById('submit').className = 'selected';
+                    serviceError();
+                }
+            });
+        } 
     });
 
     //Called when user clicks 'Submit' button
@@ -79,16 +105,18 @@ $(document).ready(function ()  {
         var visitorIdentification = document.getElementById('identification').value;
         var isEntryAllowed = document.getElementById('selected').getAttribute('data-choiceId');
 
-        var typeOfIdentification = 'name';
-        if (isIdentificationTypeNNumber(visitorIdentification)) {
-            typeOfIdentification = 'nnumber';
-        }
+        // var typeOfIdentification = 'name';
+        // if (isIdentificationTypeNNumber(visitorIdentification)) {
+        //     typeOfIdentification = 'nnumber';
+        // }
+
+
 
         console.log(visitorIdentification);
         console.log(typeOfIdentification);
         console.log(isEntryAllowed);
         document.getElementById('identification').value = '';
-        
+
         $.ajax({
 
             global: false,
