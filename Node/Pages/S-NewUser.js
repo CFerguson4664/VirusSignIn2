@@ -53,13 +53,58 @@ router.get('/', function(req,res) {
     });
 });
 
-router.post('/data',function(req,res) {
-
+router.post('/checkNNumber',function(req,res) {
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl1;
 
-    //Store the data sent by the client
-    var data = req.body.response
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            var nNumber = req.body.nNumber;
+
+            checkIfNNumberExists(nNumber, function(exists,userId) {
+                getButton(userId, function(HTML) {
+
+                })
+            })
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/timeout');
+            res.end();
+        }
+    });
+});
+
+router.post('/checkEmail',function(req,res) {
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl1;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            var email = req.body.email.toLowerCase();
+
+            checkIfEmailExists(email, function(exists,userId) {
+                getButton(userId, function(HTML) {
+
+                })
+            })
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/timeout');
+            res.end();
+        }
+    });
+});
+
+router.post('/newUser',function(req,res) {
+
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
     sessionMan.sessionIdValid(cookie, 1, function(valid) {
@@ -154,90 +199,41 @@ function Template() {
 //*********************************************** SPECIAL FUNCTIONS *********************************************
 
 //Adds a new user to the database. Return true and the userid if user could be added or false if not
-function addNewUser(lName,fName,email,nNumber,sessionId,callback) {
-    
-    //Check to see if this email already exists
-    checkIfEmailExists(email, function(exists,userId) {
+function addNewUser(lName,fName,email,nNumber,callback) {
 
-        //If it does
-        if(exists) {
+    //Get the current time to use as the signup datetime
+    var currentTime = time.getTime();
 
-            //See if the name also matches
-            checkForNameMatch(userId, lName, fName, function(exists) {
-                if(exists) {
-                    //If the name also matches then use the existing user
-                    return callback(true, userId);
-                }
-                else {
-                    //If the name doesnt match prepare temp users so that the user can be prompted
+    var table = 'users';
+    var columns = ['lname','fname','email','nNumber','signUpDatetime'];
+    var values = [`'${lName}'`,`'${fName}'`,`'${email}'`,`'${nNumber}'`,`'${currentTime}'`];
 
-                    //Duplicate the user from users to temp users
-                    duplicateUser(userId, sessionId, function(done) {
-                        //Add the newly created user to temp users
-                        addTempUser(userId, lName, fName, email, nNumber, sessionId, function(done) {
-                            //Callback false because the user could not be added
-                            console.log('Done')
-                            return callback(false,undefined)
-                        });
-                    });
-                }
-            });
-        }
-        else {
-            //Get the current time to use as the signup datetime
-            var currentTime = time.getTime();
+    //Add the new user to the database
+    SQL.insert(table,columns,values, function(err,done) {
 
-            var table = 'users';
-            var columns = ['lname','fname','email','nNumber','signUpDatetime'];
-            var values = [`'${lName}'`,`'${fName}'`,`'${email}'`,`'${nNumber}'`,`'${currentTime}'`];
+        //Now we need to get the userId of the newly created user
+        var table = 'users';
+        var columns = ['userId'];
+        var params = ['lName','fName','email'];
+        var values = [`'${lName}'`,`'${fName}'`,`'${email}'`];
+        
+        //Select the userId from the database
+        SQL.select(table,columns,params,values,function(err,data) {
 
-            //Add the new user to the database
-            SQL.insert(table,columns,values, function(err,done) {
-
-                //Now we need to get the userid of the newly created user
-                var table = 'users';
-                var columns = ['userId'];
-                var params = ['lName','fName','email'];
-                var values = [`'${lName}'`,`'${fName}'`,`'${email}'`];
-                
-                //Select the userId from the database
-                SQL.select(table,columns,params,values,function(err,data) {
-                    return callback(true, data[0][0])
-                })
-            })
-        }
-    })
-
+            //Return true because the user could be created and the userId
+            return callback(true, data[0][0])
+        })
+    });
 }
 
-function checkForNameMatch(userId, lName, fName, callback) {
+function checkIfNNumberExists(nNumber, callback) {
     var table = 'users';
     var columns = ['userId'];
-    var params = ['userId','lName','fName'];
-    var values = [`'${userId}'`,`'${lName}'`,`'${fName}'`];
+    var params = ['nNumber'];
+    var values = [`'${nNumber}'`];
 
-    //Select will only return data if the userId has the specified name
+    //Try to select the nNumber from the database
     SQL.select(table,columns,params,values, function(err,data) {
-        console.log(err);
-        if(data.length > 0) {
-            return callback(true);
-        }
-        else {
-            return callback(false);
-        }
-    })
-}
-
-//callsback with true or false on whether the email exists, inclues the userId of the email if it exists
-function checkIfEmailExists(email, callback) {
-    //Get all emails from the database
-    var table = 'users';
-    var columns = ['userId'];
-    var params = ['email'];
-    var values = [`'${email}'`];
-
-    //Try to select the email from the database
-    SQL.select(table,columns,params,values,function(err,data) {
 
         //If we have the email return the corresponding userId otherwise return false
         if(data.length > 0) {
@@ -249,40 +245,42 @@ function checkIfEmailExists(email, callback) {
     })
 }
 
-function duplicateUser(userId, sessionId, callback) {
+//callsback with true or false on whether the email exists, inclues the userId of the email if it exists
+function checkIfEmailExists(email, callback) {
     var table = 'users';
-    var columns = ['lName','fName','email','nNumber','signUpDatetime'];
-    var params = ['userId'];
-    var values = [`${userId}`];
+    var columns = ['userId'];
+    var params = ['email'];
+    var values = [`'${email}'`];
 
-    //Select the data from users
+    //Try to select the email from the database
     SQL.select(table,columns,params,values,function(err,data) {
-        console.log(err);
-        data = data[0];
+        console.log(data);
 
-        var table = 'tempusers';
-        var columns = ['lname','fname','email','nNumber','signUpDatetime','userId','sessionId'];
-        var values = [`'${data[0]}'`,`'${data[1]}'`,`'${data[2]}'`,`'${data[3]}'`,`'${time.formatTime(data[4])}'`,`${userId}`,`'${sessionId}'`];
-
-        //Add it to tempusers
-        SQL.insert(table,columns,values, function(err,done) {
-            console.log(err);
-            callback(done);
-        })
+        //If we have the email return the corresponding userId otherwise return false
+        if(data.length > 0) {
+            return callback(true, data[0][0]);
+        }
+        else {
+            return callback(false, undefined);
+        }
     })
 }
 
-function addTempUser(userId, lName,fName,email,nNumber, sessionId, callback) {
-    //Get the current time to use as the signup datetime
-    var currentTime = time.getTime();
+//Gets the button to go to returning user page
+function getButton(userId,callback) {
+    var table = 'users';
+    var columns = ['fName','lName'];
+    var params = ['userId'];
+    var values = [`${userId}`]
 
-    var table = 'tempusers';
-    var columns = ['lname','fname','email','nNumber','signUpDatetime','userId','sessionId'];
-    var values = [`'${lName}'`,`'${fName}'`,`'${email}'`,`'${nNumber}'`,`'${currentTime}'`,`'${userId}'`,`'${sessionId}'`];
+    //Select the name from the database
+    SQL.select(table,columns,params,values,function(err,data) {
+        console.log(data);
 
-    //Add the new user to tempusers
-    SQL.insert(table,columns,values, function(err,done) { 
-        callback(done);
-    });
+        var fName = data[0][0];
+        var lName = data[0][1];
+        var template = `<button name="returning" onclick="button_click(this)">${fName} ${lName}</button>`
+
+        return callback(true, template);
+    })
 }
-
