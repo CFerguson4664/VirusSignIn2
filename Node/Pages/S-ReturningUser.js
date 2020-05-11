@@ -27,6 +27,8 @@ router.get('/',function(req,res) {
     });
 });
 
+//const queryObject = url.parse(req.url,true).query;
+
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 //High level function to get the starting state of this webpage.
@@ -60,6 +62,48 @@ function Template(nameHTML) {
             
             <div class="button-like">
                 <input type="text" name="firstname" id="nameText" autocomplete="off" onclick="openNav()" class="text2" placeholder="Enter your last name" maxlength="105">
+                <div id="mySidenav" class="sidenav-closed">
+                    ${nameHTML}
+                </div>
+            </div>
+        </main>
+        <footer class="bg-dark-float-off" id="subFoot">
+                <button id="submit-event" class="not-ready">Submit</button>
+        </footer>
+        <footer class="bg-dark">
+            <div id="social-icons">
+            </div>
+        </footer>
+    </html>`;
+
+    return html;
+}
+
+//Template function to handle the generation of the HTML for this webpage with a name pre-selected
+function TemplatePrefilled(fName, lName, userId, nameHTML) {
+    var html = `<!DOCTYPE html>
+    <html>
+        <head>
+            <link rel="stylesheet" type="text/css" href="style.css">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script src="returning.js"></script>
+            <title>NSCC Sign In</title>
+        </head>
+        <header class="bg-dark">
+            <div class="logo">
+                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+            </div>
+        </header>
+        <header class="bg-dark-header">
+            <button id="back" class="ready">Previous page</button>
+        </header>
+        <main class="bg-light">
+    
+            <h2 class="text-center">Welcome Back!</h2>
+            
+            <div class="button-like">
+                <input type="text" name="${userId}" id="nameText" autocomplete="off" onclick="openNav()" class="text2" placeholder="Enter your last name" maxlength="105">
                 <div id="mySidenav" class="sidenav-closed">
                     ${nameHTML}
                 </div>
