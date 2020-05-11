@@ -74,7 +74,41 @@ $(document).ready(function ()  {
         }
         else
         {
-            document.getElementById('emailerror').innerHTML = '';
+            $.ajax({
+                global: false,
+                type: 'POST',
+                url: '/new/checkEmail', //The url to post to on the server
+                dataType: 'html',
+    
+                //The data to send to the server
+                data: { 
+                    // fname : document.getElementById('firstname').value,
+                    // lname : document.getElementById('lastname').value,
+                    email : document.getElementById('email').value,
+                    // nNumber : nNumberVal
+                },
+    
+                //The response from the server
+                success: function (result) {
+                    console.log(result);
+                    if (result == '/timeout') {
+                        window.location.replace(result);
+                    }
+                    else if(result != undefined) {
+                        document.getElementById('emailerror').innerHTML = result;
+                    }
+                    else {
+                        document.getElementById('emailerror').innerHTML = '';
+                    }
+                },
+    
+                //Handle any errors
+                error: function (request, status, error) { 
+                    serviceError();
+                }
+            });
+
+            
         }
         checkall($('#email').val());
     });
@@ -115,7 +149,7 @@ $(document).ready(function ()  {
         $.ajax({
             global: false,
             type: 'POST',
-            url: '/new/data', //The url to post to on the server
+            url: '/new/newUser', //The url to post to on the server
             dataType: 'html',
 
             //The data to send to the server
@@ -127,7 +161,7 @@ $(document).ready(function ()  {
             },
 
             //The response from the server
-            success: function (result) { 
+            success: function (result) {
                 window.location.replace(result)
             },
 

@@ -64,10 +64,12 @@ router.post('/checkNNumber',function(req,res) {
             var nNumber = req.body.nNumber;
 
             checkIfNNumberExists(nNumber, function(exists,userId) {
-                getButton(userId, function(HTML) {
+                getButton(userId, function(dead,HTML) {
+                    if(exists) {
 
-                })
-            })
+                    }
+                });
+            });
         }
         //Otherwise redirect them to the timeout page
         else {
@@ -88,10 +90,17 @@ router.post('/checkEmail',function(req,res) {
             var email = req.body.email.toLowerCase();
 
             checkIfEmailExists(email, function(exists,userId) {
-                getButton(userId, function(HTML) {
-
-                })
-            })
+            
+                if (exists) {
+                    getButton(userId, function(dead,HTML) {
+                        res.send(HTML);
+                        
+                    });
+                }
+                else {
+                    res.send();
+                }
+            });
         }
         //Otherwise redirect them to the timeout page
         else {
@@ -119,10 +128,13 @@ router.post('/newUser',function(req,res) {
             console.log(email);
             console.log(nNumber);
 
-            addNewUser(lName, fName, email, nNumber, cookie, function(success,userId) {
+            addNewUser(lName, fName, email, nNumber, function(success,userId) {
                 console.log(`success: ${success}`);
                 console.log(`userId: ${userId}`);
-            })
+
+                res.send('')
+                res.end();
+            });
         }
         //Otherwise redirect them to the timeout page
         else {
@@ -161,6 +173,7 @@ function Template() {
             <div class="button-like">
                 <h2 class="label text-center">Enter your first name</h2>
                 <input type="text" name="firstname" id="firstname" autocomplete="off" class="text2" maxlength="50">
+                <div id="nameExists"></div>
             </div>
             <div class="button-like">
                 <h2 class="label text-center">Enter your last name</h2>
@@ -221,8 +234,8 @@ function addNewUser(lName,fName,email,nNumber,callback) {
         SQL.select(table,columns,params,values,function(err,data) {
 
             //Return true because the user could be created and the userId
-            return callback(true, data[0][0])
-        })
+            return callback(true, data[0][0]);
+        });
     });
 }
 
@@ -242,7 +255,7 @@ function checkIfNNumberExists(nNumber, callback) {
         else {
             return callback(false, undefined);
         }
-    })
+    });
 }
 
 //callsback with true or false on whether the email exists, inclues the userId of the email if it exists
@@ -263,7 +276,7 @@ function checkIfEmailExists(email, callback) {
         else {
             return callback(false, undefined);
         }
-    })
+    });
 }
 
 //Gets the button to go to returning user page
@@ -282,5 +295,5 @@ function getButton(userId,callback) {
         var template = `<button name="returning" onclick="button_click(this)">${fName} ${lName}</button>`
 
         return callback(true, template);
-    })
+    });
 }
