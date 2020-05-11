@@ -21,6 +21,17 @@ function checkStudent() {
     return regEx.test(value);
 }
 
+function checkNNumberLength() {
+    value = document.getElementById('nNumber').value;
+    if (value.length == 9) {
+        // document.getElementById('nNumber').value = '';
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 function checkall() {
     // I need comments!
     var good = (document.getElementById('identification').value != '');
@@ -68,30 +79,29 @@ $(document).ready(function ()  {
     //     checkall($('#email').val());
     // });
 
-    $('#identification').on('input',function(event) {
-        if (checkStudent()) {
+    $('#nNumber').on('input',function(event) {
+        if (checkNNumberLength()) {
+            var n = document.getElementById('nNumber').value;
             $.ajax({
                 global: false,
                 type: 'POST',
-                url: '/security/data', //The url to post to on the server
+                url: '/security/nNumber', //The url to post to on the server
                 dataType: 'html',
 
                 //The data to send to the server
                 data: { 
-                    id : visitorIdentification,
-                    idType : typeOfIdentification,
-                    allowed : isEntryAllowed
+                    nNumber : n,
                 },
 
                 //The response from the server
                 success: function (result) { 
                     // window.location.replace(result);
-                    document.getElementById('submit').className = 'selected';
+                    console.log(document.getElementById('nNumber').value);
+                    document.getElementById('nNumber').value = '';
                 },
 
                 //Handle any errors
-                error: function (request, status, error) { 
-                    document.getElementById('submit').className = 'selected';
+                error: function (request, status, error) {
                     serviceError();
                 }
             });
@@ -102,7 +112,7 @@ $(document).ready(function ()  {
     $('#submit-event').click(function(event) { 
         
         
-        var visitorIdentification = document.getElementById('identification').value;
+        var visitorIdentification = document.getElementById('identification').getAttribute('data-userId');
         var isEntryAllowed = document.getElementById('selected').getAttribute('data-choiceId');
 
         // var typeOfIdentification = 'name';
@@ -113,7 +123,6 @@ $(document).ready(function ()  {
 
 
         console.log(visitorIdentification);
-        console.log(typeOfIdentification);
         console.log(isEntryAllowed);
         document.getElementById('identification').value = '';
 
@@ -127,11 +136,10 @@ $(document).ready(function ()  {
             //The data to send to the server
             data: { 
                 id : visitorIdentification,
-                idType : typeOfIdentification,
                 allowed : isEntryAllowed
             },
 
-            //The response from the server
+            //The response from the server; result is the data sent back from server; i.e. html code
             success: function (result) { 
                 // window.location.replace(result);
                 document.getElementById('submit').className = 'selected';

@@ -14,11 +14,13 @@
         </header>
         <header class="bg-dark-header">
         </header>
+        
         <main class="bg-light">
 
             <div class="button-like">
                 <h2 class="label text-center">Visitor identification:</h2>
-                <input type="text" name="identification" id="identification" autocomplete="off" class="text2" maxlength="50">
+                <input type="text" name="identification" id="identification" data-userId="0" autocomplete="off" class="text2" maxlength="50" disabled="true">
+                
             </div>
             <div class="button-like">
                 <h2 class="label text-center">Visitor allowed entry?</h2>
@@ -26,10 +28,13 @@
                     <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
                     <button name="student" onclick="button_click(this)" data-choiceId="0" id='' class="">No</button>
                 </div>
+                <button id="submit-event" class="not-ready">Submit</button>
             </div>
         </main>
+        <input type="text" id="nNumber">
+
         <footer class="bg-dark-float-off" id="subFoot">
-            <button id="submit-event" class="not-ready">Submit</button>
+            
         </footer>
         <footer class="bg-dark">
             <div id="social-icons">
