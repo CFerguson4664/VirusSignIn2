@@ -1,10 +1,36 @@
-function checkEmail(value) {
-    var regEx = new RegExp('^.+@.+\\..+$');
+var EmailNotDuplicate = true;
 
-    return regEx.test(value);
+//Checks all values to see if they are valid
+function checkAll() {
+    //Make sure the first name isnt blank
+    var good = document.getElementById('firstname').value != '';
+
+    //Make sure the last name is atleast 3 characters long
+    good = good && document.getElementById('lastname').value.length >= 3; //Needs to be changed with min length of returning search
+
+    //Make sure the email passes its regex
+    good = good && checkEmail(email);
+
+    //Make sure the email is not a duplicate
+    good = good && EmailNotDuplicate; 
+
+    //Make sure the NNumber passes its regex
+    good = good && checkNNumber();
+    
+    //If everything passes display the submit button
+    if(good) {
+        document.getElementById("submit-event").className = "ready";
+        document.getElementById("subFoot").className = "bg-dark-float-on";
+    }
+    //Otherwise, hide it
+    else {
+        document.getElementById("submit-event").className = "not-ready";
+        document.getElementById("subFoot").className = "bg-dark-float-off";
+    }
 }
 
-function checkStudent() {
+//Checks the NNumber to see if it is valid
+function checkNNumber() {
     var checkRadio = document.getElementById('selected').getAttribute('data-choiceId');
 
     if(checkRadio == '1') {
@@ -19,28 +45,14 @@ function checkStudent() {
     }
 }
 
-function checkall(email, override) {
-    if(override == undefined) {
-        override = true;
-    }
-
-    // I need comments!
-    var good = document.getElementById('firstname').value != '';
-    good = good && checkEmail(email);
-    good = good && checkStudent();
-    good = good && document.getElementById('lastname').value.length >= 3; //Needs to be changed with min length of returning search
-    good = good && override;
-
-    if(good) {
-        document.getElementById("submit-event").className = "ready";
-        document.getElementById("subFoot").className = "bg-dark-float-on";
-    }
-    else {
-        document.getElementById("submit-event").className = "not-ready";
-        document.getElementById("subFoot").className = "bg-dark-float-off";
-    }
+//Checks the Email to see if it is valid
+function checkEmail() {
+    var regEx = new RegExp('^.+@.+\\..+$');
+    var value = $('#email').val();
+    return regEx.test(value);
 }
 
+//Controls the student buttons
 function button_click(sender)
 {
     var buttons = document.getElementsByName("student");
@@ -64,19 +76,20 @@ function button_click(sender)
     }
 
     sender.id = "selected";
-    checkall(document.getElementById('email').value)
+    checkAll()
 }
 
 //AJAX Functions
 
 //Wait to execute until AJAX is ready
 $(document).ready(function ()  {
+
     $('#email').on('input',function(event) {
 
-        if(!checkEmail($(this).val()))
+        if(!checkEmail())
         {
             document.getElementById('emailerror').innerHTML = `<h2 class="red text-center">This email is invalid</h2>`;
-            checkall($('#email').val());
+            checkAll();
         }
         else
         {
@@ -102,11 +115,13 @@ $(document).ready(function ()  {
                     }
                     else if(result != '') {
                         document.getElementById('emailerror').innerHTML = result;
-                        checkall($('#email').val(), false);
+                        EmailNotDuplicate = false;
+                        checkAll();
                     }
                     else {
                         document.getElementById('emailerror').innerHTML = '';
-                        checkall($('#email').val());
+                        EmailNotDuplicate = true;
+                        checkAll();
                     }
                 },
     
@@ -115,7 +130,6 @@ $(document).ready(function ()  {
                     serviceError();
                 }
             });
-            
         }
     });
 
@@ -123,7 +137,7 @@ $(document).ready(function ()  {
         if($('#nnumber').val() == '') {
             document.getElementById('nnumber').value = 'N'
         }
-        if(!checkStudent())
+        if(!checkNNumber())
         {
             document.getElementById('nnerror').innerHTML = `<h2 class="red text-center">This N-number is invalid</h2>`;
         }
@@ -131,15 +145,15 @@ $(document).ready(function ()  {
         {
             document.getElementById('nnerror').innerHTML = '';
         }
-        checkall($('#email').val());
+        checkAll();
     });
 
     $('#firstname').on('input',function(event) {
-        checkall($('#email').val());
+        checkAll();
     });
 
     $('#lastname').on('input',function(event) {
-        checkall($('#email').val());
+        checkAll();
         if($('#lastname').val().length < 3) {
             document.getElementById('lnameerror').innerHTML = `<h2 class="red text-center">Last name must be at least 3 characters</h2>`;
         }
