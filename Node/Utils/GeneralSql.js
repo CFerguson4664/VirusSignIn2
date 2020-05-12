@@ -8,7 +8,7 @@ exports.init = function(callback) {
         connectionLimit : 50,
         host            : 'localhost',
         user            : 'root',
-        password        : '',
+        password        : 'Password01',
         database        : 'virussignin2'
     });
 
@@ -60,6 +60,10 @@ exports.select = function(table, columns, params, values, callback) {
 //Overloaded function with the ability to tack on extra SQL (Limit, Order By, etc...) 
 //  and using 'LIKE' instead of '='
 exports.selectExtra = function(table, columns, params, operators, values, extraSQL, callback) {
+    console.log(params);
+    console.log(operators);
+    console.log(values);
+
     // check if number of params matches number of values, needed for correct where clause
     if (params.length != values.length || params.length != operators.length) return callback(new Error("params and vals must be the same length!"), undefined);
 

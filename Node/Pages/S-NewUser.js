@@ -47,7 +47,7 @@ router.get('/', function(req,res) {
         }
         //Otherwise redirect them to the timeout page
         else {
-            res.send('/timeout');
+            res.redirect('/timeout');
             res.end();
         }
     });
@@ -178,6 +178,7 @@ function Template() {
             <div class="button-like">
                 <h2 class="label text-center">Enter your last name</h2>
                 <input type="text" name="lastname" id="lastname" autocomplete="off" class="text2" maxlength="50">
+                <div id='lnameerror'></div>
             </div>
             <div class="button-like">
                 <h2 class="label text-center">Enter your email</h2>

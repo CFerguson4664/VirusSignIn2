@@ -1,5 +1,4 @@
 function checkEmail(value) {
-    //Taken from emailregex.com
     var regEx = new RegExp('^.+@.+\\..+$');
 
     return regEx.test(value);
@@ -20,12 +19,18 @@ function checkStudent() {
     }
 }
 
-function checkall(email) {
+function checkall(email, override) {
+    if(override == undefined) {
+        override = true;
+    }
+
     // I need comments!
-    var good = (document.getElementById('firstname').value != '') && (document.getElementById('lastname').value != '') ;
+    var good = document.getElementById('firstname').value != '';
     good = good && checkEmail(email);
     good = good && checkStudent();
-    
+    good = good && document.getElementById('lastname').value.length >= 3; //Needs to be changed with min length of returning search
+    good = good && override;
+
     if(good) {
         document.getElementById("submit-event").className = "ready";
         document.getElementById("subFoot").className = "bg-dark-float-on";
@@ -71,6 +76,7 @@ $(document).ready(function ()  {
         if(!checkEmail($(this).val()))
         {
             document.getElementById('emailerror').innerHTML = `<h2 class="red text-center">This email is invalid</h2>`;
+            checkall($('#email').val());
         }
         else
         {
@@ -94,11 +100,13 @@ $(document).ready(function ()  {
                     if (result == '/timeout') {
                         window.location.replace(result);
                     }
-                    else if(result != undefined) {
+                    else if(result != '') {
                         document.getElementById('emailerror').innerHTML = result;
+                        checkall($('#email').val(), false);
                     }
                     else {
                         document.getElementById('emailerror').innerHTML = '';
+                        checkall($('#email').val());
                     }
                 },
     
@@ -107,10 +115,8 @@ $(document).ready(function ()  {
                     serviceError();
                 }
             });
-
             
         }
-        checkall($('#email').val());
     });
 
     $('#nnumber').on('input',function(event) {
@@ -134,6 +140,12 @@ $(document).ready(function ()  {
 
     $('#lastname').on('input',function(event) {
         checkall($('#email').val());
+        if($('#lastname').val().length < 3) {
+            document.getElementById('lnameerror').innerHTML = `<h2 class="red text-center">Last name must be at least 3 characters</h2>`;
+        }
+        else {
+            document.getElementById('lnameerror').innerHTML = '';
+        }
     });
 
     //Called when user clicks 'New User' button

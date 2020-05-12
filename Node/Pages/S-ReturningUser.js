@@ -1,10 +1,16 @@
 //**************************************************** IMPORTS **************************************************
 
+//Requires the URL utilty
+const URL = require('url');
+
 //Requires the GeneralSQL utility.
 const SQL = require("../Utils/GeneralSql");
 
 //Requires Express Node.js framework
 const express = require('express');
+
+//Reqires the SessionMan Utility
+const sessionMan = require('../Utils/SessionMan');
 
 //***************************************************** SETUP ***************************************************
 
@@ -18,16 +24,66 @@ module.exports = router;
 
 //Handles the get request for the starting form of this page
 router.get('/',function(req,res) {
-    //Get the starting form of the webpage
-    getPage(function(HTML) {
-        //Send the HTML to the client
-        res.write(HTML);
-        //End our response to the client
-        res.end();
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl1;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            var queryObject = URL.parse(req.url,true).query;
+            
+            if(queryObject.userId != null) {
+                //Get the starting form of the webpage
+                getPagePrefilled(queryObject.userId, function(HTML) {
+                    //Send the HTML to the client
+                    res.write(HTML);
+                    //End our response to the client
+                    res.end();
+                });
+            }
+            else {
+                //Get the starting form of the webpage
+                getPage(function(HTML) {
+                    //Send the HTML to the client
+                    res.write(HTML);
+                    //End our response to the client
+                    res.end();
+                });
+            }
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.redirect('/timeout');
+            res.end();
+        }
     });
 });
 
-//const queryObject = url.parse(req.url,true).query;
+router.post('/names',function(req,res) {
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl1;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            var search = req.body.name;
+            
+            getNames(search, function(HTML) {
+                //Send the HTML to the client
+                res.send(HTML);
+                //End our response to the client
+                res.end();
+            })
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/timeout');
+            res.end();
+        }
+    });
+});
 
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
@@ -35,6 +91,23 @@ router.get('/',function(req,res) {
 function getPage(callback) {
     //Calls the template function with no names to avoid displaying too much user data
     callback(Template(`<h2 class="label-b">There are no names that match that search</h2>`));
+}
+
+function getPagePrefilled(userId, callback) {
+
+    var table = 'users';
+    var columns = ['fName','lName'];
+    var params = ['userId'];
+    var values = [`${userId}`];
+
+    //Try to select the first and last names from the database
+    SQL.select(table,columns,params,values, function(err,data) {
+        var fName = data[0][0];
+        var lName = data[0][1];
+
+        //Calls the template function with no names to avoid displaying too much user data
+        callback(TemplatePrefilled(fName, lName, userId, `<h2 class="label-b">There are no names that match that search</h2>`));
+    });
 }
 
 //Template function to handle the generation of the HTML for this webpage
@@ -103,14 +176,14 @@ function TemplatePrefilled(fName, lName, userId, nameHTML) {
             <h2 class="text-center">Welcome Back!</h2>
             
             <div class="button-like">
-                <input type="text" name="${userId}" id="nameText" autocomplete="off" onclick="openNav()" class="text2" placeholder="Enter your last name" maxlength="105">
+                <input type="text" name="${userId}" id="nameText" autocomplete="off" onclick="openNav()" class="text2" placeholder="Enter your last name" maxlength="105" value="${lName}, ${fName}">
                 <div id="mySidenav" class="sidenav-closed">
                     ${nameHTML}
                 </div>
             </div>
         </main>
-        <footer class="bg-dark-float-off" id="subFoot">
-                <button id="submit-event" class="not-ready">Submit</button>
+        <footer class="bg-dark-float-on" id="subFoot">
+                <button id="submit-event" class="ready">Submit</button>
         </footer>
         <footer class="bg-dark">
             <div id="social-icons">
@@ -132,13 +205,17 @@ function getNames(search, callback)
         var table = 'users';
         var columns = ['lName','fName','userId'];
         var params = ['lName'];
-        var values = [`${search}%`];
-        var extraSQL = 'LIMIT 20';
+        var operators = ['LIKE'];
+        var values = [`'${search}%'`];
+        var extraSQL = '';
         var useLike = true;
+        
 
         //Selects lName, fName, and userId from users where lName starts with the search term with a
         //  limit of 20 records.
-        SQL.selectExtra(table,columns, params, values, extraSQL, useLike, function(err,names) {
+        SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err,names) {
+            console.log(err);
+            console.log(names);
             //After getting the names uses them to generate the HTML to display them and 
             //  calls back with the HTML.
             callback(genNameHTML(names))
@@ -208,5 +285,5 @@ function genNameHTML(names) {
     }
 
     //Call back with the generated HTML
-    callback(nameHTML)
+    return nameHTML;
 }

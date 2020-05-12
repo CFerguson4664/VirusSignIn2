@@ -34,23 +34,32 @@ $(document).ready(function () {
         document.getElementById("submit-event").className = "not-ready";
         document.getElementById("subFoot").className = "bg-dark-float-off";
 
-        $.ajax({
-            global: false,
-            type: 'POST',
-            url: '/names',
-            dataType: 'html',
-            data: {
-                name: data
-            },
-            success: function (result) {
-                document.getElementById('mySidenav').innerHTML = result
-            },
-            error: function (request, status, error) {
-                serviceError();
-            }
-        });
-
-        
+        if(data.length >= 3){
+            $.ajax({
+                global: false,
+                type: 'POST',
+                url: '/returning/names',
+                dataType: 'html',
+                data: {
+                    name: data
+                },
+                success: function (result) {
+                    if (result == '/timeout') {
+                        window.location.replace(result);
+                    }
+                    else 
+                    {
+                        document.getElementById('mySidenav').innerHTML = result
+                    }
+                },
+                error: function (request, status, error) {
+                    serviceError();
+                }
+            });
+        }
+        else {
+            document.getElementById('mySidenav').innerHTML = `<h2 class="label-b">Three characters must be entered before predictions will be provided</h2>`;
+        }
     });
 
     //Called when a new character is typed in the name textbox, gets list of names from server and populates the choices
@@ -58,22 +67,33 @@ $(document).ready(function () {
 
         document.getElementById("submit-event").className = "not-ready";
         document.getElementById("subFoot").className = "bg-dark-float-off";
-    
-        $.ajax({
-            global: false,
-            type: 'POST',
-            url: '/names',
-            dataType: 'html',
-            data: {
-                name: document.getElementById('nameText').value
-            },
-            success: function (result) {
-                document.getElementById('mySidenav').innerHTML = result
-            },
-            error: function (request, status, error) {
-                serviceError();
-            }
-        });
+        
+        if(document.getElementById('nameText').value.length >= 3) {
+            $.ajax({
+                global: false,
+                type: 'POST',
+                url: '/returning/names',
+                dataType: 'html',
+                data: {
+                    name: document.getElementById('nameText').value
+                },
+                success: function (result) {
+                    if (result == '/timeout') {
+                        window.location.replace(result);
+                    }
+                    else 
+                    {
+                       document.getElementById('mySidenav').innerHTML = result
+                    }
+                },
+                error: function (request, status, error) {
+                    serviceError();
+                }
+            });
+        }
+        else {
+            document.getElementById('mySidenav').innerHTML = `<h2 class="label-b">Three characters must be entered before predictions will be provided</h2>`;
+        }
         
     });
 

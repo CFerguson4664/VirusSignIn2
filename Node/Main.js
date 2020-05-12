@@ -19,12 +19,14 @@ app.use(express.static('../Public')); //Makes all files in the public folder acc
 var Welcome = require('./Pages/S-Welcome');
 var UserType = require('./Pages/S-UserType');
 var New = require('./Pages/S-NewUser');
+var Returning = require('./Pages/S-ReturningUser');
 var Timeout = require('./Pages/S-Timeout');
 
 // Import my test routes into the path '/test'
 app.use('/welcome', Welcome);
 app.use('/usertype', UserType);
 app.use('/new', New);
+app.use('/returning', Returning);
 app.use('/timeout', Timeout);
 
 http.createServer(app).listen(8080, function() {
