@@ -25,7 +25,7 @@ $(document).ready(function () {
     //Comma would come from clicking a name button. To ensure search works properly all text after and including the ','
     //is removed. Then gets a list of names from the server and populates the choices
     $('#nameText').click(function(event) {
-        var name = $(this).val()
+        var name = $(this).val();
         if(name.includes(',')) {
             document.getElementById('nameText').value = name.substring(0,name.indexOf(','));
         }
@@ -49,7 +49,7 @@ $(document).ready(function () {
                     }
                     else 
                     {
-                        document.getElementById('mySidenav').innerHTML = result
+                        document.getElementById('mySidenav').innerHTML = result;
                     }
                 },
                 error: function (request, status, error) {
@@ -83,7 +83,7 @@ $(document).ready(function () {
                     }
                     else 
                     {
-                       document.getElementById('mySidenav').innerHTML = result
+                       document.getElementById('mySidenav').innerHTML = result;
                     }
                 },
                 error: function (request, status, error) {
