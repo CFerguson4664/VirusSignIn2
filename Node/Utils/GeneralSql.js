@@ -8,7 +8,7 @@ exports.init = function(callback) {
         connectionLimit : 50,
         host            : 'localhost',
         user            : 'root',
-        password        : 'Password01',
+        password        : '',
         database        : 'virussignin2'
     });
 
@@ -36,6 +36,8 @@ exports.select = function(table, columns, params, values, callback) {
 
     // assemble sql statement
     var sql = `SELECT ${columns} FROM ${table} ${pairs};`;
+
+    console.log(sql);
 
     // query database
     connection.query(sql, function(err,result) {
@@ -87,6 +89,8 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
     // assemble sql statement
     var sql = `SELECT ${columns} FROM ${table} ${pairs} ${extraSQL};`;
 
+    console.log(sql);
+
     // query database
     connection.query(sql, function(err,result) {
         if (err) return callback(err,undefined);
@@ -101,7 +105,7 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
             }
             data.push(recordData);
         }
-        
+        console.log('GenSql data print:' + data);
         // return data constructed from sql query
         callback(undefined, data);
     });
@@ -127,6 +131,7 @@ exports.insert = function(table, columns, values, callback) {
 
     // assemble sql statement
     var sql = `INSERT INTO ${table} (${cols}) VALUES (${vals});`;
+    console.log(sql);
 
     // query database
     connection.query(sql, function(err,result) {

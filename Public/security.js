@@ -96,8 +96,10 @@ $(document).ready(function ()  {
                 //The response from the server
                 success: function (result) { 
                     // window.location.replace(result);
-                    console.log(document.getElementById('nNumber').value);
+                    // console.log(document.getElementById('nNumber').value);
+                    document.getElementById('users').innerHTML = result;
                     document.getElementById('nNumber').value = '';
+                    // console.log(result);
                 },
 
                 //Handle any errors

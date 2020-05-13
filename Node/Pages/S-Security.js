@@ -1,5 +1,8 @@
 //**************************************************** IMPORTS **************************************************
 
+//Requires the GeneralSQL utility.
+const SQL = require("../Utils/GeneralSql");
+
 //Requires Express Node.js framework
 const express = require('express');
 
@@ -22,6 +25,18 @@ router.get('/',function(req,res) {
         //End our response to the client
         res.end();
     });
+});
+
+router.post('/nNumber',function(req,res) {
+    var nNumber = req.body.nNumber;
+    addUserToBufferNNumber(nNumber, function(success) {
+        getUserBuffer(function(HTML) {
+
+            res.send(HTML);
+        });
+    });
+    
+        
 });
 
 //********************************************** DEFAULT FUNCTIONS **********************************************
@@ -61,7 +76,9 @@ function Template(userHTML) {
         </header>
         
         <main class="bg-light">
-            ${userHTML}
+            <div id="users">
+                ${userHTML}
+            </div>
         </main>
         <input type="text" id="nNumber">
 
@@ -79,5 +96,76 @@ function Template(userHTML) {
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
 
+function addUserToBufferNNumber(nNumber,callback) {
+    var table = 'users';
+    var columns = ['userId'];
+    var params = ['nNumber'];
+    var values = [`'${nNumber}'`];
 
+    SQL.select(table, columns, params, values, function(err,userId) {
+        table = 'userbuffer';
+        columns = ['userId'];
+        console.log(userId);
+        values = userId;
 
+        SQL.insert(table, columns, values, function(err,success) {
+            callback(success);
+        });
+    });
+
+}
+
+function getUserBuffer(callback) {
+    var table = 'userbuffer';
+    var columns = ['userbuffer.userId','users.fName','users.lName'];
+    var params = [];
+    var operators = [];
+    var values = [];
+    var extraSQL = 'INNER JOIN users on userbuffer.userId = users.userId';
+
+    SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
+        
+        callback(genUserBufferInnerHTML(res));
+    });
+}
+
+function genUserBufferInnerHTML(data) {
+    var innerHTML = '';
+    console.log(data);
+    for(var i = 0; i < data.length; i++) {
+        innerHTML += `<div class="button-like">
+        <h2 class="label text-center">Visitor identification:</h2>
+        <input type="text" name="identification" id="identification" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
+        
+    </div>
+    <div class="button-like">
+        <h2 class="label text-center">Visitor allowed entry?</h2>
+        <div class="sidenav-open">
+            <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
+            <button name="student" onclick="button_click(this)" data-choiceId="0" id='' class="">No</button>
+        </div>
+        <button id="submit-event" class="not-ready">Submit</button>
+    </div>`;
+    }
+
+    return innerHTML;
+}
+
+function insertNameIntoUserBufferInnerHTML(user) {
+    var html = `<div class="button-like">
+            <h2 class="label text-center">Visitor identification:</h2>
+            <input type="text" name="identification" id="identification" data-userId="${user[0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${user[1]} ${user[2]}>
+            
+        </div>
+        <div class="button-like">
+            <h2 class="label text-center">Visitor allowed entry?</h2>
+            <div class="sidenav-open">
+                <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
+                <button name="student" onclick="button_click(this)" data-choiceId="0" id='' class="">No</button>
+            </div>
+            <button id="submit-event" class="not-ready">Submit</button>
+        </div>`;
+return html;
+}
+
+function deleteUserFromBuffer(userid) {}
