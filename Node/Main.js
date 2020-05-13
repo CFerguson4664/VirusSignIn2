@@ -21,6 +21,9 @@ var UserType = require('./Pages/S-UserType');
 var New = require('./Pages/S-NewUser');
 var Returning = require('./Pages/S-ReturningUser');
 var Timeout = require('./Pages/S-Timeout');
+var Admin = require('./Pages/S-Admin');
+var Securtiy = require('./Pages/S-Security');
+var Login = require('./Pages/S-Login');
 
 // Import my test routes into the path '/test'
 app.use('/welcome', Welcome);
@@ -28,6 +31,9 @@ app.use('/usertype', UserType);
 app.use('/new', New);
 app.use('/returning', Returning);
 app.use('/timeout', Timeout);
+app.use('/admin', Admin);
+app.use('/security', Securtiy);
+app.use('/login', Login);
 
 http.createServer(app).listen(8080, function() {
     SQL.init(function(done) {
