@@ -12,7 +12,7 @@ function checkEmail(value) {
 
 // uses simple regex to determine whether entered nnumber is valid
 // probably not needed
-function checkStudent() {
+function checkStudent(name) {
     // var checkRadio = document.getElementById('selected').getAttribute('data-choiceId');
 
     value = document.getElementById('identification').value;
@@ -32,7 +32,7 @@ function checkNNumberLength() {
     }
 }
 
-function checkall() {
+function checkall(name) {
     // I need comments!
     var good = (document.getElementById('identification').value != '');
     // good = good && checkEmail(email);
@@ -52,7 +52,7 @@ function checkall() {
 
 function button_click(sender)
 {
-    var buttons = document.getElementsByName("student");
+    var buttons = document.getElementsByName(sender.name);
 
     for (var i = 0; i < buttons.length; i++)
     {
@@ -66,7 +66,7 @@ function button_click(sender)
     }
 
     sender.id = "selected";
-    checkall();
+    checkall(sender.name);
 }
 
 //AJAX Functions
