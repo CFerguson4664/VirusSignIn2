@@ -106,7 +106,7 @@ function addUserToBufferNNumber(nNumber,callback) {
         table = 'userbuffer';
         columns = ['userId'];
         console.log(userId);
-        values = userId;
+        values = [`${userId}`];
 
         SQL.insert(table, columns, values, function(err,success) {
             callback(success);
@@ -121,10 +121,11 @@ function getUserBuffer(callback) {
     var params = [];
     var operators = [];
     var values = [];
-    var extraSQL = 'INNER JOIN users on userbuffer.userId = users.userId';
+    var extraSQL = `INNER JOIN users on userbuffer.userId = users.userId`;
 
     SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
-        
+        console.log(`Err message: ${err}`);
+        console.log(`Result: ${res}`);
         callback(genUserBufferInnerHTML(res));
     });
 }

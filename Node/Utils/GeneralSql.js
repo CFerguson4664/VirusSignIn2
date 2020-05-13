@@ -8,7 +8,7 @@ exports.init = function(callback) {
         connectionLimit : 50,
         host            : 'localhost',
         user            : 'root',
-        password        : '',
+        password        : 'Password01',
         database        : 'virussignin2'
     });
 
@@ -94,10 +94,12 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
     // query database
     connection.query(sql, function(err,result) {
         if (err) return callback(err,undefined);
+        console.log(`Result print: ${result}`)
 
         // assemble data to return, want to get rid of RowDataPackets
         var data = [];
         for (var i = 0; i < result.length; i++) {
+            console.log(result[i]);
             // 2nd dimension of data array
             var recordData = [];
             for (var j = 0; j < columns.length; j++) {

@@ -5,9 +5,13 @@ const time = require('./TimeUtils');
 //Call the program specific funcion to manasge sessonData
 const UserType = require('../Pages/S-UserType');
 
-
-//Sets the session lifetime in minutes.
-var sessionLifetime = 10; //minutes
+//Sets the session lifetime of the different access levels
+//Level : lifetime  ---  lifetime in minutes, -1 for no timeout
+var lifetimes = {
+    1: 10, //Normal user
+    2: 5,  //Admin page
+    3: -1  //Security page
+};
 
 //Sets the interval at which the sever checks if any seesions have exceeded thier lifetime
 var sessionLifetimeCheckTime = 1; //minutes
@@ -17,6 +21,7 @@ setInterval(function() {
     //Every sessionLifetimeCheckTime delete the old sessions from the database.
     
     deleteOldSessions(function(success) {
+        //Call the program specific funcion to manasge sessonData
         UserType.deleteOldSessionData()
     });
 }, sessionLifetimeCheckTime * 60 * 1000);
