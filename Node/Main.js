@@ -33,7 +33,7 @@ app.use('/returning', Returning);
 app.use('/timeout', Timeout);
 app.use('/admin', Admin);
 app.use('/security', Securtiy);
-app.use('/login', Login);
+// app.use('/login', Login);
 
 http.createServer(app).listen(8080, function() {
     SQL.init(function(done) {
