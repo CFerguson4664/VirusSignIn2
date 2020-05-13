@@ -37,8 +37,6 @@ exports.select = function(table, columns, params, values, callback) {
     // assemble sql statement
     var sql = `SELECT ${columns} FROM ${table} ${pairs};`;
 
-    console.log(sql);
-
     // query database
     connection.query(sql, function(err,result) {
         if (err) return callback(err,undefined);
@@ -71,8 +69,16 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
 
     // assemble columns string
     var cols = `${columns[0]}`;
+    if (columns[0].indexOf('.') !== -1) {
+        // gets the string after the period (column name)
+        columns[0] = columns[0].substring(columns[0].indexOf('.')+1,columns[0].length);
+    }
     for(var i = 1; i < columns.length; i++) {
         cols += `, ${columns[i]}`;
+        if (columns[i].indexOf('.') !== -1) {
+            // gets the string after the period (column name)
+            columns[i] = columns[i].substring(columns[i].indexOf('.')+1,columns[i].length);
+        }
     }
 
     
@@ -87,9 +93,7 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
     }
     
     // assemble sql statement
-    var sql = `SELECT ${columns} FROM ${table} ${pairs} ${extraSQL};`;
-
-    console.log(sql);
+    var sql = `SELECT ${cols} FROM ${table} ${pairs} ${extraSQL};`;
 
     // query database
     connection.query(sql, function(err,result) {
@@ -105,7 +109,6 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
             }
             data.push(recordData);
         }
-        console.log('GenSql data print:' + data);
         // return data constructed from sql query
         callback(undefined, data);
     });
@@ -131,7 +134,6 @@ exports.insert = function(table, columns, values, callback) {
 
     // assemble sql statement
     var sql = `INSERT INTO ${table} (${cols}) VALUES (${vals});`;
-    console.log(sql);
 
     // query database
     connection.query(sql, function(err,result) {

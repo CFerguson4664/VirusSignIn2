@@ -42,19 +42,9 @@ router.post('/nNumber',function(req,res) {
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
-    callback(Template(`<div class="button-like">
-            <h2 class="label text-center">Visitor identification:</h2>
-            <input type="text" name="identification" id="identification" data-userId="0" autocomplete="off" class="text2" maxlength="50" disabled="true">
-            
-        </div>
-        <div class="button-like">
-            <h2 class="label text-center">Visitor allowed entry?</h2>
-            <div class="sidenav-open">
-                <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
-                <button name="student" onclick="button_click(this)" data-choiceId="0" id='' class="">No</button>
-            </div>
-            <button id="submit-event" class="not-ready">Submit</button>
-        </div>`));
+    getUserBuffer(function(HTML) {
+        callback(Template(HTML));
+    });
 }
 
 function Template(userHTML) {
@@ -105,8 +95,7 @@ function addUserToBufferNNumber(nNumber,callback) {
     SQL.select(table, columns, params, values, function(err,userId) {
         table = 'userbuffer';
         columns = ['userId'];
-        console.log(userId);
-        values = userId;
+        values = [userId];
 
         SQL.insert(table, columns, values, function(err,success) {
             callback(success);
@@ -131,18 +120,17 @@ function getUserBuffer(callback) {
 
 function genUserBufferInnerHTML(data) {
     var innerHTML = '';
-    console.log(data);
     for(var i = 0; i < data.length; i++) {
         innerHTML += `<div class="button-like">
         <h2 class="label text-center">Visitor identification:</h2>
-        <input type="text" name="identification" id="identification" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
+        <input type="text" name="name-userId-${data[i][0]}" id="userId-${data[i][0]}" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
         
     </div>
     <div class="button-like">
         <h2 class="label text-center">Visitor allowed entry?</h2>
         <div class="sidenav-open">
-            <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
-            <button name="student" onclick="button_click(this)" data-choiceId="0" id='' class="">No</button>
+            <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1">Yes</button>
+            <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id='' class="">No</button>
         </div>
         <button id="submit-event" class="not-ready">Submit</button>
     </div>`;
