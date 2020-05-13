@@ -103,7 +103,7 @@ $(document).ready(function () {
         $.ajax({
             global: false,
             type: 'POST',
-            url: '/returningdata', //The url to post to on the server
+            url: '/returning/data', //The url to post to on the server
             dataType: 'html',
 
             //The data to send to the server

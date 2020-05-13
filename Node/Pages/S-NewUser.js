@@ -64,11 +64,15 @@ router.post('/checkNNumber',function(req,res) {
             var nNumber = req.body.nNumber;
 
             checkIfNNumberExists(nNumber, function(exists,userId) {
-                getButton(userId, function(dead,HTML) {
-                    if(exists) {
-
-                    }
-                });
+                if (exists) {
+                    getButton(userId, 'N-number', function(dead,HTML) {
+                        res.send(HTML);
+                        
+                    });
+                }
+                else {
+                    res.send();
+                }
             });
         }
         //Otherwise redirect them to the timeout page
@@ -92,7 +96,7 @@ router.post('/checkEmail',function(req,res) {
             checkIfEmailExists(email, function(exists,userId) {
             
                 if (exists) {
-                    getButton(userId, function(dead,HTML) {
+                    getButton(userId, 'email', function(dead,HTML) {
                         res.send(HTML);
                         
                     });
@@ -186,7 +190,7 @@ function Template() {
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Are you a student at Northwest?</h2>
+                <h2 class="label text-center">Do you have an N-number?</h2>
                 <div class="sidenav-open">
                     <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
                     <button name="student" onclick="button_click(this)" data-choiceId="0" id='selected' class="selected">No</button>
@@ -281,7 +285,7 @@ function checkIfEmailExists(email, callback) {
 }
 
 //Gets the button to go to returning user page
-function getButton(userId,callback) {
+function getButton(userId,type,callback) {
     var table = 'users';
     var columns = ['fName','lName'];
     var params = ['userId'];
@@ -293,7 +297,8 @@ function getButton(userId,callback) {
 
         var fName = data[0][0];
         var lName = data[0][1];
-        var template = `<button name="returning" onclick="button_click(this)">${fName} ${lName}</button>`
+        var template = `<br><h2 class="label text-center">Someone has that ${type} already.</h2>
+        <button name="exists" onclick="exists_button_click(this)" data-UserId="${userId}">${fName} ${lName}</button>`
 
         return callback(true, template);
     });

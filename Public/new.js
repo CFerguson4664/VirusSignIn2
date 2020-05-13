@@ -1,4 +1,8 @@
+// global variables kind of smelly, but easiest way to keep track of whether
+// email or nnumber have been checked with the server
+// this was done to save from pinging the server an ungodly number of unnecessary times
 var EmailNotDuplicate = true;
+var NNumberNotDuplicate = true;
 
 //Checks all values to see if they are valid
 function checkAll() {
@@ -31,13 +35,19 @@ function checkAll() {
 
 //Checks the NNumber to see if it is valid
 function checkNNumber() {
+    
     var checkRadio = document.getElementById('selected').getAttribute('data-choiceId');
 
+    // determine if user has nNumber (yes button selected)
     if(checkRadio == '1') {
-        value = document.getElementById('nnumber').value;
+        // get user entered nnumber
+        nnumber = document.getElementById('nnumber').value;
+
+        // set up regex to test if nnumber is valid
         var regEx = new RegExp('^[N,n][0-9]{8}$');
 
-        return regEx.test(value);
+        // test nNumber and return result
+        return regEx.test(nnumber);
     }
     else
     {
@@ -52,31 +62,53 @@ function checkEmail() {
     return regEx.test(value);
 }
 
-//Controls the student buttons
+//Controls the nnumber y/N buttons
 function button_click(sender)
 {
+    // gets all buttons 
     var buttons = document.getElementsByName("student");
 
+    // for every button
     for (var i = 0; i < buttons.length; i++)
     {
+        // reset the css formatting and change id (essentially resets buttons)
         buttons[i].className = "";
         buttons[i].id = "";
 
+        // if this is the button that was clicked
         if(buttons[i] == sender){
+            // if the yes button was clicked
             if(sender.getAttribute("data-choiceId") == '1') {
+                // show the nnumber prompt
                 document.getElementById('nndiv').style = '';
             }
+            // if the no button was clicked
             else
             {
+                // hide the nnumber prompt
                 document.getElementById('nndiv').style = 'display:none;';
             }
 
+            // graphically select button (change css class) ** this does not have to be here, it can go after the for loop
             sender.className = "selected";
         }
     }
 
+    // select button for the program to see
     sender.id = "selected";
+
+    // check if all inputs are valid
     checkAll()
+}
+
+// if the user clicks the button because they had a duplicate email or nnumber
+function exists_button_click(sender) {
+    // get the user id stored in the button
+    var userId = sender.getAttribute("data-UserId");
+    // prepare a url to send the user (will go to the returning page with their name already filled in)
+    var url = '/returning?userId=' + userId;
+    // send the user to the url
+    window.location.replace(url);
 }
 
 //AJAX Functions
@@ -86,11 +118,14 @@ $(document).ready(function ()  {
 
     $('#email').on('input',function(event) {
 
+        // if the user entered email is invalid (dosen't look like an email)
         if(!checkEmail())
         {
+            // tell them in red text
             document.getElementById('emailerror').innerHTML = `<h2 class="red text-center">This email is invalid</h2>`;
             checkAll();
         }
+        // if the user entered an email that is valid (lookd like an email)
         else
         {
             $.ajax({
@@ -101,10 +136,7 @@ $(document).ready(function ()  {
     
                 //The data to send to the server
                 data: { 
-                    // fname : document.getElementById('firstname').value,
-                    // lname : document.getElementById('lastname').value,
                     email : document.getElementById('email').value,
-                    // nNumber : nNumberVal
                 },
     
                 //The response from the server
@@ -143,9 +175,41 @@ $(document).ready(function ()  {
         }
         else
         {
-            document.getElementById('nnerror').innerHTML = '';
+            $.ajax({
+                global: false,
+                type: 'POST',
+                url: '/new/checkNNumber', //The url to post to on the server
+                dataType: 'html',
+    
+                //The data to send to the server
+                data: { 
+                    nNumber : document.getElementById('nnumber').value
+                },
+    
+                //The response from the server
+                success: function (result) {
+                    console.log(result);
+                    if (result == '/timeout') {
+                        window.location.replace(result);
+                    }
+                    else if(result != '') {
+                        document.getElementById('nnerror').innerHTML = result;
+                        NNumberNotDuplicate = false;
+                        checkAll();
+                    }
+                    else {
+                        document.getElementById('nnerror').innerHTML = '';
+                        NNumberNotDuplicate = true;
+                        checkAll();
+                    }
+                },
+    
+                //Handle any errors
+                error: function (request, status, error) { 
+                    serviceError();
+                }
+            });
         }
-        checkAll();
     });
 
     $('#firstname').on('input',function(event) {
