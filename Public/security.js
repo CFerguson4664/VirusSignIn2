@@ -15,7 +15,7 @@ function checkEmail(value) {
 function checkStudent(name) {
     // var checkRadio = document.getElementById('selected').getAttribute('data-choiceId');
 
-    value = document.getElementById('identification').value;
+    value = document.getElementById(name).value;
     var regEx = new RegExp('^[N,n][0-9]{8}$');
 
     return regEx.test(value);
@@ -33,10 +33,10 @@ function checkNNumberLength() {
 }
 
 function checkall(name) {
+
+    // var 
     // I need comments!
-    var good = (document.getElementById('identification').value != '');
-    // good = good && checkEmail(email);
-    // good = good && checkStudent();
+    var good = (document.getElementById().value != '');
     
     if(good) {
         document.getElementById("submit-event").className = "ready";
@@ -50,9 +50,9 @@ function checkall(name) {
 
 
 
-function button_click(sender)
-{
+function button_click(sender) {
     var buttons = document.getElementsByName(sender.name);
+    console.log(sender.name);
 
     for (var i = 0; i < buttons.length; i++)
     {
@@ -65,8 +65,48 @@ function button_click(sender)
         }
     }
 
-    sender.id = "selected";
-    checkall(sender.name);
+    var userId = sender.name.substring(sender.name.indexOf('-'), sender.name.length);
+    console.log("submit"+userId);
+    document.getElementById("submit"+userId).className = "ready";
+    
+    sender.id = "selected"+userId;
+}
+
+function submit_button_click(sender) {
+
+    console.log("submit:"+sender.id);
+    var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
+    var entryAllowed = false;
+    // if selected button is yes
+    console.log("allowed-"+userId);     
+    if (document.getElementById('selected-'+userId).getAttribute('data-choiceId') == 1) {
+        entryAllowed = true;
+    }
+
+    $.ajax({
+
+        global: false,
+        type: 'POST',
+        url: '/security/submit', //The url to post to on the server
+        dataType: 'html',
+
+        //The data to send to the server
+        data: {
+            userId  : userId.substring(userId.indexOf('-')+1,userId.length),
+            allowed : entryAllowed
+        },
+
+        //The response from the server; result is the data sent back from server; i.e. html code
+        success: function (result) { 
+            // window.location.replace(result);
+            document.getElementById('users').innerHTML = result;
+        },
+
+        //Handle any errors
+        error: function (request, status, error) { 
+            serviceError();
+        }
+    });
 }
 
 //AJAX Functions
@@ -132,7 +172,7 @@ $(document).ready(function ()  {
 
             global: false,
             type: 'POST',
-            url: '/new/data', //The url to post to on the server
+            url: '/security/data', //The url to post to on the server
             dataType: 'html',
 
             //The data to send to the server

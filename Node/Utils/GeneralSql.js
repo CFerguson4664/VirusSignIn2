@@ -132,6 +132,8 @@ exports.insert = function(table, columns, values, callback) {
     // assemble sql statement
     var sql = `INSERT INTO ${table} (${cols}) VALUES (${vals});`;
 
+    console.log(sql);
+
     // query database
     connection.query(sql, function(err,result) {
         if (err) return callback(err,false);
@@ -156,6 +158,8 @@ exports.delete = function(table, params, values, callback) {
 
     // assemble sql statement
     var sql = `DELETE FROM ${table} ${pairs};`;
+
+    console.log(sql);
 
     // query database
     connection.query(sql, function(err,result) {

@@ -6,6 +6,9 @@ const SQL = require("../Utils/GeneralSql");
 //Requires Express Node.js framework
 const express = require('express');
 
+//Requires the TimeUtils utility
+const time = require('../Utils/TimeUtils');
+
 //***************************************************** SETUP ***************************************************
 
 //router to handle moving the get/post requests around
@@ -36,6 +39,18 @@ router.post('/nNumber',function(req,res) {
         });
     });
     
+        
+});
+
+router.post('/submit',function(req,res) {
+    console.log("severSubmit");
+    addUserActivity(req.body.userId, req.body.allowed, function(success1) {
+        deleteUserFromBuffer(req.body.userId, function(success2) {
+            getUserBuffer(function(HTML) {
+                res.send(HTML);
+            });
+        });
+    }); 
         
 });
 
@@ -130,31 +145,33 @@ function genUserBufferInnerHTML(data) {
     <div class="button-like">
         <h2 class="label text-center">Visitor allowed entry?</h2>
         <div class="sidenav-open">
-            <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1">Yes</button>
-            <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id='' class="">No</button>
+            <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${data[i][0]}">Yes</button>
+            <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="">No</button>
         </div>
-        <button id="submit-event" class="not-ready">Submit</button>
+        <button id="submit-userId-${data[i][0]}" onclick="submit_button_click(this)" class="not-ready">Submit</button>
     </div>`;
     }
 
     return innerHTML;
 }
 
-function insertNameIntoUserBufferInnerHTML(user) {
-    var html = `<div class="button-like">
-            <h2 class="label text-center">Visitor identification:</h2>
-            <input type="text" name="identification" id="identification" data-userId="${user[0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${user[1]} ${user[2]}>
-            
-        </div>
-        <div class="button-like">
-            <h2 class="label text-center">Visitor allowed entry?</h2>
-            <div class="sidenav-open">
-                <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
-                <button name="student" onclick="button_click(this)" data-choiceId="0" id='' class="">No</button>
-            </div>
-            <button id="submit-event" class="not-ready">Submit</button>
-        </div>`;
-return html;
+function deleteUserFromBuffer(userId,callback) {
+    var table = 'userbuffer';
+    var params = ['userId'];
+    var values = [userId];
+    console.log('delete');
+    
+    SQL.delete(table, params, values, function(err,res) {
+        callback(res);
+    });
 }
 
-function deleteUserFromBuffer(userid) {}
+function addUserActivity(userId, allowed, callback) {
+    var table = 'useractivity';
+    var columns = ['userId', 'admitted', 'userActivityDatetime'];
+    var values = [userId,allowed, `'${time.getTime()}'`];
+
+    SQL.insert(table, columns, values, function(err,success) {
+        callback(success);
+    });
+}
