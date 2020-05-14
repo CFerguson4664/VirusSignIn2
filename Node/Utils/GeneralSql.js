@@ -60,9 +60,6 @@ exports.select = function(table, columns, params, values, callback) {
 //Overloaded function with the ability to tack on extra SQL (Limit, Order By, etc...) 
 //  and using 'LIKE' instead of '='
 exports.selectExtra = function(table, columns, params, operators, values, extraSQL, callback) {
-    console.log(params);
-    console.log(operators);
-    console.log(values);
 
     // check if number of params matches number of values, needed for correct where clause
     if (params.length != values.length || params.length != operators.length) return callback(new Error("params and vals must be the same length!"), undefined);
@@ -98,12 +95,10 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
     // query database
     connection.query(sql, function(err,result) {
         if (err) return callback(err,undefined);
-        console.log(`Result print: ${result}`)
 
         // assemble data to return, want to get rid of RowDataPackets
         var data = [];
         for (var i = 0; i < result.length; i++) {
-            console.log(result[i]);
             // 2nd dimension of data array
             var recordData = [];
             for (var j = 0; j < columns.length; j++) {
@@ -151,13 +146,16 @@ exports.delete = function(table, params, values, callback) {
     if (params.length != values.length) return callback(new Error("params and vals must be the same length!"), false);
 
     // assemble pairs string
-    var pairs = `${params[0]} = ${values[0]}`;
-    for(var i = 1; i < params.length; i++) {
-        pairs += ` AND ${params[i]} = ${values[i]}`;
+    var pairs = '';
+    if(params.length > 0) {
+        pairs = `WHERE ${params[0]} = ${values[0]}`;
+        for(var i = 1; i < params.length; i++) {
+            pairs += ` AND ${params[i]} = ${values[i]}`;
+        }
     }
 
     // assemble sql statement
-    var sql = `DELETE FROM ${table} WHERE ${pairs};`;
+    var sql = `DELETE FROM ${table} ${pairs};`;
 
     // query database
     connection.query(sql, function(err,result) {

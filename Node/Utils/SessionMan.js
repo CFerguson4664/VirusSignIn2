@@ -14,7 +14,7 @@ var lifetimes = {
 };
 
 //Sets the interval at which the sever checks if any seesions have exceeded thier lifetime
-var sessionLifetimeCheckTime = 1; //minutes
+var sessionLifetimeCheckTime = 100; //minutes
 
 //Function to remove old sessions after a given number of minutes
 setInterval(function() {
