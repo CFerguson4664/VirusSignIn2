@@ -8,7 +8,7 @@ exports.init = function(callback) {
         connectionLimit : 50,
         host            : 'localhost',
         user            : 'root',
-        password        : 'Password01',
+        password        : '',
         database        : 'virussignin2'
     });
 
@@ -36,6 +36,7 @@ exports.select = function(table, columns, params, values, callback) {
 
     // assemble sql statement
     var sql = `SELECT ${columns} FROM ${table} ${pairs};`;
+    console.log(sql);
 
     // query database
     connection.query(sql, function(err,result) {

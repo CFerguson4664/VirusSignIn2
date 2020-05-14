@@ -102,7 +102,7 @@ $(document).ready(function ()  {
 
                 //The response from the server
                 success: function (result) { 
-                    document.getElementById('users').innerHTML = result;
+                    document.getElementById('users').innerHTML += result;
                     document.getElementById('nNumber').value = '';
                 },
 
@@ -154,4 +154,26 @@ $(document).ready(function ()  {
     });
 });
 
-// window.onload = setInterval()
+window.onload = setInterval(function() {
+    $.ajax({
+        global: false,
+        type: 'POST',
+        url: '/security/reload', //The url to post to on the server
+        dataType: 'html',
+
+        //The data to send to the server
+        data: {
+        },
+
+        //The response from the server
+        success: function (result) { 
+            document.getElementById('users').innerHTML += result;
+        },
+
+        //Handle any errors
+        error: function (request, status, error) {
+            serviceError();
+        }
+    });
+    console.log("reload");
+},10000);

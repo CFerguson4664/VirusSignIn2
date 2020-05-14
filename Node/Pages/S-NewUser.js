@@ -133,11 +133,13 @@ router.post('/newUser',function(req,res) {
             console.log(nNumber);
 
             addNewUser(lName, fName, email, nNumber, function(success,userId) {
-                console.log(`success: ${success}`);
-                console.log(`userId: ${userId}`);
+                addUserToBuffer(userId, function(success2) {
+                    console.log(`success: ${success}`);
+                    console.log(`userId: ${userId}`);
 
-                res.send('')
-                res.end();
+                    res.send('')
+                    res.end();
+                });
             });
         }
         //Otherwise redirect them to the timeout page
@@ -241,6 +243,18 @@ function addNewUser(lName,fName,email,nNumber,callback) {
             //Return true because the user could be created and the userId
             return callback(true, data[0][0]);
         });
+    });
+}
+
+// function to add user to buffer based on userId
+function addUserToBuffer(userId,callback) {
+    var table = 'userbuffer';
+    var columns = ['userId'];
+    var values = [userId];
+
+    // insert user into userbuffer
+    SQL.insert(table, columns, values, function(err,success) {
+        callback(success);
     });
 }
 

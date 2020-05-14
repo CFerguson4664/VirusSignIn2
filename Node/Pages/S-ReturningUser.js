@@ -75,7 +75,28 @@ router.post('/names',function(req,res) {
                 res.send(HTML);
                 //End our response to the client
                 res.end();
-            })
+            });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/timeout');
+            res.end();
+        }
+    });
+});
+
+router.post('/submit',function(req,res) {
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl1;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            addUserToBuffer(req.body.userId, function(success) {
+
+            });
+            
         }
         //Otherwise redirect them to the timeout page
         else {
@@ -286,4 +307,16 @@ function genNameHTML(names) {
 
     //Call back with the generated HTML
     return nameHTML;
+}
+
+// function to add user to buffer based on userId
+function addUserToBuffer(userId,callback) {
+    var table = 'userbuffer';
+    var columns = ['userId'];
+    var values = [userId];
+
+    // insert user into userbuffer
+    SQL.insert(table, columns, values, function(err,success) {
+        callback(success);
+    });
 }

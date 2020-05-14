@@ -20,6 +20,9 @@ function checkAll() {
 
     //Make sure the NNumber passes its regex
     good = good && checkNNumber();
+
+    //Make sure the nNumber is not a duplicate
+    good = good && NNumberNotDuplicate; 
     
     //If everything passes display the submit button
     if(good) {
@@ -172,6 +175,7 @@ $(document).ready(function ()  {
         if(!checkNNumber())
         {
             document.getElementById('nnerror').innerHTML = `<h2 class="red text-center">This N-number is invalid</h2>`;
+            checkAll()
         }
         else
         {

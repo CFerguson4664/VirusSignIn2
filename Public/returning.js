@@ -103,7 +103,7 @@ $(document).ready(function () {
         $.ajax({
             global: false,
             type: 'POST',
-            url: '/returning/data', //The url to post to on the server
+            url: '/returning/submit', //The url to post to on the server
             dataType: 'html',
 
             //The data to send to the server
@@ -125,5 +125,5 @@ $(document).ready(function () {
 
     $('#back').click(function(event) {
         window.location.replace('/usertype');
-    })
+    });
 });
