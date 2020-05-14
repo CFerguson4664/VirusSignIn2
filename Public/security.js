@@ -1,26 +1,5 @@
-function isIdentificationTypeNNumber(identification) {
-    var regEx = new RegExp('[0-9]');
-    return regEx.test(identification);
-}
 
-function checkEmail(value) {
-    //Taken from emailregex.com
-    var regEx = new RegExp('^.+@.+\\..+$');
-
-    return regEx.test(value);
-}
-
-// uses simple regex to determine whether entered nnumber is valid
-// probably not needed
-function checkStudent(name) {
-    // var checkRadio = document.getElementById('selected').getAttribute('data-choiceId');
-
-    value = document.getElementById(name).value;
-    var regEx = new RegExp('^[N,n][0-9]{8}$');
-
-    return regEx.test(value);
-}
-
+// function to determine if the text in the nnumber box is the right length
 function checkNNumberLength() {
     value = document.getElementById('nNumber').value;
     if (value.length == 9) {
@@ -32,57 +11,46 @@ function checkNNumberLength() {
     }
 }
 
-function checkall(name) {
-
-    // var 
-    // I need comments!
-    var good = (document.getElementById().value != '');
-    
-    if(good) {
-        document.getElementById("submit-event").className = "ready";
-        document.getElementById("subFoot").className = "bg-dark-float-on";
-    }
-    else {
-        document.getElementById("submit-event").className = "not-ready";
-        document.getElementById("subFoot").className = "bg-dark-float-off";
-    }
-}
-
-
-
+// function to handle when a yes/no button is clicked (userId specific)
 function button_click(sender) {
+    // gets all the buttons in the name group
     var buttons = document.getElementsByName(sender.name);
-    console.log(sender.name);
 
-    for (var i = 0; i < buttons.length; i++)
-    {
+    // for every button in the name group
+    for (var i = 0; i < buttons.length; i++) {
+        // clear the css and ids
         buttons[i].className = "";
         buttons[i].id = "";
-
-        if(buttons[i] == sender){
-
-            sender.className = "selected";
-        }
     }
 
+    // set the css for the clicked button
+    sender.className = "selected";
+
+    // grab the userId data from the clicked button name
     var userId = sender.name.substring(sender.name.indexOf('-'), sender.name.length);
-    console.log("submit"+userId);
+    
+    // set the css for the specific submit button (show it)
     document.getElementById("submit"+userId).className = "ready";
     
+    // set the sender to be selected (for use when the submit button is clicked)
     sender.id = "selected"+userId;
 }
 
+// function to handle when a submit button is clicked
 function submit_button_click(sender) {
-
-    console.log("submit:"+sender.id);
+    // parse out the userId text from the id
     var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
+
+    // initialize entryAllowed so no else statement is needed
     var entryAllowed = false;
-    // if selected button is yes
-    console.log("allowed-"+userId);     
+
+    // if selected button is yes  
     if (document.getElementById('selected-'+userId).getAttribute('data-choiceId') == 1) {
+        // set entryAllowed to true
         entryAllowed = true;
     }
 
+    // ajax post with the userId and whether or not the user was allowed
     $.ajax({
 
         global: false,
@@ -92,13 +60,13 @@ function submit_button_click(sender) {
 
         //The data to send to the server
         data: {
+            // parse the userId number from the userId string
             userId  : userId.substring(userId.indexOf('-')+1,userId.length),
             allowed : entryAllowed
         },
 
         //The response from the server; result is the data sent back from server; i.e. html code
         success: function (result) { 
-            // window.location.replace(result);
             document.getElementById('users').innerHTML = result;
         },
 
@@ -113,15 +81,14 @@ function submit_button_click(sender) {
 
 //Wait to execute until AJAX is ready
 $(document).ready(function ()  {
-    
-    // here for record keeping
-    // $('#lastname').on('input',function(event) {
-    //     checkall($('#email').val());
-    // });
 
     $('#nNumber').on('input',function(event) {
+        // if the text in the box is long enough
         if (checkNNumberLength()) {
+
             var n = document.getElementById('nNumber').value;
+
+            // post to server the nnumber and clear the box
             $.ajax({
                 global: false,
                 type: 'POST',
@@ -135,11 +102,8 @@ $(document).ready(function ()  {
 
                 //The response from the server
                 success: function (result) { 
-                    // window.location.replace(result);
-                    // console.log(document.getElementById('nNumber').value);
                     document.getElementById('users').innerHTML = result;
                     document.getElementById('nNumber').value = '';
-                    // console.log(result);
                 },
 
                 //Handle any errors
@@ -150,19 +114,13 @@ $(document).ready(function ()  {
         } 
     });
 
+    // ************************************** DEPRECATED **************************************
     //Called when user clicks 'Submit' button
     $('#submit-event').click(function(event) { 
         
         
         var visitorIdentification = document.getElementById('identification').getAttribute('data-userId');
         var isEntryAllowed = document.getElementById('selected').getAttribute('data-choiceId');
-
-        // var typeOfIdentification = 'name';
-        // if (isIdentificationTypeNNumber(visitorIdentification)) {
-        //     typeOfIdentification = 'nnumber';
-        // }
-
-
 
         console.log(visitorIdentification);
         console.log(isEntryAllowed);
@@ -195,3 +153,5 @@ $(document).ready(function ()  {
         });
     });
 });
+
+// window.onload = setInterval()

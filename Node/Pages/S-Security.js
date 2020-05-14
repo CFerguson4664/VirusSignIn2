@@ -30,28 +30,43 @@ router.get('/',function(req,res) {
     });
 });
 
+// when the client posts to nNumber
 router.post('/nNumber',function(req,res) {
     var nNumber = req.body.nNumber;
+
+    // add the user with the nNumber to the buffer
     addUserToBufferNNumber(nNumber, function(success) {
+        // update the buffer
         getUserBuffer(function(HTML) {
 
+            // send updated innerHTML to client
             res.send(HTML);
         });
     });
-    
-        
 });
 
+// when the client interval resets (not actual reload)
+router.post('/reload', function(req,res) {
+    // update the buffer
+    getUserBuffer(function(HTML) {
+        // send updated innerHTML to client
+        res.send(HTML);
+    });
+});
+
+// when the client posts to submit
 router.post('/submit',function(req,res) {
-    console.log("severSubmit");
+    // add the user data to useractivity
     addUserActivity(req.body.userId, req.body.allowed, function(success1) {
+        // remove user from buffer
         deleteUserFromBuffer(req.body.userId, function(success2) {
+            // update the buffer
             getUserBuffer(function(HTML) {
+                // send updated innerHTML to client
                 res.send(HTML);
             });
         });
-    }); 
-        
+    });   
 });
 
 //********************************************** DEFAULT FUNCTIONS **********************************************
@@ -101,25 +116,31 @@ function Template(userHTML) {
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
 
+// function to add user to buffer based on nNumber
 function addUserToBufferNNumber(nNumber,callback) {
+    // set up data for select statement
     var table = 'users';
     var columns = ['userId'];
     var params = ['nNumber'];
     var values = [`'${nNumber}'`];
 
+    // select userId with matching nNumber
     SQL.select(table, columns, params, values, function(err,userId) {
+        // set up data for insert statement
         table = 'userbuffer';
         columns = ['userId'];
         values = [userId];
 
+        // insert user into userbuffer
         SQL.insert(table, columns, values, function(err,success) {
             callback(success);
         });
     });
-
 }
 
+// function to get all from userbuffer table
 function getUserBuffer(callback) {
+    // set up data for selectExtra statement
     var table = 'userbuffer';
     var columns = ['userbuffer.userId','users.fName','users.lName'];
     var params = [];
@@ -127,16 +148,19 @@ function getUserBuffer(callback) {
     var values = [];
     var extraSQL = `INNER JOIN users on userbuffer.userId = users.userId`;
 
+    // select userId and name from database
     SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
-        console.log(`Err message: ${err}`);
-        console.log(`Result: ${res}`);
+        // callback the innerHTML
         callback(genUserBufferInnerHTML(res));
     });
 }
 
+// function to generate the innerHTML based on result from selectExtra statement
 function genUserBufferInnerHTML(data) {
     var innerHTML = '';
+    // for every returned item
     for(var i = 0; i < data.length; i++) {
+        // append to the innerHTML
         innerHTML += `<div class="button-like">
         <h2 class="label text-center">Visitor identification:</h2>
         <input type="text" name="name-userId-${data[i][0]}" id="userId-${data[i][0]}" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
@@ -152,25 +176,31 @@ function genUserBufferInnerHTML(data) {
     </div>`;
     }
 
+    // return fully generated innerHTML
     return innerHTML;
 }
 
+// function to delete user from userbuffer table
 function deleteUserFromBuffer(userId,callback) {
+    // set up data for delete statement
     var table = 'userbuffer';
     var params = ['userId'];
     var values = [userId];
-    console.log('delete');
-    
+
+    // delete record with userId
     SQL.delete(table, params, values, function(err,res) {
         callback(res);
     });
 }
 
+// function to add user results to useractivity table
 function addUserActivity(userId, allowed, callback) {
+    // set up data for insert statement
     var table = 'useractivity';
     var columns = ['userId', 'admitted', 'userActivityDatetime'];
     var values = [userId,allowed, `'${time.getTime()}'`];
 
+    // insert user activity into database
     SQL.insert(table, columns, values, function(err,success) {
         callback(success);
     });
