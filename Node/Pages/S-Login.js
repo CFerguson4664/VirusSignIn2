@@ -37,14 +37,21 @@ router.get('/', function(req,res) {
 
 router.post('/auth',function(req,res) {
 
-    var encrypted = req.body.data
+    var encrypted = req.body.data;
 
     encryption.decode(encrypted, function(success,data) {
         console.log(success);
         console.log(`decrypted: ${data}`);
-    })
 
-    auth.hash('hello','password')
+        var split = data.split`,`
+    });
+
+    auth.addAuthForLevel(3,'test','password',function(success) {
+        auth.authenticate('test','password', function(success,authId,level) {
+        })
+    });
+
+    
 
     res.send('');
     res.end();
