@@ -4,10 +4,19 @@
 const express = require('express');
 
 //Requires server encryption
-const encryption = require('../Utils/CryptoServer')
+const encryption = require('../Utils/CryptoServer');
+
+//Reqires the SessionMan Utility
+const sessionMan = require('../Utils/SessionMan');
+
+//Requires the TimeUtils utility
+const time = require('../Utils/TimeUtils');
 
 //Requires passwords
-const auth = require('../Utils/AuthMan')
+const auth = require('../Utils/AuthMan');
+
+//Requires the GeneralSQL utility
+const SQL = require('../Utils/GeneralSql');
 
 //***************************************************** SETUP ***************************************************
 
@@ -40,21 +49,46 @@ router.post('/auth',function(req,res) {
     var encrypted = req.body.data;
 
     encryption.decode(encrypted, function(success,data) {
-        console.log(success);
-        console.log(`decrypted: ${data}`);
 
         var split = data.split`,`
-    });
 
-    auth.addAuthForLevel(3,'test','password',function(success) {
-        auth.authenticate('test','password', function(success,authId,level) {
-        })
-    });
+        console.log(split[0]);
+        console.log(split[1]);
 
+        auth.authenticate(split[0],split[1], function(success,authId,level) {
+            console.log(`Success: ${success}`);
+            console.log(`AuthId: ${authId}`);
+            console.log(`Level: ${level}`);
+
+            if(success) {
+                if(level == 3) {
+                    createAdminSession(function(sessionId) {
+                        res.cookie('SignInLvl3',sessionId, { httpOnly: true });
+                        res.send('/admin');
+                        res.end();
+                    })
+                }
+                else if(level == 2) {
+                    createSecuritySession(function(sessionId) {
+                        res.cookie('SignInLvl2',sessionId, { httpOnly: true });
+                        res.send('/security');
+                        res.end();
+                    })
+                }
+                else {
+                    res.send('-1');
+                    res.end();
+                }
+            }
+            else {
+                res.send('-1');
+                res.end();
+            }
+        });
+    });
     
 
-    res.send('');
-    res.end();
+    
 });
 
 //********************************************** DEFAULT FUNCTIONS **********************************************
@@ -99,6 +133,7 @@ function Template(publickey)
                     <input type="password" id="password" autocomplete="off" class="text2" maxlength="50">
                 </div>
                 <div class="button-like">
+                    <div id='passworderror'></div>
                     <button name="login" id='login' class="ready">Login</button>
                 </div>
             </div>
@@ -119,3 +154,42 @@ function Template(publickey)
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
 
+//Creates a new session and sessionData entry
+function createAdminSession(callback) {
+    //Get the current time to use as the session's creation time
+    var sessionTime = time.getTime();
+
+    //Get a new session id to use for the session
+    sessionMan.getNewSessionId(3, function(sessionId) {
+
+        var table = 'sessionData';
+        var columns = ['sessionId','sessionDatetime'];
+        var values = [`'${sessionId}'`,`'${sessionTime}'`];
+
+        //Insert the session id and creation time into the database
+        SQL.insert(table, columns, values, function(err, success) {
+            //callback the session id so it can be sent to the client
+            callback(sessionId);
+        });
+    });
+}
+
+//Creates a new session and sessionData entry
+function createSecuritySession(callback) {
+    //Get the current time to use as the session's creation time
+    var sessionTime = time.getTime();
+
+    //Get a new session id to use for the session
+    sessionMan.getNewSessionId(2, function(sessionId) {
+
+        var table = 'sessionData';
+        var columns = ['sessionId','sessionDatetime'];
+        var values = [`'${sessionId}'`,`'${sessionTime}'`];
+
+        //Insert the session id and creation time into the database
+        SQL.insert(table, columns, values, function(err, success) {
+            //callback the session id so it can be sent to the client
+            callback(sessionId);
+        });
+    });
+}

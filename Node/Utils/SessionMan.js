@@ -6,25 +6,28 @@ const time = require('./TimeUtils');
 const UserType = require('../Pages/S-UserType');
 
 //Sets the session lifetime of the different access levels
-//Level : lifetime  ---  lifetime in minutes, -1 for no timeout
-var lifetimes = {
+//Level : lifetime  ---  lifetime in minutes
+var lifetimes = { 
     1: 10, //Normal user
     2: 5,  //Admin page
-    3: -1  //Security page
+    3: 480  //Security page
 };
 
-//Sets the interval at which the sever checks if any seesions have exceeded thier lifetime
-var sessionLifetimeCheckTime = 100; //minutes
+//Sets up functions to execute at the correct intervals
+var keys = Object.keys(lifetimes);
+for(let i = 0; i < keys.length; i++) {
+    //Function to remove old sessions after a given number of minutes
+    setInterval(function() {
+        //Every sessionLifetimeCheckTime delete the old sessions from the database.
+        
+        deleteOldSessions(keys[i], lifetimes[keys[i]], function(success) {
 
-//Function to remove old sessions after a given number of minutes
-setInterval(function() {
-    //Every sessionLifetimeCheckTime delete the old sessions from the database.
-    
-    deleteOldSessions(function(success) {
-        //Call the program specific funcion to manasge sessonData
-        UserType.deleteOldSessionData()
-    });
-}, sessionLifetimeCheckTime * 60 * 1000);
+            //Call the program specific funcion to manasge sessonData
+            UserType.deleteOldSessionData()
+        });
+    }, lifetimes[keys[i]] * 60 * 1000);
+}
+
 
 exports.renewSessionId = function(sessionId, callback) {
     //Get the current time to use as the renewed time
@@ -124,14 +127,14 @@ function getNewSessionId(level, callback) {
     });
 }
 
-function deleteOldSessions(callback) {
+function deleteOldSessions(level, lifetime, callback) {
     //Get the current time minus the session lifetime to use in database query
-    var deleteTime = time.getTime(0,0,0,0,(-1 * sessionLifetime),0);
+    var deleteTime = time.getTime(0,0,0,0,(-1 * lifetime),0);
 
     var table = 'sessions'
-    var params = ['renewedDatetime']
-    var operators = ['<']
-    var values = [`'${deleteTime}'`]
+    var params = ['level','renewedDatetime']
+    var operators = ['=','<']
+    var values = [`${level}`,`'${deleteTime}'`]
     var extraSQL = '';
 
     //Delete any sessions older than deleteTime

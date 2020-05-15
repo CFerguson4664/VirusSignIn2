@@ -3,6 +3,9 @@
 //Requires Express Node.js framework
 const express = require('express');
 
+//Reqires the SessionMan Utility
+const sessionMan = require('../Utils/SessionMan');
+
 //***************************************************** SETUP ***************************************************
 
 //router to handle moving the get/post requests around
@@ -15,12 +18,26 @@ module.exports = router;
 
 //Handles the get request for the starting form of this page
 router.get('/',function(req,res) {
-    //Get the starting form of the webpage
-    getPage(function(HTML) {
-        //Send the HTML to the client
-        res.write(HTML);
-        //End our response to the client
-        res.end();
+    //This cookie is the session id stored on login page
+    var cookie = req.cookies.SignInLvl3;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 3, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            //Get the starting form of the webpage
+            getPage(function(HTML) {
+                //Send the HTML to the client
+                res.write(HTML);
+                //End our response to the client
+                res.end();
+            });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.redirect('/logintimeout');
+            res.end();
+        }
     });
 });
 
@@ -38,7 +55,7 @@ function Template(userHTML) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-            <script src="security.js"></script>
+            <script src="admin.js"></script>
         </head>
         <header class="bg-dark">
             <div class="logo">

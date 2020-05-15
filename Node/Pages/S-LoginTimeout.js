@@ -31,8 +31,7 @@ router.get('/', function(req,res) {
 });
 
 router.post('/data',function(req,res) {
-
-    res.send('/welcome');
+    res.send('/login');
 });
 
 //********************************************** DEFAULT FUNCTIONS **********************************************
@@ -48,11 +47,10 @@ function Template()
     <html>
         <head>
             <title>NSCC Sign In</title>
-            <meta name="author" content="C Ferguson and E Wannemacher">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link rel="stylesheet" type="text/css" href="style.css">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-            <script src="timeout.js"></script>
+            <script src="logintimeout.js"></script>
         </head>
         <body>
             <header class="bg-dark">
@@ -61,7 +59,7 @@ function Template()
                 </div>
             </header>
             <main class="bg-light">
-                <h2 class="text-center">Your session has timed out!<br> Click the button to restart</h2>
+                <h2 class="text-center">Your session has timed out!<br> Click the button to login again</h2>
             </main>
             <footer class="bg-dark-float-off" id="subFoot">
                     <button id="submit-event" class="ready">Restart</button>

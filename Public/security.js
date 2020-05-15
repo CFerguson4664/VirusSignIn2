@@ -67,7 +67,12 @@ function submit_button_click(sender) {
 
         //The response from the server; result is the data sent back from server; i.e. html code
         success: function (result) { 
-            document.getElementById('users').innerHTML = result;
+            if (result == '/logintimeout') {
+                window.location.replace(result);
+            }
+            else {
+                document.getElementById('users').innerHTML = result;
+            }
         },
 
         //Handle any errors
@@ -102,8 +107,13 @@ $(document).ready(function ()  {
 
                 //The response from the server
                 success: function (result) { 
-                    document.getElementById('users').innerHTML += result;
-                    document.getElementById('nNumber').value = '';
+                    if (result == '/logintimeout') {
+                        window.location.replace(result);
+                    }
+                    else {
+                        document.getElementById('users').innerHTML += result;
+                        document.getElementById('nNumber').value = '';
+                    }
                 },
 
                 //Handle any errors
@@ -141,8 +151,14 @@ $(document).ready(function ()  {
 
             //The response from the server; result is the data sent back from server; i.e. html code
             success: function (result) { 
-                // window.location.replace(result);
-                document.getElementById('submit').className = 'selected';
+
+                if (result == '/logintimeout') {
+                    window.location.replace(result);
+                }
+                else {
+                    // window.location.replace(result);
+                    document.getElementById('submit').className = 'selected';
+                }
             },
 
             //Handle any errors
@@ -167,7 +183,12 @@ window.onload = setInterval(function() {
 
         //The response from the server
         success: function (result) { 
-            document.getElementById('users').innerHTML += result;
+            if (result == '/logintimeout') {
+                window.location.replace(result);
+            }
+            else {
+                document.getElementById('users').innerHTML += result;
+            }
         },
 
         //Handle any errors

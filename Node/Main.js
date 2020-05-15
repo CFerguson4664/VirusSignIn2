@@ -24,6 +24,7 @@ var Timeout = require('./Pages/S-Timeout');
 var Admin = require('./Pages/S-Admin');
 var Securtiy = require('./Pages/S-Security');
 var Login = require('./Pages/S-Login');
+var LoginTimeout = require('./Pages/S-LoginTimeout');
 
 // Import my test routes into the path '/test'
 app.use('/welcome', Welcome);
@@ -34,6 +35,7 @@ app.use('/timeout', Timeout);
 app.use('/admin', Admin);
 app.use('/security', Securtiy);
 app.use('/login', Login);
+app.use('/logintimeout', LoginTimeout);
 
 http.createServer(app).listen(8080, function() {
     SQL.init(function(done) {

@@ -55,8 +55,6 @@ exports.authenticate = function(username,password,callback) {
             var authId = data[0][1];
             var level = data[0][2];
 
-            console.log(hash);
-
             var valid = sodium.crypto_pwhash_str_verify(hash,password);
 
             if(valid) {
@@ -80,8 +78,6 @@ exports.authenticateAtLevel = function(username,password,level,callback) {
             var hash = data[0][0];
             var authId = data[0][1];
             var level = data[0][2];
-
-            console.log(hash);
 
             var valid = sodium.crypto_pwhash_str_verify(hash,password);
 

@@ -1,6 +1,9 @@
 $(document).ready(function ()  {
     //Called when user clicks 'Submit' button
     $('#login').click(function(event) { 
+        document.getElementById("login").className = "not-ready";
+        document.getElementById('passworderror').innerHTML = ``
+
         init();
         var publicKeyText = document.getElementById('main').getAttribute('data-publickey');
 
@@ -24,6 +27,13 @@ $(document).ready(function ()  {
 
             //The response from the server; result is the data sent back from server; i.e. html code
             success: function (result) { 
+                if(result == '-1') {
+                    document.getElementById('passworderror').innerHTML = `<h2 class="red text-center">That username or password is invalid</h2>`
+                    document.getElementById("login").className = "ready";
+                }
+                else {
+                    window.location.replace(result);
+                }
             },
 
             //Handle any errors

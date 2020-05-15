@@ -1,5 +1,8 @@
 //**************************************************** IMPORTS **************************************************
 
+//Reqires the SessionMan Utility
+const sessionMan = require('../Utils/SessionMan');
+
 //Requires the GeneralSQL utility.
 const SQL = require("../Utils/GeneralSql");
 
@@ -21,52 +24,108 @@ module.exports = router;
 
 //Handles the get request for the starting form of this page
 router.get('/',function(req,res) {
-    //Get the starting form of the webpage
-    getPage(function(HTML) {
-        //Send the HTML to the client
-        res.write(HTML);
-        //End our response to the client
-        res.end();
+    //This cookie is the session id stored on login page
+    var cookie = req.cookies.SignInLvl2;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            //Get the starting form of the webpage
+        getPage(function(HTML) {
+            //Send the HTML to the client
+            res.write(HTML);
+            //End our response to the client
+            res.end();
+        });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.redirect('/logintimeout');
+            res.end();
+        }
     });
 });
 
 // when the client posts to nNumber
 router.post('/nNumber',function(req,res) {
-    var nNumber = req.body.nNumber;
+    //This cookie is the session id stored on login page
+    var cookie = req.cookies.SignInLvl2;
 
-    // add the user with the nNumber to the buffer
-    addUserToBufferNNumber(nNumber, function(success) {
-        // update the buffer
-        updateUserBuffer(function(HTML) {
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            var nNumber = req.body.nNumber;
 
-            // send updated innerHTML to client
-            res.send(HTML);
-        });
+            // add the user with the nNumber to the buffer
+            addUserToBufferNNumber(nNumber, function(success) {
+                // update the buffer
+                updateUserBuffer(function(HTML) {
+
+                    // send updated innerHTML to client
+                    res.send(HTML);
+                });
+            });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/logintimeout');
+            res.end();
+        }
     });
 });
 
 // when the client interval resets (not actual reload)
 router.post('/reload', function(req,res) {
-    // update the buffer
-    updateUserBuffer(function(HTML) {
-        // send updated innerHTML to client
-        res.send(HTML);
+    //This cookie is the session id stored on login page
+    var cookie = req.cookies.SignInLvl2;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            // update the buffer
+            updateUserBuffer(function(HTML) {
+                // send updated innerHTML to client
+                res.send(HTML);
+            });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/logintimeout');
+            res.end();
+        }
     });
 });
 
 // when the client posts to submit
 router.post('/submit',function(req,res) {
-    // add the user data to useractivity
-    addUserActivity(req.body.userId, req.body.allowed, function(success1) {
-        // remove user from buffer
-        deleteUserFromBuffer(req.body.userId, function(success2) {
-            // update the buffer
-            getUserBuffer(function(HTML) {
-                // send updated innerHTML to client
-                res.send(HTML);
-            });
-        });
-    });   
+    //This cookie is the session id stored on login page
+    var cookie = req.cookies.SignInLvl2;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            // add the user data to useractivity
+            addUserActivity(req.body.userId, req.body.allowed, function(success1) {
+                // remove user from buffer
+                deleteUserFromBuffer(req.body.userId, function(success2) {
+                    // update the buffer
+                    getUserBuffer(function(HTML) {
+                        // send updated innerHTML to client
+                        res.send(HTML);
+                    });
+                });
+            });   
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/logintimeout');
+            res.end();
+        }
+    }); 
 });
 
 //********************************************** DEFAULT FUNCTIONS **********************************************

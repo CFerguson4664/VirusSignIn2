@@ -8,7 +8,7 @@ exports.init = function(callback) {
         connectionLimit : 50,
         host            : 'localhost',
         user            : 'root',
-        password        : '',
+        password        : 'Password01',
         database        : 'virussignin2'
     });
 
@@ -36,7 +36,6 @@ exports.select = function(table, columns, params, values, callback) {
 
     // assemble sql statement
     var sql = `SELECT ${columns} FROM ${table} ${pairs};`;
-    console.log(sql);
 
     // query database
     connection.query(sql, function(err,result) {
@@ -133,8 +132,6 @@ exports.insert = function(table, columns, values, callback) {
     // assemble sql statement
     var sql = `INSERT INTO ${table} (${cols}) VALUES (${vals});`;
 
-    console.log(sql);
-
     // query database
     connection.query(sql, function(err,result) {
         if (err) return callback(err,false);
@@ -159,8 +156,6 @@ exports.delete = function(table, params, values, callback) {
 
     // assemble sql statement
     var sql = `DELETE FROM ${table} ${pairs};`;
-
-    console.log(sql);
 
     // query database
     connection.query(sql, function(err,result) {
