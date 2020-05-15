@@ -60,14 +60,16 @@ router.post('/nNumber',function(req,res) {
 
             // add the user with the nNumber to the buffer
             addUserToBufferNNumber(nNumber, function(success) {
+                console.log('after addUserToBufferNNumber');
                 // if the user was added
                 if (success) {
                     console.log("add success");
                     // update the buffer with no nNumber
                     updateUserBuffer('',function(HTML) {
-
+                        console.log('after updateUserBuffer');
                         // send updated innerHTML to client
                         res.send(HTML);
+                        console.log("HTML sent");
                         //End our response to the client
                         res.end();
                     });
@@ -77,6 +79,7 @@ router.post('/nNumber',function(req,res) {
                     console.log("add fail");
                     // update the buffer with nNumber
                     updateUserBuffer(nNumber,function(HTML) {
+                        console.log('after updateUserBuffer');
 
                         // send updated innerHTML to client
                         res.send(HTML);
@@ -227,6 +230,8 @@ function Template(userHTML) {
 
 // function to add user to buffer based on nNumber
 function addUserToBufferNNumber(nNumber,callback) {
+    
+    console.log('insode addUserToBufferNNumber');
     // set up data for select statement
     var table = 'users';
     var columns = ['userId'];
@@ -264,7 +269,22 @@ function updateUserBuffer(nNumber,callback) {
 
     // select userId and name from database
     SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
+        // console.log('err: ' + err);
         var needLoaded = [];
+        // console.log(`res len: ${res.length}`);
+        // console.log('res:');
+        // console.log(res);
+        // if (!res.length) {
+        //     console.log('res.length = 0');
+        //     if (nNumber != '') {
+        //         console.log('push nNumber to needLoaded');
+        //         // add undefined user to array
+        //         needLoaded.push[nNumber,nNumber,'',''];
+                
+        //         // callback the innerHTML
+        //         callback(genUserBufferInnerHTML(needLoaded));
+        //     }
+        // }
         for (let i = 0; i < res.length; i++) {
             if (res[i][3] == 0) {
                 needLoaded.push(res[i]);
@@ -272,23 +292,42 @@ function updateUserBuffer(nNumber,callback) {
                 colValues = ['1'];
                 params = ['userId'];
                 parValues = [res[i][0]];
+
                 SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
-                    userWasDenied(res[i][0], function(denied,deniedAgo, deniedDate) {
+                    console.log('after table update');
+                    userWasDenied(needLoaded[needLoaded.length-1], function(denied,deniedAgo, deniedDate) {
+                        console.log("user was denied: " + denied);
                         if (denied) {
-                            needLoaded[i].push(deniedAgo);
-                            needLoaded[i].push(deniedDate)
+                        //     console.log('needLoaded:');
+                        //     console.log(needLoaded);
+                        //     console.log('needLoaded at '+(needLoaded.length-1));
+                        //     console.log(needLoaded[needLoaded.length-1]);
+                            needLoaded[needLoaded.length-1].push(deniedAgo);
+                            needLoaded[needLoaded.length-1].push(deniedDate);
                         }
-                        if (i == res.length) {
-                            if (nNumber != '') {
-                                // add undefined user to array
-                                needLoaded.push[nNumber,nNumber,'',''];
-                            }
-                            // callback the innerHTML
-                            callback(genUserBufferInnerHTML(needLoaded));
-                        }
+                        
                     });
                 });
             }
+            if (i == res.length-1) {
+                console.log(nNumber);
+                console.log(nNumber != '');
+                if (nNumber != '') {
+                    // add undefined user to array
+                    needLoaded.push([nNumber,nNumber,'','','']);
+                    console.log(needLoaded);
+                }
+                else {
+                    
+                }
+                console.log('generate innerHTML');
+                console.log('final needLoaded:');
+                console.log(needLoaded);
+                // callback the innerHTML
+                callback(genUserBufferInnerHTML(needLoaded));
+            }
+            
+            console.log(needLoaded);
         }
     });
 }

@@ -117,51 +117,53 @@ function deny_button_click(sender) {
     });
 }
 
+function input_to_textBox() {
+    // if the text in the box is long enough
+    if (checkNNumberLength()) {
+        console.log("validNNumber");
+
+        var n = document.getElementById('nNumber').value;
+
+        // post to server the nnumber and clear the box
+        $.ajax({
+            global: false,
+            type: 'POST',
+            url: '/security/nNumber', //The url to post to on the server
+            dataType: 'html',
+
+            //The data to send to the server
+            data: { 
+                nNumber : n,
+            },
+
+            //The response from the server
+            success: function (result) { 
+                if (result == '/logintimeout') {
+                    console.log('timeout');
+                    window.location.replace(result);
+                }
+                else {
+                    console.log('replace innerHTML');
+                    document.getElementById('users').innerHTML += result;
+                    console.log('reset nNumber value');
+                    document.getElementById('nNumber').value = '';
+                }
+            },
+
+            //Handle any errors
+            error: function (request, status, error) {
+                serviceError();
+            }
+        });
+    } 
+}
+
 //AJAX Functions
 
 //Wait to execute until AJAX is ready
 $(document).ready(function ()  {
 
-    $('#nNumber').on('input',function(event) {
-        // if the text in the box is long enough
-        if (checkNNumberLength()) {
-            console.log("validNNumber");
-
-            var n = document.getElementById('nNumber').value;
-
-            // post to server the nnumber and clear the box
-            $.ajax({
-                global: false,
-                type: 'POST',
-                url: '/security/nNumber', //The url to post to on the server
-                dataType: 'html',
-
-                //The data to send to the server
-                data: { 
-                    nNumber : n,
-                },
-
-                //The response from the server
-                success: function (result) { 
-                    if (result == '/logintimeout') {
-                        console.log('timeout');
-                        window.location.replace(result);
-                    }
-                    else {
-                        console.log('replace innerHTML');
-                        document.getElementById('users').innerHTML += result;
-                        console.log('reset nNumber value');
-                        document.getElementById('nNumber').value = '';
-                    }
-                },
-
-                //Handle any errors
-                error: function (request, status, error) {
-                    serviceError();
-                }
-            });
-        } 
-    });
+    
 
     // ************************************** DEPRECATED **************************************
     //Called when user clicks 'Submit' button
@@ -207,9 +209,28 @@ $(document).ready(function ()  {
             }
         });
     });
+
+    // $(document).keypress(function(event) {
+    //     document.getElementById('nNumber').value += String.fromCharCode(event.charCode);
+    //     event.preventDefault();
+    // });
+
+    $(document).keydown(function(event) {
+        if (event.keyCode == 8) {
+            var text = document.getElementById('nNumber').value;
+            document.getElementById('nNumber').value = text.substring(0,text.length-1);
+        }
+        else if (event.key.length == 1){
+            document.getElementById('nNumber').value += event.key;
+            
+        }
+        event.preventDefault();
+        input_to_textBox();
+    });
 });
 
 window.onload = setInterval(function() {
+    // document.getElementById('nNumber').focus();
     $.ajax({
         global: false,
         type: 'POST',
