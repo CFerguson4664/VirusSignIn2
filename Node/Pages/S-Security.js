@@ -128,6 +128,32 @@ router.post('/submit',function(req,res) {
     }); 
 });
 
+// when the client posts to deny
+router.post('/deny',function(req,res) {
+    //This cookie is the session id stored on login page
+    var cookie = req.cookies.SignInLvl2;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            // remove user from buffer
+            deleteUserFromBuffer(req.body.userId, function(success2) {
+                // update the buffer
+                getUserBuffer(function(HTML) {
+                    // send updated innerHTML to client
+                    res.send(HTML);
+                });
+            });   
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/logintimeout');
+            res.end();
+        }
+    }); 
+});
+
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
@@ -279,14 +305,14 @@ function genUserBufferInnerHTML(data) {
                     <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="">No</button>
                 </div>
                 <button id="submit-userId-${data[i][0]}" onclick="submit_button_click(this)" class="ready">Submit</button>
-            `;
+            </div>`;
         var deniedHTML = `<div class="button-like">
                 <h2 class="label text-center">Visitor allowed entry?</h2>
                 <div class="sidenav-open">
                     <button name="allowed-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Visitor has been denied in the last 14 days.</button>
                 </div>
-                <button id="submit-userId-${data[i][0]}" onclick="submit_button_click(this)" class="ready">Ok</button>
-            `;
+                <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Ok</button>
+            </div>`;
         // for every returned item
         if (data[i].length == 4) {
             innerHTML += `<div class="button-like">
@@ -297,12 +323,14 @@ function genUserBufferInnerHTML(data) {
                 ${allowedHTML}`;
         }
         else {
-            innerHTML += `<div class="button-like">
+            innerHTML += `<div class="admin">
+                <div class="button-like">
                     <h2 class="label text-center">Visitor identification:</h2>
                     <input type="text" name="name-userId-${data[i][0]}" id="userId-${data[i][0]}" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
                     
                 </div>
-                ${deniedHTML}`;
+                    ${deniedHTML}
+                </div>`;
         }
     }
 

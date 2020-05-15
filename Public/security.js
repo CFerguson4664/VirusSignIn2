@@ -82,6 +82,41 @@ function submit_button_click(sender) {
     });
 }
 
+function deny_button_click(sender) {
+    // parse out the userId text from the id
+    var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
+
+    // ajax post with the userId and whether or not the user was allowed
+    $.ajax({
+
+        global: false,
+        type: 'POST',
+        url: '/security/deny', //The url to post to on the server
+        dataType: 'html',
+
+        //The data to send to the server
+        data: {
+            // parse the userId number from the userId string
+            userId  : userId.substring(userId.indexOf('-')+1,userId.length)
+        },
+
+        //The response from the server; result is the data sent back from server; i.e. html code
+        success: function (result) { 
+            if (result == '/logintimeout') {
+                window.location.replace(result);
+            }
+            else {
+                document.getElementById('users').innerHTML = result;
+            }
+        },
+
+        //Handle any errors
+        error: function (request, status, error) { 
+            serviceError();
+        }
+    });
+}
+
 //AJAX Functions
 
 //Wait to execute until AJAX is ready

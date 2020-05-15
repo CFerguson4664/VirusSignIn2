@@ -9,8 +9,8 @@ const UserType = require('../Pages/S-UserType');
 //Level : lifetime  ---  lifetime in minutes
 var lifetimes = { 
     1: 10, //Normal user
-    2: 5,  //Admin page
-    3: 480  //Security page
+    2: 480,  //Security page
+    3: 5  //Admin page
 };
 
 //Sets up functions to execute at the correct intervals
