@@ -1,3 +1,6 @@
+//Hash for password password
+//$argon2id$v=19$m=262144,t=3,p=1$KVuso7M/kaMnMboUV9PzMg$G7D7DUW4t5+c5Rwv6KgwwOcU9f3nVdeazJv3AcStLMs
+
 //**************************************************** IMPORTS **************************************************
 
 //Requires Express Node.js framework
@@ -66,6 +69,12 @@ function Template(userHTML) {
         </header>
         
         <main class="bg-light">
+            <h2 class="text-center">This page will reset the security and<br> 
+            admin usernames and passwords.  <br>
+            <br>
+            The two logons must have different usernames.
+            </h2>
+
             <div class="admin">
                 <div class="button-like">
                     <h2 class="label text-center">Enter the new Secuity Username</h2>
@@ -80,7 +89,8 @@ function Template(userHTML) {
                     <input type="password" id="newSecurityPassword2" autocomplete="off" class="text2" maxlength="50">
                 </div>
                 <div class="button-like">
-                    <button name="student" onclick="button_click(this)" data-choiceId="0" id='changeSecurity' class="ready">Change Security Logon</button>
+                    <div id="securityData"></div>
+                    <button name="changeSecurity" onclick="button_click(this)" data-choiceId="0" id='changeSecurity' class="not-ready">Change Security Logon</button>
                 </div>
             </div>
             <br>
@@ -99,7 +109,8 @@ function Template(userHTML) {
                     <input type="password" id="newAdminPassword2" autocomplete="off" class="text2" maxlength="50">
                 </div>
                 <div class="button-like">
-                    <button name="student" onclick="button_click(this)" data-choiceId="0" id='changeSecurity' class="ready">Change Admin Logon</button>
+                    <div id="adminData"></div>
+                    <button name="changeAdmin" onclick="button_click(this)" data-choiceId="0" id='changeAdmin' class="not-ready">Change Admin Logon</button>
                 </div>
             </div>
 

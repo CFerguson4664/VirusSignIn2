@@ -35,6 +35,10 @@
                 color:red;
             }
 
+            h2.white {
+                color:white;
+            }
+
             h2.label {
                 font-size:1.25em;
                 margin: 0px;
