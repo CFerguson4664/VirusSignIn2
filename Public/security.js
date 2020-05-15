@@ -125,6 +125,7 @@ $(document).ready(function ()  {
     $('#nNumber').on('input',function(event) {
         // if the text in the box is long enough
         if (checkNNumberLength()) {
+            console.log("validNNumber");
 
             var n = document.getElementById('nNumber').value;
 
@@ -143,10 +144,13 @@ $(document).ready(function ()  {
                 //The response from the server
                 success: function (result) { 
                     if (result == '/logintimeout') {
+                        console.log('timeout');
                         window.location.replace(result);
                     }
                     else {
+                        console.log('replace innerHTML');
                         document.getElementById('users').innerHTML += result;
+                        console.log('reset nNumber value');
                         document.getElementById('nNumber').value = '';
                     }
                 },
