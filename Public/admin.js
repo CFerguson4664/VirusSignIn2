@@ -65,7 +65,13 @@ $(document).ready(function ()  {
 
             //The response from the server
             success: function (result) {
-                document.getElementById('adminData').innerHTML = `<h2 class="white text-center">Credentials changed successfully.</h2>`;
+                if (result == '/logintimeout') {
+                    console.log('timeout');
+                    window.location.replace(result);
+                }
+                else {
+                    document.getElementById('adminData').innerHTML = `<h2 class="white text-center">Credentials changed successfully.</h2>`;
+                }
             },
 
             //Handle any errors
@@ -95,7 +101,13 @@ $(document).ready(function ()  {
 
             //The response from the server
             success: function (result) {
-                document.getElementById('securityData').innerHTML = `<h2 class="white text-center">Credentials changed successfully.</h2>`;
+                if (result == '/logintimeout') {
+                    console.log('timeout');
+                    window.location.replace(result);
+                }
+                else {
+                    document.getElementById('securityData').innerHTML = `<h2 class="white text-center">Credentials changed successfully.</h2>`;
+                }
             },
 
             //Handle any errors

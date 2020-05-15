@@ -137,7 +137,7 @@ router.post('/newUser',function(req,res) {
                     console.log(`success: ${success}`);
                     console.log(`userId: ${userId}`);
 
-                    res.send('')
+                    res.send('/thankyou');
                     res.end();
                 });
             });

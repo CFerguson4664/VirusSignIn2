@@ -8,7 +8,7 @@ const UserType = require('../Pages/S-UserType');
 //Sets the session lifetime of the different access levels
 //Level : lifetime  ---  lifetime in minutes
 var lifetimes = { 
-    1: 10, //Normal user
+    1: 1, //Normal user
     2: 480,  //Security page
     3: 5  //Admin page
 };

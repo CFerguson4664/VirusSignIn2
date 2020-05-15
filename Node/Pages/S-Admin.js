@@ -9,6 +9,9 @@ const express = require('express');
 //Reqires the SessionMan Utility
 const sessionMan = require('../Utils/SessionMan');
 
+//Requires passwords
+const auth = require('../Utils/AuthMan');
+
 //***************************************************** SETUP ***************************************************
 
 //router to handle moving the get/post requests around
@@ -39,6 +42,64 @@ router.get('/',function(req,res) {
         //Otherwise redirect them to the timeout page
         else {
             res.redirect('/logintimeout');
+            res.end();
+        }
+    });
+});
+
+router.post('/changesecurity',function(req,res) {
+
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl3;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 3, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            var username = req.body.username;
+            var password = req.body.password;
+
+            auth.removeAllAuthForLevel(2, function(success) {
+                auth.addAuthForLevel(2,username,password,function(success) {
+                    if(success) {
+                        res.send(true);
+                        res.end();
+                    }
+                });
+            });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/logintimeout');
+            res.end();
+        }
+    });
+});
+
+router.post('/changeadmin',function(req,res) {
+
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl3;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 3, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            var username = req.body.username;
+            var password = req.body.password;
+
+            auth.removeAllAuthForLevel(3, function(success) {
+                auth.addAuthForLevel(3,username,password,function(success) {
+                    if(success) {
+                        res.send(true);
+                        res.end()
+                    }
+                });
+            });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/logintimeout');
             res.end();
         }
     });

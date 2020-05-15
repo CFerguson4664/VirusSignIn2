@@ -94,9 +94,9 @@ router.post('/submit',function(req,res) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             addUserToBuffer(req.body.userId, function(success) {
-
+                res.send('/thankyou');
+                res.end();
             });
-            
         }
         //Otherwise redirect them to the timeout page
         else {

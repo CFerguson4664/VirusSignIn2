@@ -1,8 +1,15 @@
 $(document).ready(function ()  {
+    $(document).keypress(function(event) {
+        if(event.charCode == 13 && document.getElementById('username').value.length > 0 && document.getElementById('password').value.length > 0) {
+            $('#login').click();
+        }
+    });
+
+
     //Called when user clicks 'Submit' button
     $('#login').click(function(event) { 
         document.getElementById("login").className = "not-ready";
-        document.getElementById('passworderror').innerHTML = ``
+        document.getElementById('passworderror').innerHTML = `<h2 class="white text-center">Hashing and validating credentials...</h2>`
 
         init();
         var publicKeyText = document.getElementById('main').getAttribute('data-publickey');
