@@ -22,7 +22,7 @@ var New = require('./Pages/S-NewUser');
 var Returning = require('./Pages/S-ReturningUser');
 var Timeout = require('./Pages/S-Timeout');
 var Admin = require('./Pages/S-Admin');
-var Securtiy = require('./Pages/S-Security');
+var Security = require('./Pages/S-Security');
 var Login = require('./Pages/S-Login');
 var LoginTimeout = require('./Pages/S-LoginTimeout');
 
@@ -33,7 +33,7 @@ app.use('/new', New);
 app.use('/returning', Returning);
 app.use('/timeout', Timeout);
 app.use('/admin', Admin);
-app.use('/security', Securtiy);
+app.use('/security', Security);
 app.use('/login', Login);
 app.use('/logintimeout', LoginTimeout);
 

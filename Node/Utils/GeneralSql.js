@@ -8,7 +8,7 @@ exports.init = function(callback) {
         connectionLimit : 50,
         host            : 'localhost',
         user            : 'root',
-        password        : 'Password01',
+        password        : '',
         database        : 'virussignin2'
     });
 
