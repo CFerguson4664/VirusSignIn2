@@ -1,3 +1,5 @@
+// global variable to keep track of the nNumber input
+var previousInput = '';
 
 // function to determine if the text in the nnumber box is the right length
 function checkNNumberLength() {
@@ -158,6 +160,14 @@ function input_to_textBox() {
     } 
 }
 
+function checkNNumberInput() {
+    var textBox = document.getElementById('nNumber');
+    if (textBox.value == previousInput) {
+        textBox.value = '';
+    }
+    previousInput = textBox.value;
+}
+
 //AJAX Functions
 
 //Wait to execute until AJAX is ready
@@ -230,6 +240,8 @@ $(document).ready(function ()  {
 });
 
 window.onload = setInterval(function() {
+
+    checkNNumberInput();
     // document.getElementById('nNumber').focus();
     $.ajax({
         global: false,

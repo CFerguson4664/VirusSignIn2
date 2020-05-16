@@ -242,10 +242,10 @@ function addUserToBufferNNumber(nNumber,callback) {
     // select userId with matching nNumber
     SQL.select(table, columns, params, values, function(err,userId) {
 
-        console.log(`Add user to buffer select res:`)
-        console.log(res)
-        console.log(`Add user to buffer select res[0]:`)
-        console.log(res[0])
+        // console.log(`Add user to buffer select res:`)
+        // console.log(res)
+        // console.log(`Add user to buffer select res[0]:`)
+        // console.log(res[0])
 
         if (userId != []) {
             // set up data for insert statement
@@ -259,13 +259,14 @@ function addUserToBufferNNumber(nNumber,callback) {
             });
         }
         else {
-            return  callback(false);
+            return  allback(false);
         }
     });
 }
 
 // function to update from userbuffer table
 function updateUserBuffer(nNumber,callback) {
+    console.log('nnumber: '+nNumber);
     // set up data for selectExtra statement
     var table = 'userbuffer';
     var columns = ['userbuffer.userId','users.fName','users.lName','userbuffer.loaded'];
@@ -277,10 +278,10 @@ function updateUserBuffer(nNumber,callback) {
     // select userId and name from database
     SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
 
-        console.log(`Update user buffer select res:`)
-        console.log(res)
-        console.log(`Update user buffer select res[0]:`)
-        console.log(res[0])
+        // console.log(`Update user buffer select res:`)
+        // console.log(res)
+        // console.log(`Update user buffer select res[0]:`)
+        // console.log(res[0])
 
         // console.log('err: ' + err);
         var needLoaded = [];
@@ -318,21 +319,21 @@ function updateUserBuffer(nNumber,callback) {
                             if (denied) {
                                 needLoaded[needLoaded.length-1].push(deniedAgo);
                                 needLoaded[needLoaded.length-1].push(deniedDate);
-                                console.log('After need loaded addition')
-                                console.log(needLoaded)
+                                console.log('After need loaded addition');
+                                console.log(needLoaded);
                             }
 
                             if (i == res.length-1) {
                                 // console.log(nNumber);
                                 // console.log(nNumber != '');
-                                // if (nNumber != '') {
-                                //     // add undefined user to array
-                                //     needLoaded.push([nNumber,nNumber,'','','']);
-                                //     console.log(needLoaded);
-                                // }
-                                // else {
+                                if (nNumber != '') {
+                                    // add undefined user to array
+                                    needLoaded.push([nNumber,nNumber,'','','']);
+                                    console.log(needLoaded);
+                                }
+                                else {
                                     
-                                // }
+                                }
                                 console.log('generate innerHTML');
                                 console.log('final needLoaded:');
                                 console.log(needLoaded);
@@ -347,8 +348,14 @@ function updateUserBuffer(nNumber,callback) {
             }
         }
         else {
-            console.log('Update user buffer returning no data')
-            return callback('');
+            console.log('Update user buffer returning no data');
+            if (nNumber != '') {
+                // add undefined user to array
+                return callback(genUserBufferInnerHTML([[nNumber,nNumber,'','','']]));
+            }
+            else {
+                return callback('');
+            }
         }
     });
 }

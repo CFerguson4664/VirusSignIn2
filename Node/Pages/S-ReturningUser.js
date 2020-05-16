@@ -85,6 +85,27 @@ router.post('/names',function(req,res) {
     });
 });
 
+router.post('/create',function(req,res) {
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl1;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            addUserToBuffer(req.body.userId, function(success) {
+                res.send('/new');
+                res.end();
+            });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/timeout');
+            res.end();
+        }
+    });
+});
+
 router.post('/submit',function(req,res) {
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl1;
@@ -302,7 +323,8 @@ function genNameHTML(names) {
     }
     //If no names were returned, add HTML to inform the user that no names matched their search
     else {
-        nameHTML += `<h2 class="label-b">There are no names that match that search</h2>`;
+        nameHTML += `<h2 class="label-b">There are no names that match that search</h2>
+        <button name="new" id="new" onclick="create(this)">Create an account</button>`;
     }
 
     //Call back with the generated HTML

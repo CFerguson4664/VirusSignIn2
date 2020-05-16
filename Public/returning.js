@@ -17,6 +17,25 @@ function predictButton(value) {
     closeNav();
 }
 
+function create(sender) {
+    // if the user is not found in the search, and wants to be created
+    console.log('new clicked');
+    $.ajax({
+        global: false,
+        type: 'POST',
+        url: '/returning/create',
+        dataType: 'html',
+        data: { 
+        },
+        success: function (result) {
+            window.location.replace(result)
+        },
+        error: function (request, status, error) {
+            serviceError();
+        }
+    });
+}
+
 //Called when the backspace button is pressed. Handles seaching when backspace key is pressed because
 //pressing backspace doesn't call the keypress event the other handler is looking for
 $(document).ready(function () {

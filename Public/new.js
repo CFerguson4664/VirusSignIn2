@@ -114,6 +114,19 @@ function exists_button_click(sender) {
     window.location.replace(url);
 }
 
+function reset_button_click(sender,type) {
+    if (type == 'email') {
+        document.getElementById('email').value = '';
+        document.getElementById('email').focus();
+        document.getElementById('emailerror').innerHTML = '';
+    }
+    else {
+        document.getElementById('nnumber').value = '';
+        document.getElementById('nnumber').focus();
+        document.getElementById('nnerror').innerHTML = '';
+    }
+}
+
 //AJAX Functions
 
 //Wait to execute until AJAX is ready

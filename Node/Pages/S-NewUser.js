@@ -311,8 +311,9 @@ function getButton(userId,type,callback) {
 
         var fName = data[0][0];
         var lName = data[0][1];
-        var template = `<br><h2 class="label text-center">Someone has that ${type} already.</h2>
-        <button name="exists" onclick="exists_button_click(this)" data-UserId="${userId}">${fName} ${lName}</button>`
+        var template = `<br><h2 class="label text-center">Someone has that ${type} already. <br> Are you: </h2>
+        <button name="exists" onclick="exists_button_click(this)" data-UserId="${userId}">${fName} ${lName}</button>
+        <button name="exists" onclick="reset_button_click(this,'${type}')" data-UserId="${userId}">This is not me (enter new ${type})</button>`
 
         return callback(true, template);
     });
