@@ -20,35 +20,35 @@ function button_click(sender) {
     for (var i = 0; i < buttons.length; i++) {
         // clear the css and ids
         buttons[i].className = "";
-        buttons[i].id = "";
     }
 
     // set the css for the clicked button
     sender.className = "selected";
-
-    // grab the userId data from the clicked button name
-    var userId = sender.name.substring(sender.name.indexOf('-'), sender.name.length);
-    
-    // set the css for the specific submit button (show it)
-    document.getElementById("submit"+userId).className = "ready";
-    
-    // set the sender to be selected (for use when the submit button is clicked)
-    sender.id = "selected"+userId;
 }
 
 // function to handle when a submit button is clicked
 function submit_button_click(sender) {
     // parse out the userId text from the id
-    var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
+    sender.className = "not-ready";
 
+    var userId = sender.id.substring(sender.id.indexOf('-')+8, sender.id.length);
+
+    console.log(userId)
     // initialize entryAllowed so no else statement is needed
     var entryAllowed = false;
 
-    // if selected button is yes  
-    if (document.getElementById('selected-'+userId).getAttribute('data-choiceId') == 1) {
-        // set entryAllowed to true
-        entryAllowed = true;
+    var buttons = document.getElementsByName('allowed-userId-'+userId)
+
+    console.log(buttons);
+
+    for (let i = 0; i < buttons.length; i++) {
+        if (buttons[i].getAttribute('data-choiceId') == 1 && buttons[i].className == "selected") {
+            // set entryAllowed to true
+            entryAllowed = true;
+        }
     }
+    // if selected button is yes  
+    
 
     // ajax post with the userId and whether or not the user was allowed
     $.ajax({
@@ -61,7 +61,7 @@ function submit_button_click(sender) {
         //The data to send to the server
         data: {
             // parse the userId number from the userId string
-            userId  : userId.substring(userId.indexOf('-')+1,userId.length),
+            userId  : userId,
             allowed : entryAllowed
         },
 
@@ -257,4 +257,4 @@ window.onload = setInterval(function() {
         }
     });
     console.log("reload");
-},10000);
+},5000);

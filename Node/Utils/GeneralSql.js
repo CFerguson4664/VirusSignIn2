@@ -39,6 +39,8 @@ exports.select = function(table, columns, params, values, callback) {
 
     // query database
     connection.query(sql, function(err,result) {
+        console.log(err);
+
         if (err) return callback(err,undefined);
 
         // assemble data to return, want to get rid of RowDataPackets
@@ -94,6 +96,8 @@ exports.selectExtra = function(table, columns, params, operators, values, extraS
 
     // query database
     connection.query(sql, function(err,result) {
+
+        console.log(err);
         if (err) return callback(err,undefined);
 
         // assemble data to return, want to get rid of RowDataPackets
