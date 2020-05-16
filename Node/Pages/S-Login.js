@@ -48,6 +48,8 @@ router.post('/auth',function(req,res) {
 
     var encrypted = req.body.data;
 
+    console.log(encrypted);
+
     encryption.decode(encrypted, function(success,data) {
 
         var split = data.split`,`
@@ -70,6 +72,7 @@ router.post('/auth',function(req,res) {
                 }
                 else if(level == 2) {
                     createSecuritySession(function(sessionId) {
+                        console.log('Redirecting')
                         res.cookie('SignInLvl2',sessionId, { httpOnly: true });
                         res.send('/security');
                         res.end();

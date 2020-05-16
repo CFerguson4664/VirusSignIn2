@@ -248,11 +248,11 @@ function addUserToBufferNNumber(nNumber,callback) {
 
             // insert user into userbuffer
             SQL.insert(table, columns, values, function(err,success) {
-                callback(success);
+                return callback(success);
             });
         }
         else {
-            callback(false);
+            return  callback(false);
         }
     });
 }
@@ -285,49 +285,56 @@ function updateUserBuffer(nNumber,callback) {
         //         callback(genUserBufferInnerHTML(needLoaded));
         //     }
         // }
-        for (let i = 0; i < res.length; i++) {
-            if (res[i][3] == 0) {
-                needLoaded.push(res[i]);
-                columns = ['loaded'];
-                colValues = ['1'];
-                params = ['userId'];
-                parValues = [res[i][0]];
+        
 
-                SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
-                    console.log('after table update');
-                    userWasDenied(needLoaded[needLoaded.length-1], function(denied,deniedAgo, deniedDate) {
-                        console.log("user was denied: " + denied);
-                        if (denied) {
-                        //     console.log('needLoaded:');
-                        //     console.log(needLoaded);
-                        //     console.log('needLoaded at '+(needLoaded.length-1));
-                        //     console.log(needLoaded[needLoaded.length-1]);
-                            needLoaded[needLoaded.length-1].push(deniedAgo);
-                            needLoaded[needLoaded.length-1].push(deniedDate);
-                        }
-                        
+        if(res != []) {
+            for (let i = 0; i < res.length; i++) {
+                if (res[i][3] == 0) {
+                    needLoaded.push(res[i]);
+                    columns = ['loaded'];
+                    colValues = ['1'];
+                    params = ['userId'];
+                    parValues = [res[i][0]];
+    
+                    SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
+                        console.log('after table update');
+                        userWasDenied(needLoaded[needLoaded.length-1], function(denied,deniedAgo, deniedDate) {
+                            console.log("user was denied: " + denied);
+                            if (denied) {
+                            //     console.log('needLoaded:');
+                            //     console.log(needLoaded);
+                            //     console.log('needLoaded at '+(needLoaded.length-1));
+                            //     console.log(needLoaded[needLoaded.length-1]);
+                                needLoaded[needLoaded.length-1].push(deniedAgo);
+                                needLoaded[needLoaded.length-1].push(deniedDate);
+                            }
+                            
+                        });
                     });
-                });
-            }
-            if (i == res.length-1) {
-                console.log(nNumber);
-                console.log(nNumber != '');
-                if (nNumber != '') {
-                    // add undefined user to array
-                    needLoaded.push([nNumber,nNumber,'','','']);
+                }
+                if (i == res.length-1) {
+                    console.log(nNumber);
+                    console.log(nNumber != '');
+                    if (nNumber != '') {
+                        // add undefined user to array
+                        needLoaded.push([nNumber,nNumber,'','','']);
+                        console.log(needLoaded);
+                    }
+                    else {
+                        
+                    }
+                    console.log('generate innerHTML');
+                    console.log('final needLoaded:');
                     console.log(needLoaded);
+                    // callback the innerHTML
+                    return callback(genUserBufferInnerHTML(needLoaded));
                 }
-                else {
-                    
-                }
-                console.log('generate innerHTML');
-                console.log('final needLoaded:');
+                
                 console.log(needLoaded);
-                // callback the innerHTML
-                callback(genUserBufferInnerHTML(needLoaded));
             }
-            
-            console.log(needLoaded);
+        }
+        else {
+            return callback('');
         }
     });
 }
@@ -345,20 +352,26 @@ function getUserBuffer(callback) {
 
     // select userId and name from database
     SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
-        for (let i = 0; i < res.length; i++) {
-            userWasDenied(res[i][0], function(denied,deniedAgo,deniedDate) {
-                if (denied) {
-                    res[i].push(deniedAgo);
-                    res[i].push(deniedDate);
-                }
-                console.log(res);
-                console.log(i);
-                console.log(res[i]);
-                if (i == res.length-1) {
-                    // callback the innerHTML
-                    callback(genUserBufferInnerHTML(res));
-                }
-            });  
+        
+        if(res != []) {
+            for (let i = 0; i < res.length; i++) {
+                userWasDenied(res[i][0], function(denied,deniedAgo,deniedDate) {
+                    if (denied) {
+                        res[i].push(deniedAgo);
+                        res[i].push(deniedDate);
+                    }
+                    console.log(res);
+                    console.log(i);
+                    console.log(res[i]);
+                    if (i == res.length-1) {
+                        // callback the innerHTML
+                        return callback(genUserBufferInnerHTML(res));
+                    }
+                });  
+            }
+        }
+        else {
+            return callback('');
         }
     });
 }
@@ -441,7 +454,7 @@ function deleteUserFromBuffer(userId,callback) {
 
     // delete record with userId
     SQL.delete(table, params, values, function(err,res) {
-        callback(res);
+        return callback(res);
     });
 }
 
@@ -454,7 +467,7 @@ function addUserActivity(userId, allowed, callback) {
 
     // insert user activity into database
     SQL.insert(table, columns, values, function(err,success) {
-        callback(success);
+        return callback(success);
     });
 }
 
@@ -467,16 +480,22 @@ function userWasDenied(userId,callback) {
     var values = [userId,0];
 
     SQL.select(table, columns, params, values, function(err,res) {
-        res.sort();
-        var lastDeniedDate = new Date(res[res.length-1]);
-        var daysSinceLastDeny = new Date().getDate() - lastDeniedDate.getDate();
-        console.log(lastDeniedDate);
-        console.log(daysSinceLastDeny);
-        // console.log(`date: ${date}`);
-        if (daysSinceLastDeny < 14) {
-            
-            // console.log('true');
-            return callback(true,daysSinceLastDeny, lastDeniedDate.toLocaleString());
+        if(res != []) {
+            res.sort();
+            var lastDeniedDate = new Date(res[res.length-1]);
+            var daysSinceLastDeny = new Date().getDate() - lastDeniedDate.getDate();
+            console.log(lastDeniedDate);
+            console.log(daysSinceLastDeny);
+            // console.log(`date: ${date}`);
+            if (daysSinceLastDeny < 14) {
+                
+                // console.log('true');
+                return callback(true,daysSinceLastDeny, lastDeniedDate.toLocaleString());
+            }
+            else {
+                // console.log('false');
+                return callback(false,undefined,undefined);
+            }
         }
         else {
             // console.log('false');
