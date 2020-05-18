@@ -189,6 +189,7 @@ function Template() {
             <div class="button-like">
                 <h2 class="label text-center">Enter your email</h2>
                 <input type="text" name="email" id="email" autocomplete="off" class="text2" maxlength="75">
+                
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
@@ -312,8 +313,10 @@ function getButton(userId,type,callback) {
         var fName = data[0][0];
         var lName = data[0][1];
         var template = `<br><h2 class="label text-center">Someone has that ${type} already. <br> Are you: </h2>
-        <button name="exists" onclick="exists_button_click(this)" data-UserId="${userId}">${fName} ${lName}</button>
-        <button name="exists" onclick="reset_button_click(this,'${type}')" data-UserId="${userId}">This is not me (enter new ${type})</button>`
+            <div class="sidenav-open">
+            <button name="exists" onclick="exists_button_click(this)" data-UserId="${userId}">${fName} ${lName}</button>
+            <button name="exists" onclick="reset_button_click(this,'${type}')" data-UserId="${userId}">This is not me <br>(enter new ${type})</button>
+        </div>`
 
         return callback(true, template);
     });
