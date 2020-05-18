@@ -27,7 +27,7 @@ function checkAll() {
     //If everything passes display the submit button
     if(good) {
         document.getElementById("submit-event").className = "ready";
-        document.getElementById("subFoot").className = "bg-dark-float-on";
+        // document.getElementById("subFoot").className = "bg-dark-float-on";
     }
     //Otherwise, hide it
     else {
@@ -125,6 +125,12 @@ function reset_button_click(sender,type) {
         document.getElementById('nnumber').focus();
         document.getElementById('nnerror').innerHTML = '';
     }
+}
+
+function disable_submit() {
+    document.getElementById('subFoot').className = 'bg-dark-float-off';
+    document.getElementById('submit-event').className = 'not-ready';
+    
 }
 
 //AJAX Functions
@@ -267,7 +273,8 @@ $(document).ready(function ()  {
 
             //The response from the server
             success: function (result) {
-                window.location.replace(result)
+                disable_submit();
+                window.location.replace(result);
             },
 
             //Handle any errors
