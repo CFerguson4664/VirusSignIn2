@@ -48,19 +48,11 @@ router.post('/auth',function(req,res) {
 
     var encrypted = req.body.data;
 
-    console.log(encrypted);
-
     encryption.decode(encrypted, function(success,data) {
 
-        var split = data.split`,`
-
-        console.log(split[0]);
-        console.log(split[1]);
+        var split = data.split(`,`);
 
         auth.authenticate(split[0],split[1], function(success,authId,level) {
-            console.log(`Success: ${success}`);
-            console.log(`AuthId: ${authId}`);
-            console.log(`Level: ${level}`);
 
             if(success) {
                 if(level == 3) {
@@ -72,7 +64,6 @@ router.post('/auth',function(req,res) {
                 }
                 else if(level == 2) {
                     createSecuritySession(function(sessionId) {
-                        console.log('Redirecting')
                         res.cookie('SignInLvl2',sessionId, { httpOnly: true });
                         res.send('/security');
                         res.end();
@@ -97,10 +88,8 @@ router.post('/auth',function(req,res) {
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
-    encryption.init(function(done) {
-        encryption.getPublicKey(function(publickey) {
-            callback(Template(publickey));
-        });
+    encryption.getPublicKey(function(publickey) {
+        callback(Template(publickey));
     });
 }
 

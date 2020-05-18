@@ -72,6 +72,7 @@ function submit_button_click(sender) {
             else {
                 document.getElementById('users').innerHTML = result;
             }
+            checkForUsers();
         },
 
         //Handle any errors
@@ -107,6 +108,7 @@ function deny_button_click(sender) {
             else {
                 document.getElementById('users').innerHTML = result;
             }
+            checkForUsers();
         },
 
         //Handle any errors
@@ -143,6 +145,7 @@ function input_to_textBox() {
                     document.getElementById('users').innerHTML += result;
                     document.getElementById('nNumber').value = '';
                 }
+                checkForUsers();
             },
 
             //Handle any errors
@@ -159,6 +162,17 @@ function checkNNumberInput() {
         textBox.value = '';
     }
     previousInput = textBox.value;
+}
+
+function checkForUsers() {
+    if (document.getElementById('users').innerHTML == '') {
+        document.getElementById('header').innerHTML = `<div class="button-like">
+                <h2 class="label text-center">There are no pending requests.</h2>
+            </div`;
+    }
+    else {
+        document.getElementById('header').innerHTML = '';
+    }
 }
 
 //AJAX Functions
@@ -201,6 +215,7 @@ $(document).ready(function ()  {
                     // window.location.replace(result);
                     document.getElementById('submit').className = 'selected';
                 }
+                checkForUsers();
             },
 
             //Handle any errors
@@ -245,13 +260,14 @@ window.onload = setInterval(function() {
         },
 
         //The response from the server
-        success: function (result) { 
+        success: function (result) {
             if (result == '/logintimeout') {
                 window.location.replace(result);
             }
             else {
                 document.getElementById('users').innerHTML += result;
             }
+            checkForUsers();
         },
 
         //Handle any errors

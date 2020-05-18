@@ -12,6 +12,7 @@ $(document).ready(function ()  {
         document.getElementById('passworderror').innerHTML = `<h2 class="white text-center">Hashing and validating credentials...</h2>`
 
         init();
+        
         var publicKeyText = document.getElementById('main').getAttribute('data-publickey');
 
         var publicKey = Uint8Array.from(publicKeyText.split`,`.map(x=>parseInt(x)))

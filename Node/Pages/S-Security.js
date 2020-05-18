@@ -193,18 +193,16 @@ function Template(userHTML) {
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script src="security.js"></script>
         </head>
-        <header class="bg-dark">
+        <header class="bg-dark" >
             <div class="logo">
                 <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
             </div>
         </header>
-        <header class="bg-dark-header">
+        <header class="bg-dark-header" id="header">
         </header>
         
         <main class="bg-light">
-            <div id="users">
-                ${userHTML}
-            </div>
+            <div id="users">${userHTML}</div>
         </main>
         <input type="text" id="nNumber">
 
@@ -212,7 +210,7 @@ function Template(userHTML) {
             
         </footer>
         <footer class="bg-dark">
-            <div id="social-icons">
+            <div id="social-i ">
             </div>
         </footer>
     </html>`;
@@ -270,6 +268,7 @@ function updateUserBuffer(nNumber,callback) {
             for (let i = 0; i < res.length; i++) {
 
                 if (res[i][3] == 0) {
+
                     needLoaded.push(res[i]);
                     columns = ['loaded'];
                     colValues = ['1'];

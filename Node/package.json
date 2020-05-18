@@ -1,11 +1,13 @@
 {
-  "name": "virussignin2",
+  "name": "SignInServer",
   "version": "1.0.0",
   "description": "",
   "main": "Main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "bin": "Main.js",
+  "scripts": [
+    "./Pages",
+    "./Utils"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

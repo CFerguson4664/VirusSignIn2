@@ -3,13 +3,14 @@ const fs = require("fs");
 
 var connection = undefined;
 
-exports.init = function(callback) {
-    connection = mysql.createPool({
+exports.init = function(host,user,password,name,callback) {
+
+    connection  = mysql.createPool({
         connectionLimit : 50,
-        host            : 'localhost',
-        user            : 'root',
-        password        : '',
-        database        : 'virussignin2'
+        host            : host,
+        user            : user,
+        password        : password,
+        database        : name
     });
 
     callback('done')

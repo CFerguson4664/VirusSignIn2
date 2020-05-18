@@ -16,7 +16,7 @@ const SQL = require('./GeneralSql');
 
 //If session tracking is being used then this should be the same as or longer than the session
 //  timeout interval
-var serverKeyLifetime = 5; //In minutes
+var serverKeyLifetime = 24 * 60; //In minutes
 
 
 function getKeys(callback) {

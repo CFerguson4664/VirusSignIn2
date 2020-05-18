@@ -5,7 +5,9 @@ var app = express();
 const SQL = require('./Utils/GeneralSql');
 const cookieParser = require('cookie-parser'); //Library to allow the use of cookies to track sessions
 const bodyParser = require('body-parser'); //Parses AJAX from client
-const http = require('http'); //Allows our server to be http
+const https = require('https');
+const fs = require('fs');
+const encryption = require('./Utils/CryptoServer'); //Requires server encryption
 
 app.use(cookieParser());
 
@@ -39,8 +41,24 @@ app.use('/login', Login);
 app.use('/logintimeout', LoginTimeout);
 app.use('/thankyou', ThankYou);
 
-http.createServer(app).listen(31415, function() {
-    SQL.init(function(done) {
-        console.log(`SignIn listening on port ${31415}`);
+function init() {
+    fs.readFile('../bin/setup.json', function(err,content) {
+        if (err) return console.log('Error loading setup file:\n' + err);
+        var parsed = JSON.parse(content);
+
+        const options = {
+            key: fs.readFileSync(parsed.key_path),
+            cert: fs.readFileSync(parsed.cert_path)
+        };
+
+        SQL.init(parsed.database_host, parsed.database_user, parsed.database_password, parsed.database_name, function(done) {
+            encryption.init(function(done) {
+                https.createServer(options, app).listen(parsed.server_port, function() {
+                    console.log(`SignIn listening on port ${parsed.server_port}`);
+                });
+            });
+        });
     });
-});
+}
+
+init();

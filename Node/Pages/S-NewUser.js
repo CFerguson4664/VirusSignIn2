@@ -244,8 +244,8 @@ function addNewUser(lName,fName,email,nNumber,callback) {
 // function to add user to buffer based on userId
 function addUserToBuffer(userId,callback) {
     var table = 'userbuffer';
-    var columns = ['userId'];
-    var values = [userId];
+    var columns = ['userId','loaded'];
+    var values = [`${userId}`,`0`];
 
     // insert user into userbuffer
     SQL.insert(table, columns, values, function(err,success) {

@@ -4,8 +4,8 @@
     "database_host"         :"localhost",
     "database_user"         :"root",
     "database_password"     :"Password01",
-    "database_name"         :"virussignin",
+    "database_name"         :"virussignin2",
 
-    "certificate_file_1_path"   :"",
-    "certificate_file_2_path"   :""
+    "key_path"              :"../bin/key.pem",
+    "cert_path"             :"../bin/cert.pem"
 }

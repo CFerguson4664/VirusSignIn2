@@ -1,7 +1,11 @@
 var keys;
+var initalized = false;
 
 function init() {
-    keys = window.sodium.crypto_box_keypair();
+    if(!initalized) {
+        keys = window.sodium.crypto_box_keypair();
+        initalized = true;
+    }
 }
 
 function encode(message, recipientPublicKey) {

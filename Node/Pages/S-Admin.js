@@ -12,6 +12,9 @@ const sessionMan = require('../Utils/SessionMan');
 //Requires passwords
 const auth = require('../Utils/AuthMan');
 
+//Requires server encryption
+const encryption = require('../Utils/CryptoServer');
+
 //***************************************************** SETUP ***************************************************
 
 //router to handle moving the get/post requests around
@@ -56,15 +59,20 @@ router.post('/changesecurity',function(req,res) {
     sessionMan.sessionIdValid(cookie, 3, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            var username = req.body.username;
-            var password = req.body.password;
 
-            auth.removeAllAuthForLevel(2, function(success) {
-                auth.addAuthForLevel(2,username,password,function(success) {
-                    if(success) {
-                        res.send(true);
-                        res.end();
-                    }
+            encryption.decode(req.body.data, function(success,decoded) {
+                var split = decoded.split(`,`);
+
+                var username = split[0];
+                var password = split[1];
+
+                auth.removeAllAuthForLevel(2, function(success) {
+                    auth.addAuthForLevel(2,username,password,function(success) {
+                        if(success) {
+                            res.send(true);
+                            res.end();
+                        }
+                    });
                 });
             });
         }
@@ -85,15 +93,20 @@ router.post('/changeadmin',function(req,res) {
     sessionMan.sessionIdValid(cookie, 3, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            var username = req.body.username;
-            var password = req.body.password;
 
-            auth.removeAllAuthForLevel(3, function(success) {
-                auth.addAuthForLevel(3,username,password,function(success) {
-                    if(success) {
-                        res.send(true);
-                        res.end()
-                    }
+            encryption.decode(req.body.data, function(success,decoded) {
+                var split = decoded.split(`,`);
+
+                var username = split[0];
+                var password = split[1];
+
+                auth.removeAllAuthForLevel(3, function(success) {
+                    auth.addAuthForLevel(3,username,password,function(success) {
+                        if(success) {
+                            res.send(true);
+                            res.end()
+                        }
+                    });
                 });
             });
         }
@@ -108,10 +121,12 @@ router.post('/changeadmin',function(req,res) {
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
-    callback(Template());
+    encryption.getPublicKey(function(publicKey) {
+        callback(Template(publicKey));
+    });
 }
 
-function Template(userHTML) {
+function Template(publicKey) {
     var html = `<!DOCTYPE html>
     <html>
         <head>
@@ -119,6 +134,8 @@ function Template(userHTML) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script src="sodium.js"></script>
+            <script src="cryptoclient.js"></script>
             <script src="admin.js"></script>
         </head>
         <header class="bg-dark">
@@ -129,7 +146,7 @@ function Template(userHTML) {
         <header class="bg-dark-header">
         </header>
         
-        <main class="bg-light">
+        <main class="bg-light" id='main' data-publickey='${publicKey}'>
             <h2 class="text-center">This page will reset the security and<br> 
             admin usernames and passwords.  <br>
             <br>
@@ -151,7 +168,7 @@ function Template(userHTML) {
                 </div>
                 <div class="button-like">
                     <div id="securityData"></div>
-                    <button name="changeSecurity" onclick="button_click(this)" data-choiceId="0" id='changeSecurity' class="not-ready">Change Security Logon</button>
+                    <button name="changeSecurity" data-choiceId="0" id='changeSecurity' class="not-ready">Change Security Logon</button>
                 </div>
             </div>
             <br>
@@ -171,7 +188,7 @@ function Template(userHTML) {
                 </div>
                 <div class="button-like">
                     <div id="adminData"></div>
-                    <button name="changeAdmin" onclick="button_click(this)" data-choiceId="0" id='changeAdmin' class="not-ready">Change Admin Logon</button>
+                    <button name="changeAdmin" data-choiceId="0" id='changeAdmin' class="not-ready">Change Admin Logon</button>
                 </div>
             </div>
 

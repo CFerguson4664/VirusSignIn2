@@ -50,6 +50,16 @@ $(document).ready(function ()  {
     $('#changeAdmin').click(function(event) { 
         document.getElementById('changeAdmin').className = 'not-ready';
         document.getElementById('adminData').innerHTML = `<h2 class="white text-center">Changing credentials...</h2>`;
+
+        init();
+        
+        var publicKeyText = document.getElementById('main').getAttribute('data-publickey');
+
+        var publicKey = Uint8Array.from(publicKeyText.split`,`.map(x=>parseInt(x)))
+
+        var data = `${document.getElementById('newAdminUsername').value},${document.getElementById('newAdminPassword').value}`;
+
+        var message = encode(data, publicKey)
           
         $.ajax({
             global: false,
@@ -59,8 +69,7 @@ $(document).ready(function ()  {
 
             //The data to send to the server
             data: { 
-                username : document.getElementById('newAdminUsername').value,
-                password : document.getElementById('newAdminPassword').value
+                data : message
             },
 
             //The response from the server
@@ -86,6 +95,16 @@ $(document).ready(function ()  {
         document.getElementById('changeSecurity').className = 'not-ready';
         document.getElementById('securityData').innerHTML = `<h2 class="white text-center">Changing credentials...</h2>`;
 
+        init();
+
+        var publicKeyText = document.getElementById('main').getAttribute('data-publickey');
+
+        var publicKey = Uint8Array.from(publicKeyText.split`,`.map(x=>parseInt(x)))
+
+        var data = `${document.getElementById('newSecurityUsername').value},${document.getElementById('newSecurityPassword').value}`;
+
+        var message = encode(data, publicKey)
+
         $.ajax({
             global: false,
             type: 'POST',
@@ -94,8 +113,7 @@ $(document).ready(function ()  {
 
             //The data to send to the server
             data: { 
-                username : document.getElementById('newSecurityUsername').value,
-                password : document.getElementById('newSecurityPassword').value
+                data : message
             },
 
             //The response from the server
