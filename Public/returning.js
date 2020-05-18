@@ -19,7 +19,6 @@ function predictButton(value) {
 
 function create(sender) {
     // if the user is not found in the search, and wants to be created
-    console.log('new clicked');
     $.ajax({
         global: false,
         type: 'POST',

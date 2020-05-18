@@ -66,7 +66,6 @@ $(document).ready(function ()  {
             //The response from the server
             success: function (result) {
                 if (result == '/logintimeout') {
-                    console.log('timeout');
                     window.location.replace(result);
                 }
                 else {
@@ -102,7 +101,6 @@ $(document).ready(function ()  {
             //The response from the server
             success: function (result) {
                 if (result == '/logintimeout') {
-                    console.log('timeout');
                     window.location.replace(result);
                 }
                 else {

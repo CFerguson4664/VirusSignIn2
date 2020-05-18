@@ -52,7 +52,7 @@ function Template()
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link rel="stylesheet" type="text/css" href="style.css">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-            <script src="timeout.js"></script>
+            <script src="thankyou.js"></script>
         </head>
         <body>
             <header class="bg-dark">

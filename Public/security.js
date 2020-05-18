@@ -35,13 +35,10 @@ function submit_button_click(sender) {
 
     var userId = sender.id.substring(sender.id.indexOf('-')+8, sender.id.length);
 
-    console.log(userId)
     // initialize entryAllowed so no else statement is needed
     var entryAllowed = false;
 
     var buttons = document.getElementsByName('allowed-userId-'+userId)
-
-    console.log(buttons);
 
     for (let i = 0; i < buttons.length; i++) {
         if (buttons[i].getAttribute('data-choiceId') == 1 && buttons[i].className == "selected") {
@@ -122,7 +119,6 @@ function deny_button_click(sender) {
 function input_to_textBox() {
     // if the text in the box is long enough
     if (checkNNumberLength()) {
-        console.log("validNNumber");
 
         var n = document.getElementById('nNumber').value;
 
@@ -141,13 +137,10 @@ function input_to_textBox() {
             //The response from the server
             success: function (result) { 
                 if (result == '/logintimeout') {
-                    console.log('timeout');
                     window.location.replace(result);
                 }
                 else {
-                    console.log('replace innerHTML');
                     document.getElementById('users').innerHTML += result;
-                    console.log('reset nNumber value');
                     document.getElementById('nNumber').value = '';
                 }
             },
@@ -183,8 +176,6 @@ $(document).ready(function ()  {
         var visitorIdentification = document.getElementById('identification').getAttribute('data-userId');
         var isEntryAllowed = document.getElementById('selected').getAttribute('data-choiceId');
 
-        console.log(visitorIdentification);
-        console.log(isEntryAllowed);
         document.getElementById('identification').value = '';
 
         $.ajax({
@@ -268,5 +259,4 @@ window.onload = setInterval(function() {
             serviceError();
         }
     });
-    console.log("reload");
 },5000);

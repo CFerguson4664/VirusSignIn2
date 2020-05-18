@@ -1,0 +1,11 @@
+{
+    "server_port"           :31415,
+
+    "database_host"         :"localhost",
+    "database_user"         :"root",
+    "database_password"     :"Password01",
+    "database_name"         :"virussignin",
+
+    "certificate_file_1_path"   :"",
+    "certificate_file_2_path"   :""
+}

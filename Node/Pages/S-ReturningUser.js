@@ -256,8 +256,6 @@ function getNames(search, callback)
         //Selects lName, fName, and userId from users where lName starts with the search term with a
         //  limit of 20 records.
         SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err,names) {
-            console.log(err);
-            console.log(names);
             //After getting the names uses them to generate the HTML to display them and 
             //  calls back with the HTML.
             callback(genNameHTML(names))

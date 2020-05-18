@@ -34,7 +34,6 @@ $(document).ready(function ()  {
 
             //The response from the server; result is the data sent back from server; i.e. html code
             success: function (result) { 
-                console.log(result)
                 if(result == '-1') {
                     document.getElementById('passworderror').innerHTML = `<h2 class="red text-center">That username or password is invalid</h2>`
                     document.getElementById("login").className = "ready";

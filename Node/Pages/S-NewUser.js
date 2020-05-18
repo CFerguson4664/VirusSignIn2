@@ -127,15 +127,9 @@ router.post('/newUser',function(req,res) {
             var lName = req.body.lname;
             var email = req.body.email.toLowerCase();
             var nNumber = req.body.nNumber;
-            console.log(fName);
-            console.log(lName);
-            console.log(email);
-            console.log(nNumber);
 
             addNewUser(lName, fName, email, nNumber, function(success,userId) {
                 addUserToBuffer(userId, function(success2) {
-                    console.log(`success: ${success}`);
-                    console.log(`userId: ${userId}`);
 
                     res.send('/thankyou');
                     res.end();
@@ -287,7 +281,6 @@ function checkIfEmailExists(email, callback) {
 
     //Try to select the email from the database
     SQL.select(table,columns,params,values,function(err,data) {
-        console.log(data);
 
         //If we have the email return the corresponding userId otherwise return false
         if(data.length > 0) {
@@ -308,8 +301,6 @@ function getButton(userId,type,callback) {
 
     //Select the name from the database
     SQL.select(table,columns,params,values,function(err,data) {
-        console.log(data);
-
         var fName = data[0][0];
         var lName = data[0][1];
         var template = `<br><h2 class="label text-center">Someone has that ${type} already. <br> Are you: </h2>

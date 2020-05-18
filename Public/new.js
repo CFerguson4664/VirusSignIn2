@@ -157,7 +157,6 @@ $(document).ready(function ()  {
     
                 //The response from the server
                 success: function (result) {
-                    console.log(result);
                     if (result == '/timeout') {
                         window.location.replace(result);
                     }
@@ -205,7 +204,6 @@ $(document).ready(function ()  {
     
                 //The response from the server
                 success: function (result) {
-                    console.log(result);
                     if (result == '/timeout') {
                         window.location.replace(result);
                     }

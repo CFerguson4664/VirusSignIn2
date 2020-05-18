@@ -60,26 +60,20 @@ router.post('/nNumber',function(req,res) {
 
             // add the user with the nNumber to the buffer
             addUserToBufferNNumber(nNumber, function(success) {
-                console.log('after addUserToBufferNNumber');
                 // if the user was added
                 if (success) {
-                    console.log("add success");
                     // update the buffer with no nNumber
                     updateUserBuffer('',function(HTML) {
-                        console.log('after updateUserBuffer');
                         // send updated innerHTML to client
                         res.send(HTML);
-                        console.log("HTML sent");
                         //End our response to the client
                         res.end();
                     });
                 }
                 // if the user was not added to buffer (does not exist)
                 else {
-                    console.log("add fail");
                     // update the buffer with nNumber
                     updateUserBuffer(nNumber,function(HTML) {
-                        console.log('after updateUserBuffer');
 
                         // send updated innerHTML to client
                         res.send(HTML);
@@ -185,7 +179,6 @@ router.post('/deny',function(req,res) {
 
 function getPage(callback) {
     getUserBuffer(function(HTML) {
-        console.log(`Back from get user buffer with:/n${HTML}`)
         callback(Template(HTML));
     });
 }
@@ -232,7 +225,6 @@ function Template(userHTML) {
 // function to add user to buffer based on nNumber
 function addUserToBufferNNumber(nNumber,callback) {
     
-    console.log('inside addUserToBufferNNumber');
     // set up data for select statement
     var table = 'users';
     var columns = ['userId'];
@@ -241,11 +233,6 @@ function addUserToBufferNNumber(nNumber,callback) {
 
     // select userId with matching nNumber
     SQL.select(table, columns, params, values, function(err,userId) {
-
-        // console.log(`Add user to buffer select res:`)
-        // console.log(res)
-        // console.log(`Add user to buffer select res[0]:`)
-        // console.log(res[0])
 
         if (userId != []) {
             // set up data for insert statement
@@ -266,7 +253,6 @@ function addUserToBufferNNumber(nNumber,callback) {
 
 // function to update from userbuffer table
 function updateUserBuffer(nNumber,callback) {
-    console.log('nnumber: '+nNumber);
     // set up data for selectExtra statement
     var table = 'userbuffer';
     var columns = ['userbuffer.userId','users.fName','users.lName','userbuffer.loaded'];
@@ -278,32 +264,10 @@ function updateUserBuffer(nNumber,callback) {
     // select userId and name from database
     SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
 
-        // console.log(`Update user buffer select res:`)
-        // console.log(res)
-        // console.log(`Update user buffer select res[0]:`)
-        // console.log(res[0])
-
-        // console.log('err: ' + err);
-        var needLoaded = [];
-        // console.log(`res len: ${res.length}`);
-        // console.log('res:');
-        // console.log(res);
-        // if (!res.length) {
-        //     console.log('res.length = 0');
-        //     if (nNumber != '') {
-        //         console.log('push nNumber to needLoaded');
-        //         // add undefined user to array
-        //         needLoaded.push[nNumber,nNumber,'',''];
-                
-        //         // callback the innerHTML
-        //         callback(genUserBufferInnerHTML(needLoaded));
-        //     }
-        // }
-        
+        var needLoaded = [];        
 
         if(res.length != 0) {
             for (let i = 0; i < res.length; i++) {
-                console.log(`Update user buffer loop # ${i}`);
 
                 if (res[i][3] == 0) {
                     needLoaded.push(res[i]);
@@ -313,33 +277,21 @@ function updateUserBuffer(nNumber,callback) {
                     parValues = [res[i][0]];
     
                     SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
-                        console.log('after table update');
                         userWasDenied(needLoaded[needLoaded.length-1][0], function(denied,deniedAgo, deniedDate) {
-                            console.log("user was denied: " + denied);
                             if (denied) {
                                 needLoaded[needLoaded.length-1].push(deniedAgo);
                                 needLoaded[needLoaded.length-1].push(deniedDate);
-                                console.log('After need loaded addition');
-                                console.log(needLoaded);
                             }
 
                             if (i == res.length-1) {
-                                // console.log(nNumber);
-                                // console.log(nNumber != '');
                                 if (nNumber != '') {
                                     // add undefined user to array
                                     needLoaded.push([nNumber,nNumber,'','','']);
-                                    console.log(needLoaded);
                                 }
                                 else {
                                     
                                 }
-                                console.log('generate innerHTML');
-                                console.log('final needLoaded:');
-                                console.log(needLoaded);
                                 // callback the innerHTML
-            
-                                console.log('Update user buffer returning with data')
                                 return callback(genUserBufferInnerHTML(needLoaded));
                             }
                         });
@@ -348,7 +300,6 @@ function updateUserBuffer(nNumber,callback) {
             }
         }
         else {
-            console.log('Update user buffer returning no data');
             if (nNumber != '') {
                 // add undefined user to array
                 return callback(genUserBufferInnerHTML([[nNumber,nNumber,'','','']]));
@@ -374,34 +325,22 @@ function getUserBuffer(callback) {
     // select userId and name from database
     SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
 
-        console.log(`Get user buffer select res:`)
-        console.log(res.length)
-        console.log(`Get user buffer select res[0]:`)
-        console.log(res[0])
-        
         //Makes sure res 
         if(res.length != 0) {
-            console.log('res not []');
             for (let i = 0; i < res.length; i++) {
-                console.log(`Get user buffer loop # ${i}`);
                 userWasDenied(res[i][0], function(denied,deniedAgo,deniedDate) {
                     if (denied) {
                         res[i].push(deniedAgo);
                         res[i].push(deniedDate);
                     }
-                    // console.log(res);
-                    // console.log(i);
-                    // console.log(res[i]);
                     if (i == res.length-1) {
                         // callback the innerHTML
-                        console.log('Get user buffer returning with data')
                         return callback(genUserBufferInnerHTML(res));
                     }
                 });  
             }
         }
         else {
-            console.log('Get user buffer returning no data')
             return callback('');
         }
     });
@@ -410,8 +349,6 @@ function getUserBuffer(callback) {
 // function to generate the innerHTML based on result from selectExtra statement
 function genUserBufferInnerHTML(data) {
     // data array: [userId,firstName, lastName(, deniedAgo, deniedDate)]
-    console.log('inhtml')
-    //console.log(data);
 
     var innerHTML = '';
     
@@ -503,7 +440,6 @@ function addUserActivity(userId, allowed, callback) {
 }
 
 function userWasDenied(userId,callback) {
-    console.log(`userWasDenied: userId: ${userId}`);
 
     var table = 'useractivity';
     var columns = ['userActivityDatetime'];
@@ -511,30 +447,20 @@ function userWasDenied(userId,callback) {
     var values = [userId,0];
 
     SQL.select(table, columns, params, values, function(err,res) {
-        console.log(`User was denied select res:`)
-        console.log(res)
-        console.log(`User was denied select res[0]:`)
-        console.log(res[0])
 
         if(res.length != 0) {
             res.sort();
             var lastDeniedDate = new Date(res[res.length-1]);
             var daysSinceLastDeny = new Date().getDate() - lastDeniedDate.getDate();
-            // console.log(lastDeniedDate);
-            // console.log(daysSinceLastDeny);
-            // console.log(`date: ${date}`);
             if (daysSinceLastDeny < 14) {
                 
-                console.log('User was denied');
                 return callback(true,daysSinceLastDeny, lastDeniedDate.toLocaleString());
             }
             else {
-                console.log('User was not denied');
                 return callback(false,undefined,undefined);
             }
         }
         else {
-            console.log('User was not denied');
             return callback(false,undefined,undefined);
         }
     });
