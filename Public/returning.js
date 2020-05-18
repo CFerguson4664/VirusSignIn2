@@ -13,7 +13,7 @@ function predictButton(value) {
     document.getElementById('nameText').value = value.innerHTML;
     document.getElementById('nameText').name = value.id;
     document.getElementById("submit-event").className = "ready";
-    document.getElementById("subFoot").className = "bg-dark-float-on";
+    // document.getElementById("subFoot").className = "bg-dark-float-on";
     closeNav();
 }
 
@@ -33,6 +33,12 @@ function create(sender) {
             serviceError();
         }
     });
+}
+
+function disable_submit() {
+    document.getElementById('subFoot').className = 'bg-dark-float-off';
+    document.getElementById('submit-event').className = 'not-ready';
+
 }
 
 //Called when the backspace button is pressed. Handles seaching when backspace key is pressed because
@@ -131,7 +137,8 @@ $(document).ready(function () {
 
             //The response from the server
             success: function (result) { 
-                window.location.replace(result)
+                disable_submit();
+                window.location.replace(result);
             },
 
             //Handle any errors
