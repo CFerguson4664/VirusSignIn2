@@ -1,5 +1,6 @@
 {
-    "server_port"           :31415,
+    "secure_server_port"           :443,
+    "insecure_server_port"         :80,
 
     "database_host"         :"localhost",
     "database_user"         :"root",
