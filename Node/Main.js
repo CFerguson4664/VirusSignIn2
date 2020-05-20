@@ -19,6 +19,13 @@ app.use(bodyParser.urlencoded({  //   body-parser to
 app.use(bodyParser.json()); //Tells the body parser it will be parsing json.
 app.use(express.static('../Public')); //Makes all files in the public folder accessable to clients
 
+app.use(function(req, res, next) { // redirect http to https
+    if(!req.secure) {
+      return res.redirect(['https://', req.headers.host, req.url].join(''));
+    }
+    next();
+  });
+
 var Welcome = require('./Pages/S-Welcome');
 var UserType = require('./Pages/S-UserType');
 var New = require('./Pages/S-NewUser');
@@ -42,6 +49,10 @@ app.use('/login', Login);
 app.use('/logintimeout', LoginTimeout);
 app.use('/thankyou', ThankYou);
 
+app.get('/',function(req,res) {
+    res.redirect('/welcome');
+});
+
 function init() {
     fs.readFile('../bin/setup.json', function(err,content) {
         if (err) return console.log('Error loading setup file:\n' + err);
@@ -55,7 +66,7 @@ function init() {
         SQL.init(parsed.database_host, parsed.database_user, parsed.database_password, parsed.database_name, function(done) {
             encryption.init(function(done) {
                 https.createServer(options, app).listen(parsed.secure_server_port, function() {
-                    http.createServer(app,function(req, res) { // create an http server to redirect to https
+                    http.createServer(app,function(req, res) { // create http to redirect to https
                         res.writeHead(307, { "Location": "https://" + req.headers['host'] + req.url });
                         res.end();
                     }).listen(parsed.insecure_server_port, function() {
