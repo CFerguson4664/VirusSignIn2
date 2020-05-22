@@ -61,9 +61,8 @@ function Template()
                 </div>
             </header>
             <main class="bg-light">
-                <h2 class="text-center">Welcome!<br> This page will ask some questions <br> 
-                to help ensure the health and safety<br> of the visitors, students, and staff <br> 
-                at Northwest State.</h2>
+                <h2 class="text-center">Welcome!<br> Please use this app to sign in. <br> 
+                An official will verify your entry.<br><br>Thank you for your patience as we <br>work to keep every safe and to <br>serve our community effectively.</h2>
             </main>
             <footer class="bg-dark-float-off" id="subFoot">
                     <button id="submit-event" class="ready">Continue</button>

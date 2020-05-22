@@ -85,6 +85,23 @@ function submit_button_click(sender) {
 function deny_button_click(sender) {
     // parse out the userId text from the id
     var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
+    console.log('userId: '+userId);
+
+    // initialize entryAllowed so no else statement is needed
+    var entryAllowed = 0;
+
+    var buttons = document.getElementsByName('allowed-'+userId);
+    console.log(buttons);
+
+    for (let i = 0; i < buttons.length; i++) {
+        console.log('choiceId: '+buttons[i].getAttribute('data-choiceId'));
+        if (buttons[i].getAttribute('data-choiceId') == 1 && buttons[i].className == "selected") {
+            console.log(true);
+            // set entryAllowed to true
+            entryAllowed = 1;
+        }
+    }
+    console.log(entryAllowed);
 
     // ajax post with the userId and whether or not the user was allowed
     $.ajax({
@@ -97,7 +114,8 @@ function deny_button_click(sender) {
         //The data to send to the server
         data: {
             // parse the userId number from the userId string
-            userId  : userId.substring(userId.indexOf('-')+1,userId.length)
+            userId  : userId.substring(userId.indexOf('-')+1,userId.length),
+            allowed : entryAllowed
         },
 
         //The response from the server; result is the data sent back from server; i.e. html code
@@ -107,6 +125,7 @@ function deny_button_click(sender) {
             }
             else {
                 document.getElementById('users').innerHTML = result;
+                console.log('update');
             }
             checkForUsers();
         },

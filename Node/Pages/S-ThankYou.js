@@ -61,7 +61,7 @@ function Template()
                 </div>
             </header>
             <main class="bg-light">
-                <h2 class="text-center">Thank You!<br><br> Click the button to restart</h2>
+                <h2 class="text-center">Thank you for provicing your information.<br>Please wait for a member of our team to verify your entry.<br><br> Click the button to restart</h2>
             </main>
             <footer class="bg-dark-float-off" id="subFoot">
                     <button id="submit-event" class="ready">Restart</button>

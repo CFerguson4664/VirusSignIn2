@@ -149,6 +149,7 @@ router.post('/submit',function(req,res) {
 
 // when the client posts to deny
 router.post('/deny',function(req,res) {
+    console.log('deny');
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
@@ -158,12 +159,27 @@ router.post('/deny',function(req,res) {
         if(valid) {
             // remove user from buffer
             deleteUserFromBuffer(req.body.userId, function(success2) {
+                console.log('after delete');
                 // update the buffer
                 getUserBuffer(function(HTML) {
-                    // send updated innerHTML to client
-                    res.send(HTML);
-                    //End our response to the client
-                    res.end();
+                    console.log('after get');
+                    console.log(req.body.allowed);
+                    if (req.body.allowed == 1) {
+                        addUserActivity(req.body.userId, req.body.allowed, function(success1) {
+                            // send updated innerHTML to client
+                            res.send(HTML);
+                            //End our response to the client
+                            res.end();
+                            console.log('add')
+                        });
+                    }
+                    else {
+                        // send updated innerHTML to client
+                        res.send(HTML);
+                        //End our response to the client
+                        res.end();
+                    }
+                    
                 });
             });   
         }
@@ -204,6 +220,7 @@ function Template(userHTML) {
         <main class="bg-light">
             <div id="users">${userHTML}</div>
         </main>
+        <p>Input N-number here:</p>
         <input type="text" id="nNumber">
 
         <footer class="bg-dark-float-off" id="subFoot">
@@ -244,7 +261,7 @@ function addUserToBufferNNumber(nNumber,callback) {
             });
         }
         else {
-            return  allback(false);
+            return callback(false);
         }
     });
 }
@@ -363,9 +380,13 @@ function genUserBufferInnerHTML(data) {
         var deniedHTML = `<div class="button-like">
                 <h2 class="label text-center">Visitor allowed entry?</h2>
                 <div class="sidenav-open">
-                    <button name="allowed-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Visitor was denied ${data[i][4]} day(s) ago. <br> Date denied: ${data[i][5]}</button>
+                    <h2 name="denied-info-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="label-b text-center">Visitor was denied ${data[i][4]} day(s) ago. <br> Date denied: ${data[i][5]}</button>
                 </div>
-                <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Ok</button>
+                <div class="sidenav-open">
+                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Override and allow</button>
+                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="">Dismiss</button>
+                </div>
+                <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Submit</button>
             </div>`;
         var unknownHTML = `<div class="button-like">
                 <h2 class="label text-center">Visitor allowed entry?</h2>
@@ -427,6 +448,7 @@ function deleteUserFromBuffer(userId,callback) {
 
 // function to add user results to useractivity table
 function addUserActivity(userId, allowed, callback) {
+    console.log('add useractivity');
     // set up data for insert statement
     var table = 'useractivity';
     var columns = ['userId', 'admitted', 'userActivityDatetime'];
