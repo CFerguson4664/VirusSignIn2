@@ -149,7 +149,6 @@ router.post('/submit',function(req,res) {
 
 // when the client posts to deny
 router.post('/deny',function(req,res) {
-    console.log('deny');
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
@@ -159,18 +158,14 @@ router.post('/deny',function(req,res) {
         if(valid) {
             // remove user from buffer
             deleteUserFromBuffer(req.body.userId, function(success2) {
-                console.log('after delete');
                 // update the buffer
                 getUserBuffer(function(HTML) {
-                    console.log('after get');
-                    console.log(req.body.allowed);
                     if (req.body.allowed == 1) {
                         addUserActivity(req.body.userId, req.body.allowed, function(success1) {
                             // send updated innerHTML to client
                             res.send(HTML);
                             //End our response to the client
                             res.end();
-                            console.log('add')
                         });
                     }
                     else {
@@ -204,6 +199,7 @@ function Template(userHTML) {
     <html>
         <head>
             <link rel="stylesheet" type="text/css" href="style.css">
+            <meta name="author" content="C Ferguson and E Wannemacher">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -448,7 +444,6 @@ function deleteUserFromBuffer(userId,callback) {
 
 // function to add user results to useractivity table
 function addUserActivity(userId, allowed, callback) {
-    console.log('add useractivity');
     // set up data for insert statement
     var table = 'useractivity';
     var columns = ['userId', 'admitted', 'userActivityDatetime'];
