@@ -21,10 +21,10 @@ app.use(express.static('../Public')); //Makes all files in the public folder acc
 
 app.use(function(req, res, next) { // redirect http to https
     if(!req.secure) {
-      return res.redirect(['https://', req.headers.host, req.url].join(''));
+        return res.redirect(['https://', req.headers.host, req.url].join(''));
     }
     next();
-  });
+});
 
 var Welcome = require('./Pages/S-Welcome');
 var UserType = require('./Pages/S-UserType');
