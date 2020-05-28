@@ -1,0 +1,12 @@
+{
+    "secure_server_port"           :443,
+    "insecure_server_port"         :80,
+
+    "database_host"         :"localhost",
+    "database_user"         :"root",
+    "database_password"     :"Password01",
+    "database_name"         :"virussignin2",
+
+    "key_path"              :"../bin/key.pem",
+    "cert_path"             :"../bin/cert.pem"
+}

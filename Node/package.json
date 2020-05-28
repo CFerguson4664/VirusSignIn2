@@ -1,0 +1,19 @@
+{
+  "name": "SignInServer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Main.js",
+  "bin": "Main.js",
+  "scripts": [
+    "./Pages",
+    "./Utils"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "libsodium-wrappers": "^0.7.6",
+    "mysql": "^2.18.1"
+  }
+}
