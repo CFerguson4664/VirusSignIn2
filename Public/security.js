@@ -188,6 +188,29 @@ function checkForUsers() {
     }
 }
 
+function edit_click(sender) {
+    // parse out the userId text from the id
+    var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
+
+    userId = userId.substring(userId.indexOf('-')+1,userId.length)
+
+    window.location.replace("/securitynew?userId=" + userId);
+}
+
+function new_click(sender) {
+    // parse out the userId text from the id
+    var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
+
+    userId = userId.substring(userId.indexOf('-')+1,userId.length)
+
+    if(userId != 0) {
+        window.location.replace("/securitynew?nNumber=" + userId);
+    }
+    else {
+        window.location.replace("/securitynew");
+    }
+}
+
 //AJAX Functions
 
 //Wait to execute until AJAX is ready
