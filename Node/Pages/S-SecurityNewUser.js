@@ -90,12 +90,22 @@ router.post('/checkNNumber',function(req,res) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             var nNumber = req.body.nNumber;
+            var activeUserId = req.body.userId;
+
+            console.log(`UserID in checkNNumber: ${activeUserId}`);
+
 
             checkIfNNumberExists(nNumber, function(exists,userId) {
-                if (exists) {
+                
+                var idValid = true;
+                if(activeUserId != 0){
+                    idValid = activeUserId != userId;
+                }
+
+                if (exists && idValid) {
                     getButton(userId, 'N-number', function(dead,HTML) {
+                        console.log(`nNumber HTML: ${HTML}`)
                         res.send(HTML);
-                        
                     });
                 }
                 else {
@@ -120,11 +130,19 @@ router.post('/checkEmail',function(req,res) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             var email = req.body.email.toLowerCase();
+            var activeUserId = req.body.userId;
+
+            console.log(`UserID in checkEmail: ${activeUserId}`);
 
             checkIfEmailExists(email, function(exists,userId) {
-            
-                if (exists) {
+                var idValid = true;
+                if(activeUserId != 0){
+                    idValid = activeUserId != userId;
+                }
+                
+                if (exists && idValid) {
                     getButton(userId, 'email', function(dead,HTML) {
+                        console.log(`Email HTML: ${HTML}`)
                         res.send(HTML);
                     });
                 }
@@ -154,14 +172,29 @@ router.post('/newUser',function(req,res) {
             var lName = req.body.lname;
             var email = req.body.email.toLowerCase();
             var nNumber = req.body.nNumber;
+            var remove = req.body.remove;
+            var dataNNumber = req.body.dataNNumber;
 
-            addNewUser(lName, fName, email, nNumber, function(success,userId) {
-                addUserToBuffer(userId, function(success2) {
-
-                    res.send('/security');
-                    res.end();
+            if(remove == 1) {
+                removeNNumberFromBuffer(dataNNumber, function(success) {
+                    addNewUser(lName, fName, email, nNumber, function(success,userId) {
+                        addUserToBuffer(userId, function(success2) {
+        
+                            res.send('/security');
+                            res.end();
+                        });
+                    });
                 });
-            });
+            }
+            else {
+                addNewUser(lName, fName, email, nNumber, function(success,userId) {
+                    addUserToBuffer(userId, function(success2) {
+    
+                        res.send('/security');
+                        res.end();
+                    });
+                });
+            }
         }
         //Otherwise redirect them to the timeout page
         else {
@@ -261,35 +294,36 @@ function TemplateUpdateNNumber(userId,fName,lName,email,nNumber) {
         </header>
         <header class="bg-dark-header">
             <button id="back" class="ready">Back to Security Page</button>
+            <button id="reload" class="ready" onclick='reloadPage(this)'>Restore Data</button>
         </header>
         <main class="bg-light" id='main' data-userId='${userId}'>
 
             <div class="button-like">
-                <h2 class="label text-center">Enter your first name</h2>
+                <h2 class="label text-center">Enter the user's first name</h2>
                 <input type="text" name="firstname" id="firstname" autocomplete="off" class="text2" maxlength="50" value="${fName}">
                 <div id="nameExists"></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Enter your last name</h2>
+                <h2 class="label text-center">Enter the user's last name</h2>
                 <input type="text" name="lastname" id="lastname" autocomplete="off" class="text2" maxlength="50" value=${lName}>
                 <div id='lnameerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Enter your email</h2>
-                <input type="text" name="email" id="email" autocomplete="off" class="text2" maxlength="75" value=${email}>
+                <h2 class="label text-center">Enter the user's email</h2>
+                <input type="text" name="email" id="email" autocomplete="off" class="text2" maxlength="75" value=${email} data-initial=${email}>
                 
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Do you have an N-number?</h2>
+                <h2 class="label text-center">Does the user have an N-number?</h2>
                 <div class="sidenav-open">
                     <button name="student" onclick="button_click(this)" data-choiceId="1"  id='selected' class="selected">Yes</button>
                     <button name="student" onclick="button_click(this)" data-choiceId="0">No</button>
                 </div>
             </div>
             <div class="button-like" id="nndiv">
-                <h2 class="label text-center">Enter your N-number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='${nNumber}' maxlength="10">
+                <h2 class="label text-center">Enter the user's N-number</h2>
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='${nNumber}' maxlength="9" data-initial=${nNumber}>
                 <div id='nnerror'></div>
             </div>
         </main>
@@ -323,35 +357,36 @@ function TemplateUpdate(userId, fName,lName,email) {
         </header>
         <header class="bg-dark-header">
             <button id="back" class="ready">Back to Security Page</button>
+            <button id="reload" class="ready" onclick='reloadPage(this)'>Restore Data</button>
         </header>
         <main class="bg-light" id='main' data-userId='${userId}'>
 
             <div class="button-like">
-                <h2 class="label text-center">Enter your first name</h2>
+                <h2 class="label text-center">Enter the user's first name</h2>
                 <input type="text" name="firstname" id="firstname" autocomplete="off" class="text2" maxlength="50" value="${fName}">
                 <div id="nameExists"></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Enter your last name</h2>
+                <h2 class="label text-center">Enter the user's last name</h2>
                 <input type="text" name="lastname" id="lastname" autocomplete="off" class="text2" maxlength="50" value=${lName}>
                 <div id='lnameerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Enter your email</h2>
+                <h2 class="label text-center">Enter the user's email</h2>
                 <input type="text" name="email" id="email" autocomplete="off" class="text2" maxlength="75" value=${email}>
                 
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Do you have an N-number?</h2>
+                <h2 class="label text-center">Does the user have an N-number?</h2>
                 <div class="sidenav-open">
                     <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
                     <button name="student" onclick="button_click(this)" data-choiceId="0" id='selected' class="selected">No</button>
                 </div>
             </div>
             <div class="button-like" id="nndiv" style="display:none;">
-                <h2 class="label text-center">Enter your N-number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="10">
+                <h2 class="label text-center">Enter the user's N-number</h2>
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="9" data-initial='N'>
                 <div id='nnerror'></div>
             </div>
         </main>
@@ -386,34 +421,34 @@ function TemplateNewUserNNumber(nNumber) {
         <header class="bg-dark-header">
             <button id="back" class="ready">Back to Security Page</button>
         </header>
-        <main class="bg-light">
+        <main class="bg-light" id='main' data-userId='0'>
 
             <div class="button-like">
-                <h2 class="label text-center">Enter your first name</h2>
+                <h2 class="label text-center">Enter the user's first name</h2>
                 <input type="text" name="firstname" id="firstname" autocomplete="off" class="text2" maxlength="50">
                 <div id="nameExists"></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Enter your last name</h2>
+                <h2 class="label text-center">Enter the user's last name</h2>
                 <input type="text" name="lastname" id="lastname" autocomplete="off" class="text2" maxlength="50">
                 <div id='lnameerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Enter your email</h2>
+                <h2 class="label text-center">Enter the user's email</h2>
                 <input type="text" name="email" id="email" autocomplete="off" class="text2" maxlength="75">
                 
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Do you have an N-number?</h2>
+                <h2 class="label text-center">Does the user have an N-number?</h2>
                 <div class="sidenav-open">
                     <button name="student" onclick="button_click(this)" data-choiceId="1" id='selected' class="selected">Yes</button>
                     <button name="student" onclick="button_click(this)" data-choiceId="0">No</button>
                 </div>
             </div>
-            <div class="button-like" id="nndiv">
-                <h2 class="label text-center">Enter your N-number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" maxlength="10" value="${nNumber}">
+            <div class="button-like" id="nndiv" data-nNumber="${nNumber}">
+                <h2 class="label text-center">Enter the user's N-number</h2>
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" maxlength="9" value="${nNumber}">
                 <div id='nnerror'></div>
             </div>
         </main>
@@ -429,7 +464,7 @@ function TemplateNewUserNNumber(nNumber) {
     return html;
 }
 
-function TemplateNewUser(nNumber) {
+function TemplateNewUser() {
     var html = `<!DOCTYPE html>
     <html>
         <head>
@@ -448,34 +483,34 @@ function TemplateNewUser(nNumber) {
         <header class="bg-dark-header">
             <button id="back" class="ready">Back to Security Page</button>
         </header>
-        <main class="bg-light">
+        <main class="bg-light" id='main' data-userId='0'>
 
             <div class="button-like">
-                <h2 class="label text-center">Enter your first name</h2>
+                <h2 class="label text-center">Enter the user's first name</h2>
                 <input type="text" name="firstname" id="firstname" autocomplete="off" class="text2" maxlength="50">
                 <div id="nameExists"></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Enter your last name</h2>
+                <h2 class="label text-center">Enter the user's last name</h2>
                 <input type="text" name="lastname" id="lastname" autocomplete="off" class="text2" maxlength="50">
                 <div id='lnameerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Enter your email</h2>
+                <h2 class="label text-center">Enter the user's email</h2>
                 <input type="text" name="email" id="email" autocomplete="off" class="text2" maxlength="75">
                 
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Do you have an N-number?</h2>
+                <h2 class="label text-center">Does the user have an N-number?</h2>
                 <div class="sidenav-open">
                     <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
                     <button name="student" onclick="button_click(this)" data-choiceId="0" id='selected' class="selected">No</button>
                 </div>
             </div>
-            <div class="button-like" id="nndiv"  style="display:none;">
-                <h2 class="label text-center">Enter your N-number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="10">
+            <div class="button-like" id="nndiv"  style="display:none;" data-nNumber="0">
+                <h2 class="label text-center">Enter the user's N-number</h2>
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="9">
                 <div id='nnerror'></div>
             </div>
         </main>
@@ -537,6 +572,18 @@ function updateUser(userId,lName,fName,email,nNumber,callback) {
         console.log(done)
 
         return callback(true, userId);
+    });
+}
+
+// function to remove user from buffer based on nNumber
+function removeNNumberFromBuffer(nNumber,callback) {
+    var table = 'userbuffer';
+    var params = ['userId'];
+    var values = [`${parseInt(nNumber.substring(1)) * -1}`];
+
+    // insert user into userbuffer
+    SQL.delete(table, params, values, function(err,success) {
+        callback(success);
     });
 }
 
@@ -602,10 +649,10 @@ function getButton(userId,type,callback) {
     SQL.select(table,columns,params,values,function(err,data) {
         var fName = data[0][0];
         var lName = data[0][1];
-        var template = `<br><h2 class="label text-center">Someone has that ${type} already. <br> Are you: </h2>
+        var template = `<br><h2 class="label text-center">A user with the name: <br><br> ${fName} ${lName} <br><br> has that ${type} already.</h2>
             <div class="sidenav-open">
-            <button name="exists" onclick="exists_button_click(this)" data-UserId="${userId}">${fName} ${lName}</button>
-            <button name="exists" onclick="reset_button_click(this,'${type}')" data-UserId="${userId}">This is not me <br>(enter new ${type})</button>
+            <button name="exists" onclick="reset_button_click(this,'${type}')" data-UserId="${userId}">Enter a different ${type}</button>
+            <button name="exists" onclick="restore_button_click(this,'${type}')" data-info="${userId}">Restore ${type}</button>
         </div>`
 
         return callback(true, template);

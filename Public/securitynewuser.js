@@ -158,6 +158,7 @@ $(document).ready(function ()  {
     
                 //The data to send to the server
                 data: { 
+                    userId : document.getElementById('main').getAttribute("data-UserId"),
                     email : document.getElementById('email').value,
                 },
     
@@ -205,6 +206,7 @@ $(document).ready(function ()  {
     
                 //The data to send to the server
                 data: { 
+                    userId : document.getElementById('main').getAttribute("data-UserId"),
                     nNumber : document.getElementById('nnumber').value
                 },
     
@@ -256,6 +258,13 @@ $(document).ready(function ()  {
         if(studentBox == 1) {
             nNumberVal = document.getElementById('nnumber').value;
         }
+
+        var dataNNumber = document.getElementById('nndiv').getAttribute('data-nNumber');
+
+        var remove = 0;
+        if(dataNNumber != 0) {
+            remove = 1;
+        }
           
         $.ajax({
             global: false,
@@ -268,7 +277,9 @@ $(document).ready(function ()  {
                 fname : document.getElementById('firstname').value,
                 lname : document.getElementById('lastname').value,
                 email : document.getElementById('email').value,
-                nNumber : nNumberVal
+                nNumber : nNumberVal,
+                remove : remove,
+                dataNNumber : dataNNumber
             },
 
             //The response from the server

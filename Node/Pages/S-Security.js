@@ -93,6 +93,8 @@ router.post('/reload', function(req,res) {
         if(valid) {
             // update the buffer
             updateUserBuffer(function(HTML) {
+                console.log(`HTML: ${HTML}`)
+
                 // send updated innerHTML to client
                 res.send(HTML);
                 //End our response to the client
@@ -269,9 +271,9 @@ function updateUserBuffer(callback) {
     // set up data for selectExtra statement
     var table = 'userbuffer';
     var columns = ['userId','loaded'];
-    var params = ['userId'];
-    var operators = ['<'];
-    var values = [`0`];
+    var params = ['userId','loaded'];
+    var operators = ['<','='];
+    var values = [`0`,`0`];
     var extraSQL = ``;
 
     SQL.selectExtra(table,columns,params,operators,values,extraSQL, function(err,res) {
@@ -282,28 +284,34 @@ function updateUserBuffer(callback) {
         //List of the users that need to be added to the security terminal
         var needLoaded = []; 
 
-        for(let j = 0; j < res.length; j++) {
-            var nNumber = '' + (res[j][0] * -1)
-
-            while(nNumber.length < 8) {
-                nNumber = '0' + nNumber;
-            }
-
-            nNumber = 'N' + nNumber;
-            
-            needLoaded.push([nNumber,nNumber,'','','']);
-
-            columns = ['loaded'];
-            colValues = ['1'];
-            params = ['userId'];
-            parValues = [res[j][0]];
-
-            SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
-                if(j == res.length-1) {
-                    updateNormalUserBuffer(callback, needLoaded)
+        if(res.length > 0) {
+            for(let j = 0; j < res.length; j++) {
+                var nNumber = '' + (res[j][0] * -1)
+    
+                while(nNumber.length < 8) {
+                    nNumber = '0' + nNumber;
                 }
-            })
+    
+                nNumber = 'N' + nNumber;
+                
+                needLoaded.push([nNumber,nNumber,'','','']);
+    
+                columns = ['loaded'];
+                colValues = ['1'];
+                params = ['userId'];
+                parValues = [res[j][0]];
+    
+                SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
+                    if(j == res.length-1) {
+                        updateNormalUserBuffer(callback, needLoaded)
+                    }
+                })
+            }
         }
+        else {
+            updateNormalUserBuffer(callback, needLoaded)
+        }
+        
     })
 }
 
@@ -381,6 +389,53 @@ function updateNormalUserBuffer(callback,needLoaded) {
 function getUserBuffer(callback) {
     // set up data for selectExtra statement
     var table = 'userbuffer';
+    var columns = ['userId','loaded'];
+    var params = ['userId'];
+    var operators = ['<'];
+    var values = [`0`];
+    var extraSQL = ``;
+
+    SQL.selectExtra(table,columns,params,operators,values,extraSQL, function(err,res) {
+
+        console.log(`res for negs : ${res}`);
+        console.log(`err for negs : ${err}`);
+
+        //List of the users that need to be added to the security terminal
+        var needLoaded = []; 
+        
+        if(res.length > 0) {
+            for(let j = 0; j < res.length; j++) {
+                var nNumber = '' + (res[j][0] * -1)
+    
+                while(nNumber.length < 8) {
+                    nNumber = '0' + nNumber;
+                }
+    
+                nNumber = 'N' + nNumber;
+                
+                needLoaded.push([nNumber,nNumber,'','','']);
+    
+                columns = ['loaded'];
+                colValues = ['1'];
+                params = ['userId'];
+                parValues = [res[j][0]];
+    
+                SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
+                    if(j == res.length-1) {
+                        getNormalUserBuffer(callback, needLoaded)
+                    }
+                })
+            }
+        }
+        else {
+            getNormalUserBuffer(callback, needLoaded)
+        }
+    })
+}
+
+function getNormalUserBuffer(callback, needLoaded) {
+    // set up data for selectExtra statement
+    var table = 'userbuffer';
     var columns = ['userbuffer.userId','users.fName','users.lName','userbuffer.loaded'];
     var params = [];
     var operators = [];
@@ -393,21 +448,57 @@ function getUserBuffer(callback) {
         //Makes sure res 
         if(res.length != 0) {
             for (let i = 0; i < res.length; i++) {
-                userWasDenied(res[i][0], function(denied,deniedAgo,deniedDate) {
-                    if (denied) {
-                        res[i].push(deniedAgo);
-                        res[i].push(deniedDate);
-                    }
-                    if (i == res.length-1) {
-                        // callback the innerHTML
-                        return callback(genUserBufferInnerHTML(res));
-                    }
-                });  
+
+
+
+                //Add them to the list of users that need loaded
+                needLoaded.push(res[i]);
+
+                if(res[i][3] == 0) {
+                    //Log that the user has been loaded
+                    columns = ['loaded'];
+                    colValues = ['1'];
+                    params = ['userId'];
+                    parValues = [res[i][0]];
+
+                    SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
+
+                        //Check if the user was denied within the last 14 days
+                        userWasDenied(needLoaded[needLoaded.length-1][0], function(denied,deniedAgo, deniedDate) {
+                            if (denied) {
+                                needLoaded[needLoaded.length-1].push(deniedAgo);
+                                needLoaded[needLoaded.length-1].push(deniedDate);
+                            }
+
+                            if (i == res.length-1) {
+                                return callback(genUserBufferInnerHTML(needLoaded));
+                            }
+                        }); //End userWasDenied
+                    }); //End SQL.update
+                }
+                else {
+                    //Check if the user was denied within the last 14 days
+                    userWasDenied(needLoaded[needLoaded.length-1][0], function(denied,deniedAgo, deniedDate) {
+                        if (denied) {
+                            needLoaded[needLoaded.length-1].push(deniedAgo);
+                            needLoaded[needLoaded.length-1].push(deniedDate);
+                        }
+
+                        if (i == res.length-1) {
+                            return callback(genUserBufferInnerHTML(needLoaded));
+                        }
+                    }); //End userWasDenied
+                }
             }
         }
         else {
-            return callback('');
-        }
+            if(needLoaded.length > 0) {
+                return callback(genUserBufferInnerHTML(needLoaded));
+            }
+            else {
+                return callback('');
+            }
+        } //End else res.length > 0
     });
 }
 
@@ -490,9 +581,25 @@ function deleteUserFromBuffer(userId,callback) {
     var params = ['userId'];
     var values = [userId];
 
+    if (userId[0] == 'N') {
+        values = [`-${userId.substring(1)}`];
+    }
+
     // delete record with userId
     SQL.delete(table, params, values, function(err,res) {
         return callback(res);
+    });
+}
+
+// function to remove user from buffer based on nNumber
+function removeNNumberFromBuffer(nNumber,callback) {
+    var table = 'userbuffer';
+    var params = ['userId'];
+    var values = [`${parseInt(nNumber.substring(1)) * -1}`];
+
+    // insert user into userbuffer
+    SQL.delete(table, params, values, function(err,success) {
+        callback(success);
     });
 }
 

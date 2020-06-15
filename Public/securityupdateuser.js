@@ -105,13 +105,22 @@ function button_click(sender)
 }
 
 // if the user clicks the button because they had a duplicate email or nnumber
-function exists_button_click(sender) {
-    // get the user id stored in the button
-    var userId = sender.getAttribute("data-UserId");
-    // prepare a url to send the user (will go to the returning page with their name already filled in)
-    var url = '/returning?userId=' + userId;
-    // send the user to the url
-    window.location.replace(url);
+function restore_button_click(sender,type) {
+    if(type == 'email'){
+        document.getElementById('email').value = document.getElementById('email').getAttribute('data-initial');
+        EmailNotDuplicate = true;
+        document.getElementById('emailerror').innerHTML = '';
+        document.getElementById('email').focus();
+    }
+    else {
+        document.getElementById('nnumber').value = document.getElementById('nnumber').getAttribute('data-initial');
+        NNumberNotDuplicate = true;
+        document.getElementById('nnerror').innerHTML = '';
+        document.getElementById('nnumber').focus();
+    }
+
+    
+    checkAll();
 }
 
 function reset_button_click(sender,type) {
@@ -131,6 +140,10 @@ function disable_submit() {
     document.getElementById('subFoot').className = 'bg-dark-float-off';
     document.getElementById('submit-event').className = 'not-ready';
     
+}
+
+function reloadPage(sender) {
+    window.location.reload();
 }
 
 //AJAX Functions
@@ -158,6 +171,7 @@ $(document).ready(function ()  {
     
                 //The data to send to the server
                 data: { 
+                    userId : document.getElementById('main').getAttribute("data-UserId"),
                     email : document.getElementById('email').value,
                 },
     
@@ -205,6 +219,7 @@ $(document).ready(function ()  {
     
                 //The data to send to the server
                 data: { 
+                    userId : document.getElementById('main').getAttribute("data-UserId"),
                     nNumber : document.getElementById('nnumber').value
                 },
     

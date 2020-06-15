@@ -155,7 +155,14 @@ function input_to_textBox() {
                     window.location.replace(result);
                 }
                 else {
-                    document.getElementById('users').innerHTML += result;
+                    if(result != '') {
+                        if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
+                            document.getElementById('users').innerHTML = result;
+                        }
+                        else {
+                            document.getElementById('users').innerHTML += result;
+                        }
+                    }
                     document.getElementById('nNumber').value = '';
                 }
                 checkForUsers();
@@ -179,12 +186,7 @@ function checkNNumberInput() {
 
 function checkForUsers() {
     if (document.getElementById('users').innerHTML == '') {
-        document.getElementById('header').innerHTML = `<div class="button-like">
-                <h2 class="label text-center">There are no pending requests.</h2>
-            </div`;
-    }
-    else {
-        document.getElementById('header').innerHTML = '';
+        document.getElementById('users').innerHTML =  `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`;
     }
 }
 
@@ -301,7 +303,15 @@ window.onload = setInterval(function() {
                 window.location.replace(result);
             }
             else {
-                document.getElementById('users').innerHTML += result;
+                if(result != '') {
+                    if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
+                        document.getElementById('users').innerHTML = result;
+                    }
+                    else {
+                        document.getElementById('users').innerHTML += result;
+                    }
+                }
+                
             }
             checkForUsers();
         },

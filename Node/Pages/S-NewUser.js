@@ -196,7 +196,7 @@ function Template() {
             </div>
             <div class="button-like" id="nndiv" style="display:none;">
                 <h2 class="label text-center">Enter your N-number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="10">
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="9">
                 <div id='nnerror'></div>
             </div>
         </main>
