@@ -15,6 +15,12 @@ const auth = require('../Utils/AuthMan');
 //Requires server encryption
 const encryption = require('../Utils/CryptoServer');
 
+//Requires database Downloads
+const dbDownload = require('../Utils/DownloadDatabase');
+
+//Requires path joining
+const path = require('path');
+
 //***************************************************** SETUP ***************************************************
 
 //router to handle moving the get/post requests around
@@ -118,6 +124,41 @@ router.post('/changeadmin',function(req,res) {
     });
 });
 
+router.post('/download',function(req,res) {
+
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl3;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 3, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            dbDownload.dumpFormattedData("test5.txt", function(data) {
+                // res.download('./test3.txt',"tes2.txt", function(err) {
+                //     // if (err) res.send('Error while downloading');
+                //     // else res.send('Download complete');
+                //     res.send();
+                //     res.end();
+                // });
+                // res.attachment('test4.txt');
+                // res.type('txt');
+                // res.send(data);
+                var file = "test5.txt";
+                var fileLocation = path.join('./',file);
+                console.log(fileLocation);
+                res.download(fileLocation, file);
+                // res.sendFile('test6.txt', {root: __dirname});
+                // res.end();
+            });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.send('/logintimeout');
+            res.end();
+        }
+    });
+});
+
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
@@ -191,6 +232,11 @@ function Template(publicKey) {
                     <div id="adminData"></div>
                     <button name="changeAdmin" data-choiceId="0" id='changeAdmin' class="not-ready">Change Admin Logon</button>
                 </div>
+            </div>
+            <br><br>
+            <div class="button-like">
+                <button id="downloadDatabase" class="ready" onclick="downloadDatabase()">Download database</button>
+                <div id="downloadInner"></div>
             </div>
 
 

@@ -1,0 +1,168 @@
+[
+	{
+		"userId": 9,
+		"userName": "Christopher Ferguson",
+		"userEmail": "email@email.com",
+		"userNNumber": "N00192800",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-05-18T14:38:31.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-05-22T16:37:03.000Z"
+			},
+			{
+				"admitted": 0,
+				"datetime": "2020-05-22T16:38:42.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-05-22T18:04:43.000Z"
+			}
+		]
+	},
+	{
+		"userId": 10,
+		"userName": "Bob Joe",
+		"userEmail": "email@email2.com",
+		"userNNumber": "0",
+		"userActivity": []
+	},
+	{
+		"userId": 16,
+		"userName": "John Doe",
+		"userEmail": "jdoe@mail.com",
+		"userNNumber": "N00192801",
+		"userActivity": []
+	},
+	{
+		"userId": 17,
+		"userName": "Jane Doe",
+		"userEmail": "jdoe@mail.co.uk",
+		"userNNumber": "N00192802",
+		"userActivity": []
+	},
+	{
+		"userId": 18,
+		"userName": "Joe Bob",
+		"userEmail": "jbob@mail.com",
+		"userNNumber": "N00192803",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-05-22T16:37:32.000Z"
+			}
+		]
+	},
+	{
+		"userId": 19,
+		"userName": "Mary Bob",
+		"userEmail": "mbob@mail.com",
+		"userNNumber": "N00192804",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-05-22T16:37:19.000Z"
+			}
+		]
+	},
+	{
+		"userId": 20,
+		"userName": "Sally Bob",
+		"userEmail": "sbob@mail.com",
+		"userNNumber": "N00192805",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-05-22T16:37:20.000Z"
+			}
+		]
+	},
+	{
+		"userId": 21,
+		"userName": "Ed Bob",
+		"userEmail": "ebob@mail.com",
+		"userNNumber": "N0019280",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-05-22T16:37:21.000Z"
+			}
+		]
+	},
+	{
+		"userId": 22,
+		"userName": "Oliver Twist",
+		"userEmail": "otwist@mail.com",
+		"userNNumber": "N00192806",
+		"userActivity": []
+	},
+	{
+		"userId": 23,
+		"userName": "Char Lotte",
+		"userEmail": "charlotte@mail.com",
+		"userNNumber": "N00192807",
+		"userActivity": [
+			{
+				"admitted": 0,
+				"datetime": "2020-05-16T17:18:14.000Z"
+			}
+		]
+	},
+	{
+		"userId": 24,
+		"userName": "Reanue Keeves",
+		"userEmail": "rkeeves@gtfo.mf",
+		"userNNumber": "N00192808",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-05-16T18:33:16.000Z"
+			},
+			{
+				"admitted": 0,
+				"datetime": "2020-05-16T18:33:43.000Z"
+			}
+		]
+	},
+	{
+		"userId": 25,
+		"userName": "Helena Ravenclaw",
+		"userEmail": "hravenclaw@mail.com",
+		"userNNumber": "0",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-05-22T16:37:17.000Z"
+			}
+		]
+	},
+	{
+		"userId": 26,
+		"userName": "tert wer",
+		"userEmail": "rye@mail.com",
+		"userNNumber": "N00192809",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-05-22T16:37:04.000Z"
+			}
+		]
+	},
+	{
+		"userId": 27,
+		"userName": "sdf sdfs",
+		"userEmail": "sdf@g.v",
+		"userNNumber": "0",
+		"userActivity": []
+	},
+	{
+		"userId": 28,
+		"userName": "sdf sdfsdf",
+		"userEmail": "sdf@m.c",
+		"userNNumber": "0",
+		"userActivity": []
+	}
+]
