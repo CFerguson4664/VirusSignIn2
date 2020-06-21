@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 //Hash for password password
 //$argon2id$v=19$m=262144,t=3,p=1$KVuso7M/kaMnMboUV9PzMg$G7D7DUW4t5+c5Rwv6KgwwOcU9f3nVdeazJv3AcStLMs
 
@@ -17,9 +20,6 @@ const encryption = require('../Utils/CryptoServer');
 
 //Requires database Downloads
 const dbDownload = require('../Utils/DownloadDatabase');
-
-//Requires path joining
-const path = require('path');
 
 //***************************************************** SETUP ***************************************************
 
@@ -124,7 +124,7 @@ router.post('/changeadmin',function(req,res) {
     });
 });
 
-router.post('/download',function(req,res) {
+router.get('/download',function(req,res) {
 
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl3;
@@ -133,27 +133,15 @@ router.post('/download',function(req,res) {
     sessionMan.sessionIdValid(cookie, 3, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            dbDownload.dumpFormattedData("test5.txt", function(data) {
-                // res.download('./test3.txt',"tes2.txt", function(err) {
-                //     // if (err) res.send('Error while downloading');
-                //     // else res.send('Download complete');
-                //     res.send();
-                //     res.end();
-                // });
-                // res.attachment('test4.txt');
-                // res.type('txt');
-                // res.send(data);
-                var file = "test5.txt";
-                var fileLocation = path.join('./',file);
-                console.log(fileLocation);
-                res.download(fileLocation, file);
-                // res.sendFile('test6.txt', {root: __dirname});
-                // res.end();
+            dbDownload.dumpFormattedData("UserActivities.txt", function(data) {
+                sendFileToUser(res,"UserActivities.txt", function(done) {
+                    res.end();
+                });
             });
         }
         //Otherwise redirect them to the timeout page
         else {
-            res.send('/logintimeout');
+            res.redirect('/logintimeout');
             res.end();
         }
     });
@@ -172,7 +160,7 @@ function Template(publicKey) {
     <html>
         <head>
             <link rel="stylesheet" type="text/css" href="style.css">
-            <meta name="author" content="C Ferguson and E Wannemacher">
+            <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -257,6 +245,25 @@ function Template(publicKey) {
 }
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
+function pad(number) {
+    if (number < 10) {
+        return '0' + number;
+    }
+    return number;
+}
 
+Date.prototype.toISONormString = function() {
+    return this.getFullYear() +
+        '-' + pad(this.getMonth() + 1) +
+        '-' + pad(this.getDate()) +
+        '_' + pad(this.getHours()) +
+        '-' + pad(this.getMinutes()) +
+        '-' + pad(this.getSeconds());
+};
 
-
+function sendFileToUser(res,filename,callback) {
+    res.download('./' + filename,`UserActivity_Report_${new Date().toISONormString()}.json`,function(err) {
+        callback(true);
+    });
+    
+}

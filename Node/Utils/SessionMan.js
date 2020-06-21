@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 const crypto = require('crypto');
 const SQL = require('./GeneralSql');
 const time = require('./TimeUtils');

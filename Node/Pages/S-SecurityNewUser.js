@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 //**************************************************** IMPORTS **************************************************
 
 //Requires the URL utilty
@@ -27,9 +30,6 @@ module.exports = router;
 
 //Handles the get request for the starting form of this page
 router.get('/', function(req,res) {
-
-    console.log('request')
-
     //Headers to try to prevent the page from being cached 
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
@@ -42,11 +42,9 @@ router.get('/', function(req,res) {
     sessionMan.sessionIdValid(cookie, 2, function(valid) {
         //If the client is valid prepare the page
         if(valid) {
-            console.log('valid')
             var queryObject = URL.parse(req.url,true).query;
             
             if(queryObject.userId != null) {
-                console.log('userId')
                 getPagePrefilledUserId(queryObject.userId, function(HTML) {
                     //Send the HTML to the client
                     res.write(HTML);
@@ -55,7 +53,6 @@ router.get('/', function(req,res) {
                 });
             }
             else if(queryObject.nNumber != null) {
-                console.log('nNumber');
                 getPagePrefilledNNumber(queryObject.nNumber, function(HTML) {
                     //Send the HTML to the client
                     res.write(HTML);
@@ -64,7 +61,6 @@ router.get('/', function(req,res) {
                 });
             }
             else {
-                console.log('none');
                 getPage(function(HTML) {
                     //Send the HTML to the client
                     res.write(HTML);
@@ -92,8 +88,6 @@ router.post('/checkNNumber',function(req,res) {
             var nNumber = req.body.nNumber;
             var activeUserId = req.body.userId;
 
-            console.log(`UserID in checkNNumber: ${activeUserId}`);
-
 
             checkIfNNumberExists(nNumber, function(exists,userId) {
                 
@@ -104,7 +98,6 @@ router.post('/checkNNumber',function(req,res) {
 
                 if (exists && idValid) {
                     getButton(userId, 'N-number', function(dead,HTML) {
-                        console.log(`nNumber HTML: ${HTML}`)
                         res.send(HTML);
                     });
                 }
@@ -132,8 +125,6 @@ router.post('/checkEmail',function(req,res) {
             var email = req.body.email.toLowerCase();
             var activeUserId = req.body.userId;
 
-            console.log(`UserID in checkEmail: ${activeUserId}`);
-
             checkIfEmailExists(email, function(exists,userId) {
                 var idValid = true;
                 if(activeUserId != 0){
@@ -142,7 +133,6 @@ router.post('/checkEmail',function(req,res) {
                 
                 if (exists && idValid) {
                     getButton(userId, 'email', function(dead,HTML) {
-                        console.log(`Email HTML: ${HTML}`)
                         res.send(HTML);
                     });
                 }
@@ -206,8 +196,6 @@ router.post('/newUser',function(req,res) {
 
 router.post('/updateUser',function(req,res) {
 
-    console.log('post')
-
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl2;
 
@@ -245,10 +233,6 @@ function getPagePrefilledUserId(userId, callback) {
 
     //Try to select the first and last names from the database
     SQL.select(table,columns,params,values, function(err,data) {
-
-        console.log(err)
-        console.log(data)
-
         if(data.length > 0) {
             var fName = data[0][0];
             var lName = data[0][1];
@@ -281,7 +265,7 @@ function TemplateUpdateNNumber(userId,fName,lName,email,nNumber) {
     <html>
         <head>
             <link rel="stylesheet" type="text/css" href="style.css">
-            <meta name="author" content="C Ferguson and E Wannemacher">
+            <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -453,7 +437,7 @@ function TemplateNewUserNNumber(nNumber) {
             </div>
         </main>
         <footer class="bg-dark-float-off" id="subFoot">
-            <button id="submit-event" class="ready">Submit</button>
+            <button id="submit-event" class="not-ready">Submit</button>
         </footer>
         <footer class="bg-dark">
             <div id="social-icons">
@@ -515,7 +499,7 @@ function TemplateNewUser() {
             </div>
         </main>
         <footer class="bg-dark-float-off" id="subFoot">
-            <button id="submit-event" class="ready">Submit</button>
+            <button id="submit-event" class="not-ready">Submit</button>
         </footer>
         <footer class="bg-dark">
             <div id="social-icons">
@@ -567,9 +551,6 @@ function updateUser(userId,lName,fName,email,nNumber,callback) {
 
     //Add the new user to the database
     SQL.update(table,columns,values,params,parValues, function(err,done) {
-
-        console.log(err)
-        console.log(done)
 
         return callback(true, userId);
     });

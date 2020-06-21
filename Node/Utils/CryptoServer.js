@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 //Using libsodium for encryption. Paired with CryptoClient.js on the client side. 
 //Requires 'npm install libsodium-wrappers'
 

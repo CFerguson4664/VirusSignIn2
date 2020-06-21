@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 const mysql = require("mysql");
 const fs = require("fs");
 

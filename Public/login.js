@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 $(document).ready(function ()  {
     $(document).keypress(function(event) {
         if(event.charCode == 13 && document.getElementById('username').value.length > 0 && document.getElementById('password').value.length > 0) {

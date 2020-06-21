@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 // global variables kind of smelly, but easiest way to keep track of whether
 // email or nnumber have been checked with the server
 // this was done to save from pinging the server an ungodly number of unnecessary times
@@ -130,7 +133,7 @@ function reset_button_click(sender,type) {
         document.getElementById('emailerror').innerHTML = '';
     }
     else {
-        document.getElementById('nnumber').value = '';
+        document.getElementById('nnumber').value = 'N';
         document.getElementById('nnumber').focus();
         document.getElementById('nnerror').innerHTML = '';
     }

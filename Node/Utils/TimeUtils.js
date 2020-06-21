@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 function pad(number) {
     if (number < 10) {
         return '0' + number;
@@ -12,7 +15,7 @@ Date.prototype.toISONormString = function() {
         ' ' + pad(this.getHours()) +
         ':' + pad(this.getMinutes()) +
         ':' + pad(this.getSeconds());
-    };
+};
 
 
 exports.formatTime = function(Date) {

@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 var keys;
 var initalized = false;
 

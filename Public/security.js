@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 // global variable to keep track of the nNumber input
 var previousInput = '';
 
@@ -87,7 +90,7 @@ function deny_button_click(sender) {
     var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
 
     // initialize entryAllowed so no else statement is needed
-    var entryAllowed = 0;
+    var entryAllowed = 2;
 
     var buttons = document.getElementsByName('allowed-'+userId);
 

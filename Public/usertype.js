@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 //Enables submit button once an option has been selected and changes the css class
 function button_click(sender)
 {

@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 //**************************************************** IMPORTS **************************************************
 
 //Requires Express Node.js framework
@@ -83,7 +86,7 @@ function Template() {
     <html>
         <head>
             <link rel="stylesheet" type="text/css" href="style.css">
-            <meta name="author" content="C Ferguson and E Wannemacher">
+            <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script src="usertype.js"></script>

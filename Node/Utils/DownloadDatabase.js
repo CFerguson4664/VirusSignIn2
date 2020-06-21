@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 const sql = require('./GeneralSql');
 const fs = require('fs');
 
@@ -11,7 +14,6 @@ exports.dumpFormattedData = function(filename, callback) {
                 
                 callback(data);
             });
-            // console.log(matchData(users,userActivity));
 
         });
     });
@@ -29,8 +31,6 @@ function matchData(users,userActivity) {
             userActivity: []
         });
     }
-    // console.log('Data After Users Entered:');
-    // console.log(data);
     for (let j = 0; j < userActivity.length; j++) {
         for (let k = 0; k < data.length; k++) {
             if (data[k]['userId'] == userActivity[j][1]) {
@@ -57,32 +57,3 @@ function getUserActivity(callback) {
         callback(users);
     });
 }
-
-// function getUsers(callback) {
-//     console.log("Get Users");
-//     connection.query(`SELECT * FROM users;`, function(err,result) {
-//         if (err) return callback(err,null);
-
-//         var users = [];
-//         for(let i = 0; i < result.length; i++) {
-//             var r = result[i];
-//             users.push([r.userId, r.lName, r.fName, r.email, r.nNumber]);
-//         }
-//         // console.log(users);
-//         callback(users);
-//     });
-// }
-
-// function getUserActivity(callback) {
-//     console.log("Get useractivity");
-//     connection.query(`SELECT * FROM useractivity;`, function(err,result) {
-//         if (err) return callback(err);
-
-//         var useractivity = [];
-//         for(let i = 0; i < result.length; i++) {
-//             var r = result[i];
-//             useractivity.push([r.activityId, r.userId, r.admitted, r.userActivityDatetime]);
-//         }
-//         callback(useractivity);
-//     });
-// }

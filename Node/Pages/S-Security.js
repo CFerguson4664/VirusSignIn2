@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 //**************************************************** IMPORTS **************************************************
 
 //Reqires the SessionMan Utility
@@ -58,8 +61,6 @@ router.post('/nNumber',function(req,res) {
         if(valid) {
             var nNumber = req.body.nNumber;
 
-            console.log(nNumber);
-
             // add the user with the nNumber to the buffer
             addUserToBufferNNumber(nNumber, function(success) {
                 // if the user was added
@@ -93,7 +94,6 @@ router.post('/reload', function(req,res) {
         if(valid) {
             // update the buffer
             updateUserBuffer(function(HTML) {
-                console.log(`HTML: ${HTML}`)
 
                 // send updated innerHTML to client
                 res.send(HTML);
@@ -153,7 +153,7 @@ router.post('/deny',function(req,res) {
             deleteUserFromBuffer(req.body.userId, function(success2) {
                 // update the buffer
                 getUserBuffer(function(HTML) {
-                    if (req.body.allowed == 1) {
+                    if (req.body.allowed == 1 || req.body.allowed == 2) {
                         addUserActivity(req.body.userId, req.body.allowed, function(success1) {
                             // send updated innerHTML to client
                             res.send(HTML);
@@ -162,6 +162,7 @@ router.post('/deny',function(req,res) {
                         });
                     }
                     else {
+                    
                         // send updated innerHTML to client
                         res.send(HTML);
                         //End our response to the client
@@ -192,7 +193,7 @@ function Template(userHTML) {
     <html>
         <head>
             <link rel="stylesheet" type="text/css" href="style.css">
-            <meta name="author" content="C Ferguson and E Wannemacher">
+            <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -256,8 +257,6 @@ function addUserToBufferNNumber(nNumber,callback) {
 
             // insert user into userbuffer
             SQL.insert(table, columns, values, function(err,success) {
-                console.log(err)
-                console.log('Added user with random number')
                 return callback(success);
             });
         }
@@ -277,9 +276,6 @@ function updateUserBuffer(callback) {
     var extraSQL = ``;
 
     SQL.selectExtra(table,columns,params,operators,values,extraSQL, function(err,res) {
-
-        console.log(`res for negs : ${res}`);
-        console.log(`err for negs : ${err}`);
 
         //List of the users that need to be added to the security terminal
         var needLoaded = []; 
@@ -316,7 +312,6 @@ function updateUserBuffer(callback) {
 }
 
 function updateNormalUserBuffer(callback,needLoaded) {
-    console.log(needLoaded);
 
     var table = 'userbuffer';
     var columns = ['userbuffer.userId','users.fName','users.lName','userbuffer.loaded'];
@@ -327,7 +322,6 @@ function updateNormalUserBuffer(callback,needLoaded) {
 
     // select userId and name from database
     SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
-        console.log(err)
 
         
 
@@ -396,9 +390,6 @@ function getUserBuffer(callback) {
     var extraSQL = ``;
 
     SQL.selectExtra(table,columns,params,operators,values,extraSQL, function(err,res) {
-
-        console.log(`res for negs : ${res}`);
-        console.log(`err for negs : ${err}`);
 
         //List of the users that need to be added to the security terminal
         var needLoaded = []; 
@@ -531,7 +522,7 @@ function genUserBufferInnerHTML(data) {
         var unknownHTML = `<div class="button-like">
                 <h2 class="label text-center">Visitor allowed entry?</h2>
                 <div class="sidenav-open">
-                    <button name="allowed-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Visitor does not have an account. <br> They need to create an account using the QR code.</button>
+                    <button name="allowed-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Visitor does not have an account. <br> They need to create an account using the QR code.<br> Or click the button above to create it here.</button>
                 </div>
                 <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Ok</button>
             </div>`;
