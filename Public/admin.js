@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 function checkAdmin() {
     var password1 = document.getElementById('newAdminPassword').value;
     var password2 = document.getElementById('newAdminPassword2').value;
@@ -24,6 +27,38 @@ function checkSecurity() {
         document.getElementById('changeSecurity').className = 'not-ready';
         document.getElementById('securityData').innerHTML = `<h2 class="red text-center">The two passwords do not match</h2>`;
     }
+}
+
+function downloadDatabase() {
+    // document.getElementById('downloadInner').innerHTML = `<h2 class="white text-center">Server is compiling data.<br>This may take a while.</h2>`;
+
+    window.open('/admin/download');
+    // $.ajax({
+    //     global: false,
+    //     type: 'POST',
+    //     url: '/admin/download', //The url to post to on the server
+    //     dataType: 'html',
+
+    //     //The data to send to the server
+    //     data: {
+    //     },
+
+    //     //The response from the server
+    //     success: function (result) {
+    //         if (result == '/logintimeout') {
+    //             window.location.replace(result);
+    //         }
+    //         else {
+    //             document.getElementById('downloadInner').innerHTML = `<h2 class="white text-center">${result.body}</h2>`;
+    //         }
+    //     },
+
+    //     //Handle any errors
+    //     error: function (request, status, error) { 
+    //         document.getElementById('securityData').innerHTML = `<h2 class="red text-center">Error: Unable to change credentials.</h2>`;
+    //         serviceError();
+    //     }
+    // });
 }
 
 //Wait to execute until AJAX is ready

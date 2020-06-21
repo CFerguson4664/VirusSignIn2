@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 const mysql = require("mysql");
 const fs = require("fs");
 
@@ -201,7 +204,7 @@ exports.update = function(table, columns, colValues, params, parValues, callback
     // assemble column pairs string
     var colPairs = `${columns[0]} = ${colValues[0]}`;
     for(var i = 1; i < columns.length; i++) {
-        colPairs += ` AND ${columns[i]} = ${colValues[i]}`;
+        colPairs += `, ${columns[i]} = ${colValues[i]}`;
     }
 
     // assemble parameter pairs string

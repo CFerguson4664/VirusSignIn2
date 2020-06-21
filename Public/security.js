@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 // global variable to keep track of the nNumber input
 var previousInput = '';
 
@@ -87,7 +90,7 @@ function deny_button_click(sender) {
     var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
 
     // initialize entryAllowed so no else statement is needed
-    var entryAllowed = 0;
+    var entryAllowed = 2;
 
     var buttons = document.getElementsByName('allowed-'+userId);
 
@@ -155,7 +158,14 @@ function input_to_textBox() {
                     window.location.replace(result);
                 }
                 else {
-                    document.getElementById('users').innerHTML += result;
+                    if(result != '') {
+                        if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
+                            document.getElementById('users').innerHTML = result;
+                        }
+                        else {
+                            document.getElementById('users').innerHTML += result;
+                        }
+                    }
                     document.getElementById('nNumber').value = '';
                 }
                 checkForUsers();
@@ -179,12 +189,30 @@ function checkNNumberInput() {
 
 function checkForUsers() {
     if (document.getElementById('users').innerHTML == '') {
-        document.getElementById('header').innerHTML = `<div class="button-like">
-                <h2 class="label text-center">There are no pending requests.</h2>
-            </div`;
+        document.getElementById('users').innerHTML =  `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`;
+    }
+}
+
+function edit_click(sender) {
+    // parse out the userId text from the id
+    var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
+
+    userId = userId.substring(userId.indexOf('-')+1,userId.length)
+
+    window.location.replace("/securitynew?userId=" + userId);
+}
+
+function new_click(sender) {
+    // parse out the userId text from the id
+    var userId = sender.id.substring(sender.id.indexOf('-')+1, sender.id.length);
+
+    userId = userId.substring(userId.indexOf('-')+1,userId.length)
+
+    if(userId != 0) {
+        window.location.replace("/securitynew?nNumber=" + userId);
     }
     else {
-        document.getElementById('header').innerHTML = '';
+        window.location.replace("/securitynew");
     }
 }
 
@@ -278,7 +306,15 @@ window.onload = setInterval(function() {
                 window.location.replace(result);
             }
             else {
-                document.getElementById('users').innerHTML += result;
+                if(result != '') {
+                    if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
+                        document.getElementById('users').innerHTML = result;
+                    }
+                    else {
+                        document.getElementById('users').innerHTML += result;
+                    }
+                }
+                
             }
             checkForUsers();
         },

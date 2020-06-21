@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 //Hash for password password
 //$argon2id$v=19$m=262144,t=3,p=1$KVuso7M/kaMnMboUV9PzMg$G7D7DUW4t5+c5Rwv6KgwwOcU9f3nVdeazJv3AcStLMs
 
@@ -14,6 +17,9 @@ const auth = require('../Utils/AuthMan');
 
 //Requires server encryption
 const encryption = require('../Utils/CryptoServer');
+
+//Requires database Downloads
+const dbDownload = require('../Utils/DownloadDatabase');
 
 //***************************************************** SETUP ***************************************************
 
@@ -118,6 +124,29 @@ router.post('/changeadmin',function(req,res) {
     });
 });
 
+router.get('/download',function(req,res) {
+
+    //This cookie is the session id stored on welcome page
+    var cookie = req.cookies.SignInLvl3;
+
+    //Validate the client using the session Id
+    sessionMan.sessionIdValid(cookie, 3, function(valid) {
+        //If the client is valid redirect them to the appropiate page
+        if(valid) {
+            dbDownload.dumpFormattedData("UserActivities.txt", function(data) {
+                sendFileToUser(res,"UserActivities.txt", function(done) {
+                    res.end();
+                });
+            });
+        }
+        //Otherwise redirect them to the timeout page
+        else {
+            res.redirect('/logintimeout');
+            res.end();
+        }
+    });
+});
+
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
@@ -131,7 +160,7 @@ function Template(publicKey) {
     <html>
         <head>
             <link rel="stylesheet" type="text/css" href="style.css">
-            <meta name="author" content="C Ferguson and E Wannemacher">
+            <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -192,6 +221,11 @@ function Template(publicKey) {
                     <button name="changeAdmin" data-choiceId="0" id='changeAdmin' class="not-ready">Change Admin Logon</button>
                 </div>
             </div>
+            <br><br>
+            <div class="button-like">
+                <button id="downloadDatabase" class="ready" onclick="downloadDatabase()">Download database</button>
+                <div id="downloadInner"></div>
+            </div>
 
 
             
@@ -211,6 +245,25 @@ function Template(publicKey) {
 }
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
+function pad(number) {
+    if (number < 10) {
+        return '0' + number;
+    }
+    return number;
+}
 
+Date.prototype.toISONormString = function() {
+    return this.getFullYear() +
+        '-' + pad(this.getMonth() + 1) +
+        '-' + pad(this.getDate()) +
+        '_' + pad(this.getHours()) +
+        '-' + pad(this.getMinutes()) +
+        '-' + pad(this.getSeconds());
+};
 
-
+function sendFileToUser(res,filename,callback) {
+    res.download('./' + filename,`UserActivity_Report_${new Date().toISONormString()}.json`,function(err) {
+        callback(true);
+    });
+    
+}

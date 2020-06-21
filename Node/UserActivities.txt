@@ -1,0 +1,47 @@
+[
+	{
+		"userId": 32,
+		"userName": "Joe Bob",
+		"userEmail": "jbob@mail.com",
+		"userNNumber": "N00192800",
+		"userActivity": []
+	},
+	{
+		"userId": 33,
+		"userName": "Christopher  Ferguson",
+		"userEmail": "email@email.com",
+		"userNNumber": "N00192801",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-06-17T18:38:39.000Z"
+			}
+		]
+	},
+	{
+		"userId": 34,
+		"userName": "Sally Bob",
+		"userEmail": "sbob@gmail.com",
+		"userNNumber": "N13371337",
+		"userActivity": []
+	},
+	{
+		"userId": 35,
+		"userName": "Timmy Scorn",
+		"userEmail": "who@where.party",
+		"userNNumber": "N00234563",
+		"userActivity": []
+	},
+	{
+		"userId": 38,
+		"userName": "Joe Robert",
+		"userEmail": "blue@socks.com",
+		"userNNumber": "N00192802",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-06-17T18:39:55.000Z"
+			}
+		]
+	}
+]

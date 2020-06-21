@@ -1,3 +1,6 @@
+// Copyright 2020
+// Xor Softworks LLC
+
 //**************************************************** IMPORTS **************************************************
 
 //Requires Express Node.js framework
@@ -155,7 +158,7 @@ function Template() {
     <html>
         <head>
             <link rel="stylesheet" type="text/css" href="style.css">
-            <meta name="author" content="C Ferguson and E Wannemacher">
+            <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -196,7 +199,7 @@ function Template() {
             </div>
             <div class="button-like" id="nndiv" style="display:none;">
                 <h2 class="label text-center">Enter your N-number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="10">
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="9">
                 <div id='nnerror'></div>
             </div>
         </main>
