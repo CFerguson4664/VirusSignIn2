@@ -174,8 +174,8 @@ $(document).ready(function ()  {
     
                 //The data to send to the server
                 data: { 
-                    userId : document.getElementById('main').getAttribute("data-UserId"),
-                    email : document.getElementById('email').value,
+                    userId : DOMPurify.sanitize(document.getElementById('main').getAttribute("data-UserId")),
+                    email : DOMPurify.sanitize(document.getElementById('email').value),
                 },
     
                 //The response from the server
@@ -222,8 +222,8 @@ $(document).ready(function ()  {
     
                 //The data to send to the server
                 data: { 
-                    userId : document.getElementById('main').getAttribute("data-UserId"),
-                    nNumber : document.getElementById('nnumber').value
+                    userId : DOMPurify.sanitize(document.getElementById('main').getAttribute("data-UserId")),
+                    nNumber : DOMPurify.sanitize(document.getElementById('nnumber').value)
                 },
     
                 //The response from the server
@@ -283,11 +283,11 @@ $(document).ready(function ()  {
 
             //The data to send to the server
             data: { 
-                userId :document.getElementById('main').getAttribute('data-userId'),
-                fname : document.getElementById('firstname').value,
-                lname : document.getElementById('lastname').value,
-                email : document.getElementById('email').value,
-                nNumber : nNumberVal
+                userId : DOMPurify.sanitize(document.getElementById('main').getAttribute('data-userId')),
+                fname : DOMPurify.sanitize(document.getElementById('firstname').value),
+                lname : DOMPurify.sanitize(document.getElementById('lastname').value),
+                email : DOMPurify.sanitize(document.getElementById('email').value),
+                nNumber : DOMPurify.sanitize(nNumberVal
             },
 
             //The response from the server

@@ -27,6 +27,10 @@ module.exports = router;
 
 //Handles the get request for the starting form of this page
 router.get('/',function(req,res) {
+
+    // helmet makes the page not render html, unless the content type is set
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
@@ -197,6 +201,7 @@ function Template(userHTML) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="security.js"></script>
         </head>
         <header class="bg-dark" >

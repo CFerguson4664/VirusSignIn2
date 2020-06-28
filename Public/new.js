@@ -161,7 +161,7 @@ $(document).ready(function ()  {
     
                 //The data to send to the server
                 data: { 
-                    email : document.getElementById('email').value,
+                    email : DOMPurify.sanitize(document.getElementById('email').value),
                 },
     
                 //The response from the server
@@ -208,7 +208,7 @@ $(document).ready(function ()  {
     
                 //The data to send to the server
                 data: { 
-                    nNumber : document.getElementById('nnumber').value
+                    nNumber : DOMPurify.sanitize(document.getElementById('nnumber').value)
                 },
     
                 //The response from the server
@@ -268,10 +268,10 @@ $(document).ready(function ()  {
 
             //The data to send to the server
             data: { 
-                fname : document.getElementById('firstname').value,
-                lname : document.getElementById('lastname').value,
-                email : document.getElementById('email').value,
-                nNumber : nNumberVal
+                fname : DOMPurify.sanitize(document.getElementById('firstname').value),
+                lname : DOMPurify.sanitize(document.getElementById('lastname').value),
+                email : DOMPurify.sanitize(document.getElementById('email').value),
+                nNumber : DOMPurify.sanitize(nNumberVal)
             },
 
             //The response from the server

@@ -25,6 +25,9 @@ router.get('/', function(req,res) {
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
 
+    // helmet makes the page not render html, unless the content type is set
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+
     getPage(function(HTML) {
         //Send the HTML to the client
         res.write(HTML);
@@ -55,6 +58,7 @@ function Template()
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link rel="stylesheet" type="text/css" href="style.css">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="thankyou.js"></script>
         </head>
         <body>
