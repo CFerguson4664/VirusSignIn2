@@ -277,7 +277,7 @@ function TemplateUpdateNNumber(userId,fName,lName,email,nNumber) {
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+                <img src="companyLogo.png" alt="Xor Via logo">
             </div>
         </header>
         <header class="bg-dark-header">
@@ -303,14 +303,14 @@ function TemplateUpdateNNumber(userId,fName,lName,email,nNumber) {
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Does the user have an N-number?</h2>
+                <h2 class="label text-center">Does the user have an ID Number?</h2>
                 <div class="sidenav-open">
                     <button name="student" onclick="button_click(this)" data-choiceId="1"  id='selected' class="selected">Yes</button>
-                    <button name="student" onclick="button_click(this)" data-choiceId="0">No</button>
+                    <button name="student" onclick="button_click(this)" data-choiceId="0" class="unselected">No</button>
                 </div>
             </div>
             <div class="button-like" id="nndiv">
-                <h2 class="label text-center">Enter the user's N-number</h2>
+                <h2 class="label text-center">Enter the user's ID Number</h2>
                 <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='${nNumber}' maxlength="9" data-initial=${nNumber}>
                 <div id='nnerror'></div>
             </div>
@@ -341,7 +341,7 @@ function TemplateUpdate(userId, fName,lName,email) {
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+                <img src="companyLogo.png" alt="Xor Via logo">
             </div>
         </header>
         <header class="bg-dark-header">
@@ -367,15 +367,15 @@ function TemplateUpdate(userId, fName,lName,email) {
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Does the user have an N-number?</h2>
+                <h2 class="label text-center">Does the user have an ID Number?</h2>
                 <div class="sidenav-open">
-                    <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
+                    <button name="student" onclick="button_click(this)" data-choiceId="1" class="unselected">Yes</button>
                     <button name="student" onclick="button_click(this)" data-choiceId="0" id='selected' class="selected">No</button>
                 </div>
             </div>
             <div class="button-like" id="nndiv" style="display:none;">
-                <h2 class="label text-center">Enter the user's N-number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="9" data-initial='N'>
+                <h2 class="label text-center">Enter the user's ID Number</h2>
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='' maxlength="9" data-initial='N'>
                 <div id='nnerror'></div>
             </div>
         </main>
@@ -405,7 +405,7 @@ function TemplateNewUserNNumber(nNumber) {
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+                <img src="companyLogo.png" alt="Xor Via logo">
             </div>
         </header>
         <header class="bg-dark-header">
@@ -430,14 +430,14 @@ function TemplateNewUserNNumber(nNumber) {
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Does the user have an N-number?</h2>
+                <h2 class="label text-center">Does the user have an ID Number?</h2>
                 <div class="sidenav-open">
                     <button name="student" onclick="button_click(this)" data-choiceId="1" id='selected' class="selected">Yes</button>
-                    <button name="student" onclick="button_click(this)" data-choiceId="0">No</button>
+                    <button name="student" onclick="button_click(this)" data-choiceId="0"class="unselected">No</button>
                 </div>
             </div>
             <div class="button-like" id="nndiv" data-nNumber="${nNumber}">
-                <h2 class="label text-center">Enter the user's N-number</h2>
+                <h2 class="label text-center">Enter the user's ID Number</h2>
                 <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" maxlength="9" value="${nNumber}">
                 <div id='nnerror'></div>
             </div>
@@ -468,7 +468,7 @@ function TemplateNewUser() {
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+                <img src="companyLogo.png" alt="Xor Via logo">
             </div>
         </header>
         <header class="bg-dark-header">
@@ -493,15 +493,15 @@ function TemplateNewUser() {
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Does the user have an N-number?</h2>
+                <h2 class="label text-center">Does the user have an ID Number?</h2>
                 <div class="sidenav-open">
-                    <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
+                    <button name="student" onclick="button_click(this)" data-choiceId="1" class="unselected">Yes</button>
                     <button name="student" onclick="button_click(this)" data-choiceId="0" id='selected' class="selected">No</button>
                 </div>
             </div>
             <div class="button-like" id="nndiv"  style="display:none;" data-nNumber="0">
-                <h2 class="label text-center">Enter the user's N-number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="9">
+                <h2 class="label text-center">Enter the user's ID-Number</h2>
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='' maxlength="9">
                 <div id='nnerror'></div>
             </div>
         </main>

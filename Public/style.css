@@ -3,6 +3,46 @@ Copyright 2020
 Xor Softworks LLC
 */
 
+/* :root {
+    --banner-color: #03396c;
+    --bg-dark-color: #696969;
+    --bg-dark-color: #011f4b;
+    --bg-dark-header-color: #696969;
+    --bg-light-color: #e4e4e4;
+    --button-color1: #969696;
+    --text-color1: #000000;
+    --button-color-ready: #e4e4e4;
+    --text-color-ready: #000000;
+    --button-color-select: #b3cde0;
+    --text-color-select: #000000;
+    --admin-div-color: #011f4b;
+    --admin-text-color: #ffffff;
+    --text-box-color: #e4e4e4;
+    --text-box-text: #000000;
+    --img-width: 100%;
+} */
+
+:root {
+    --banner-color: #000000;
+    --bg-dark-color: #121212;
+    --bg-dark-header-color: #696969;
+    --bg-light-color: #e4e4e4;
+    --button-color1: #0b2c5e;
+    --text-color1: #ffffff;
+    --button-color-ready: #e4e4e4;
+    --text-color-ready: #000000;
+    --button-color-select: #0b2c5e;
+    --text-color-select: #ffffff;
+    --button-color-unselect: #b3b3b3;
+    --text-color-unselect: #000000;
+    --admin-div-color: #7e7e7e;
+    --admin-text-color: #ffffff;
+    --text-box-color: #000000;
+    --text-box-text: #ffffff;
+    --welcome-text-color: #011f4b;
+    --img-width: 100%;
+}
+
 
 * {
     box-sizing:border-box;
@@ -39,7 +79,7 @@ h2.red {
 }
 
 h2.white {
-    color:white;
+    color: var(--text-color1);
 }
 
 h2.label {
@@ -62,7 +102,7 @@ input.text {
     margin:auto;
     margin-top:25px;
     background-color:#121212;
-    color:white;
+    color:var(--text-box-text);
     border-radius:25px;
     padding:10px;
     padding-left: 25px;
@@ -70,14 +110,14 @@ input.text {
 
 input.text2 {
     font-size:1.25em;
-    border:2px solid #121212;
+    border:2px solid black;
     width:95%;
     max-width:600px;
     display:block;
     margin:auto;
     margin-top:5px;
-    background-color:#121212;
-    color:white;
+    background-color: var(--text-box-color);
+    color:var(--text-box-text);
     border-radius:25px;
     padding:10px;
     padding-left: 25px;
@@ -93,8 +133,8 @@ button {
     margin:auto;
     margin-top:10px;
     margin-bottom:10px;
-    background-color:#1d3532;
-    color:white;
+    background-color: var(--button-color1);
+    color:var(--text-color1);
     border-radius:25px;
     padding:10px;
 }
@@ -129,8 +169,8 @@ button.small-text {
     margin:auto;
     margin-top:10px;
     margin-bottom:10px;
-    background-color:#1d3532;
-    color:white;
+    background-color:var(--button-color1);
+    color:var(--primary-text-color);
     border-radius:25px;
     padding:10px;
 }
@@ -145,8 +185,8 @@ button.small-text-selected {
     margin:auto;
     margin-top:10px;
     margin-bottom:10px;
-    background-color:#f9d72d;
-    color:#121212;
+    background-color:var(--button-color-select);
+    color:var(--text-color-select);
     border-radius:25px;
     padding:10px;
 }
@@ -158,17 +198,22 @@ button.not-ready {
 }
 
 button.ready {
-    background-color:#e4e4e4;
-    color:#121212;
+    background-color:var(--button-color-ready);
+    color:var(--text-color-ready);
 }
 
 button.selected {
-    background-color:#f9d72d;
-    color:#121212;
+    background-color:var(--button-color-select);
+    color:var(--text-color-select);
+}
+
+button.unselected {
+    background-color:var(--button-color-unselect);
+    color:var(--text-color-unselect);
 }
 
 .bg-dark {
-    background-color: #121212;
+    background-color: var(--bg-dark-color);
     color: white;
 }
 
@@ -177,27 +222,27 @@ button.selected {
     position: sticky;
     bottom: 0px;
     padding: 5px;
-    background-color: #696969;
+    background-color: var(--bg-dark-color);
     color: white;
 }
 
 .bg-dark-float-off {
     position: static;
     padding: 5px;
-    background-color: #696969;
+    background-color: var(--bg-dark-header-color);
     color: white;
 }
 
 .bg-dark-header {
     position: static;
     padding: 5px;
-    background-color: #696969;
+    background-color: var(--bg-dark-header-color);
     color: white;
 }
 
 .bg-light {
-    background-color: #e4e4e4;
-    color: #1d3532;
+    background-color: var(--bg-light-color);
+    color: var(--welcome-text-color);
 }
 
 .button-like {
@@ -207,8 +252,8 @@ button.selected {
     margin:auto;
     margin-top:10px;
     margin-bottom:10px;
-    background-color:#1d3532;
-    color:white;
+    background-color:var(--button-color1);
+    color:var(--text-color1);
     border-radius:25px;
     padding:10px;
 }
@@ -220,8 +265,8 @@ button.selected {
     margin:auto;
     margin-top:10px;
     margin-bottom:10px;
-    background-color:#7e7e7e;
-    color:white;
+    background-color:var(--admin-div-color);
+    color:var(--admin-text-color);
     border-radius:25px;
     padding:10px;
 }
@@ -233,7 +278,7 @@ button.selected {
 }
 
 img {
-    width:100%;
+    width:var(--img-width);
 }
 
 #social-icons {

@@ -24,7 +24,7 @@ function button_click(sender) {
     // for every button in the name group
     for (var i = 0; i < buttons.length; i++) {
         // clear the css and ids
-        buttons[i].className = "";
+        buttons[i].className = "unselected";
     }
 
     // set the css for the clicked button

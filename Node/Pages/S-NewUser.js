@@ -170,14 +170,13 @@ function Template() {
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+                <img src="companyLogo.png" alt="Xor Via logo">
             </div>
         </header>
         <header class="bg-dark-header">
             <button id="back" class="ready">Previous page</button>
         </header>
         <main class="bg-light">
-
             <div class="button-like">
                 <h2 class="label text-center">Enter your first name</h2>
                 <input type="text" name="firstname" id="firstname" autocomplete="off" class="text2" maxlength="50">
@@ -195,15 +194,15 @@ function Template() {
                 <div id='emailerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Do you have an N-number?</h2>
+                <h2 class="label text-center">Do you have an ID Number?</h2>
                 <div class="sidenav-open">
-                    <button name="student" onclick="button_click(this)" data-choiceId="1">Yes</button>
+                    <button name="student" onclick="button_click(this)" data-choiceId="1" class="unselected">Yes</button>
                     <button name="student" onclick="button_click(this)" data-choiceId="0" id='selected' class="selected">No</button>
                 </div>
             </div>
             <div class="button-like" id="nndiv" style="display:none;">
-                <h2 class="label text-center">Enter your N-number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='N' maxlength="9">
+                <h2 class="label text-center">Enter your ID Number</h2>
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='' maxlength="9">
                 <div id='nnerror'></div>
             </div>
         </main>

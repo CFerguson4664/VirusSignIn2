@@ -50,10 +50,11 @@ function checkNNumber() {
         nnumber = document.getElementById('nnumber').value;
 
         // set up regex to test if nnumber is valid
-        var regEx = new RegExp('^[N,n][0-9]{8}$');
+        // var regEx = new RegExp('^[N,n][0-9]{8}$');
 
         // test nNumber and return result
-        return regEx.test(nnumber);
+        // return regEx.test(nnumber);
+        return nnumber != '';
     }
     else
     {
@@ -124,7 +125,7 @@ function reset_button_click(sender,type) {
         document.getElementById('emailerror').innerHTML = '';
     }
     else {
-        document.getElementById('nnumber').value = 'N';
+        document.getElementById('nnumber').value = '';
         document.getElementById('nnumber').focus();
         document.getElementById('nnerror').innerHTML = '';
     }
@@ -192,7 +193,7 @@ $(document).ready(function ()  {
 
     $('#nnumber').on('input',function(event) {
         if($('#nnumber').val() == '') {
-            document.getElementById('nnumber').value = 'N'
+            document.getElementById('nnumber').value = ''
         }
         if(!checkNNumber())
         {
