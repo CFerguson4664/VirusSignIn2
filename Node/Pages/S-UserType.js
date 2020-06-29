@@ -33,6 +33,9 @@ router.get('/', function(req,res) {
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
 
+    // helmet makes the page not render html, unless the content type is set
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+
     //Get a new session id to represent this client
     createSession(function(sessionId) {
         //Get the starting form of the webpage
@@ -89,6 +92,7 @@ function Template() {
             <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="usertype.js"></script>
             <title>NSCC Sign In</title>
         </head>

@@ -35,6 +35,9 @@ router.get('/', function(req,res) {
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
 
+    // helmet makes the page not render html, unless the content type is set
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl2;
 
@@ -269,6 +272,7 @@ function TemplateUpdateNNumber(userId,fName,lName,email,nNumber) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="securityupdateuser.js"></script>
         </head>
         <header class="bg-dark">
@@ -332,6 +336,7 @@ function TemplateUpdate(userId, fName,lName,email) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="securityupdateuser.js"></script>
         </head>
         <header class="bg-dark">
@@ -395,6 +400,7 @@ function TemplateNewUserNNumber(nNumber) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="securitynewuser.js"></script>
         </head>
         <header class="bg-dark">
@@ -457,6 +463,7 @@ function TemplateNewUser() {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>NSCC Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="securitynewuser.js"></script>
         </head>
         <header class="bg-dark">

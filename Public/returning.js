@@ -68,7 +68,7 @@ $(document).ready(function () {
                 url: '/returning/names',
                 dataType: 'html',
                 data: {
-                    name: data
+                    name: DOMPurify.sanitize(data)
                 },
                 success: function (result) {
                     if (result == '/timeout') {
@@ -102,7 +102,7 @@ $(document).ready(function () {
                 url: '/returning/names',
                 dataType: 'html',
                 data: {
-                    name: document.getElementById('nameText').value
+                    name: DOMPurify.sanitize(document.getElementById('nameText').value)
                 },
                 success: function (result) {
                     if (result == '/timeout') {
@@ -135,7 +135,7 @@ $(document).ready(function () {
 
             //The data to send to the server
             data: { 
-                userId : document.getElementById('nameText').name
+                userId : DOMPurify.sanitize(document.getElementById('nameText').name)
             },
 
             //The response from the server

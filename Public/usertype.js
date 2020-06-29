@@ -33,7 +33,7 @@ $(document).ready(function () {
 
             //The data to send to the server
             data: { 
-                response: checkRadio.value
+                response: DOMPurify.sanitize(checkRadio.value)
             },
 
             //The response from the server

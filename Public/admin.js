@@ -104,7 +104,7 @@ $(document).ready(function ()  {
 
             //The data to send to the server
             data: { 
-                data : message
+                data : DOMPurify.sanitize(message)
             },
 
             //The response from the server
@@ -148,7 +148,7 @@ $(document).ready(function ()  {
 
             //The data to send to the server
             data: { 
-                data : message
+                data : DOMPurify.sanitize(message)
             },
 
             //The response from the server
