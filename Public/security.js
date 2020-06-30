@@ -284,6 +284,17 @@ $(document).ready(function ()  {
         event.preventDefault();
         input_to_textBox();
     });
+
+    $('input').on('input', function() {
+        var c = this.selectionStart,
+            r = /[^a-z0-9@.-]/gi,
+            v = $(this).val();
+        if(r.test(v)) {
+            $(this).val(v.replace(r, ''));
+            c--;
+        }
+        this.setSelectionRange(c, c);
+    });
 });
 
 window.onload = setInterval(function() {

@@ -4,7 +4,7 @@
 
     "database_host"         :"localhost",
     "database_user"         :"root",
-    "database_password"     :"Password01",
+    "database_password"     :"",
     "database_name"         :"virussignin2",
 
     "key_path"              :"../bin/key.pem",
