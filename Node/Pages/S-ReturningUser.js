@@ -174,7 +174,7 @@ function Template(nameHTML) {
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+                <img src="companyLogo.png" alt="Xor Via logo">
             </div>
         </header>
         <header class="bg-dark-header">

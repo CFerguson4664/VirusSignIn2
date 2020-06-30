@@ -206,7 +206,7 @@ function Template(userHTML) {
         </head>
         <header class="bg-dark" >
             <div class="logo">
-                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+                <img src="companyLogo.png" alt="Xor Via logo">
             </div>
         </header>
         <header class="bg-dark-header" id="header">
@@ -216,7 +216,7 @@ function Template(userHTML) {
         <main class="bg-light">
             <div id="users">${userHTML}</div>
         </main>
-        <input type="text" id="nNumber" placeholder="Input N-number here:">
+        <input type="text" id="nNumber" placeholder="Input ID Number here:">
 
         <footer class="bg-dark-float-off" id="subFoot">
                     
@@ -509,7 +509,7 @@ function genUserBufferInnerHTML(data) {
                 <h2 class="label text-center">Visitor allowed entry?</h2>
                 <div class="sidenav-open">
                     <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Yes</button>
-                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="">No</button>
+                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="unselected">No</button>
                 </div>
                 <button id="submit-userId-${data[i][0]}" onclick="submit_button_click(this)" class="ready">Submit</button>
             </div>`;
@@ -520,14 +520,14 @@ function genUserBufferInnerHTML(data) {
                 </div>
                 <div class="sidenav-open">
                     <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Override and allow</button>
-                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="">Dismiss</button>
+                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="unselected">Dismiss</button>
                 </div>
                 <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Submit</button>
             </div>`;
         var unknownHTML = `<div class="button-like">
                 <h2 class="label text-center">Visitor allowed entry?</h2>
                 <div class="sidenav-open">
-                    <button name="allowed-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Visitor does not have an account. <br> They need to create an account using the QR code.<br> Or click the button above to create it here.</button>
+                    <button name="allowed-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="unselected">Visitor does not have an account. <br> They need to create an account using the QR code.<br> Or click the button above to create it here.</button>
                 </div>
                 <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Ok</button>
             </div>`;

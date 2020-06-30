@@ -50,10 +50,11 @@ function checkNNumber() {
         nnumber = document.getElementById('nnumber').value;
 
         // set up regex to test if nnumber is valid
-        var regEx = new RegExp('^[N,n][0-9]{8}$');
+        // var regEx = new RegExp('^[N,n][0-9]{8}$');
 
         // test nNumber and return result
-        return regEx.test(nnumber);
+        // return regEx.test(nnumber);
+        return nnumber != '';
     }
     else
     {
@@ -78,7 +79,7 @@ function button_click(sender)
     for (var i = 0; i < buttons.length; i++)
     {
         // reset the css formatting and change id (essentially resets buttons)
-        buttons[i].className = "";
+        buttons[i].className = "unselected";
         buttons[i].id = "";
 
         // if this is the button that was clicked
@@ -124,7 +125,7 @@ function reset_button_click(sender,type) {
         document.getElementById('emailerror').innerHTML = '';
     }
     else {
-        document.getElementById('nnumber').value = 'N';
+        document.getElementById('nnumber').value = '';
         document.getElementById('nnumber').focus();
         document.getElementById('nnerror').innerHTML = '';
     }
@@ -191,11 +192,11 @@ $(document).ready(function ()  {
 
     $('#nnumber').on('input',function(event) {
         if($('#nnumber').val() == '') {
-            document.getElementById('nnumber').value = 'N'
+            document.getElementById('nnumber').value = '';
         }
         if(!checkNNumber())
         {
-            document.getElementById('nnerror').innerHTML = `<h2 class="red text-center">This N-number is invalid</h2>`;
+            document.getElementById('nnerror').innerHTML = `<h2 class="red text-center">This ID is invalid</h2>`;
             checkAll()
         }
         else

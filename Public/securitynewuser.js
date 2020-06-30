@@ -50,10 +50,11 @@ function checkNNumber() {
         nnumber = document.getElementById('nnumber').value;
 
         // set up regex to test if nnumber is valid
-        var regEx = new RegExp('^[N,n][0-9]{8}$');
+        // var regEx = new RegExp('^[N,n][0-9]{8}$');
 
         // test nNumber and return result
-        return regEx.test(nnumber);
+        // return regEx.test(nnumber);
+        return nnumber != '';
     }
     else
     {
@@ -78,7 +79,7 @@ function button_click(sender)
     for (var i = 0; i < buttons.length; i++)
     {
         // reset the css formatting and change id (essentially resets buttons)
-        buttons[i].className = "";
+        buttons[i].className = "unselected";
         buttons[i].id = "";
 
         // if this is the button that was clicked
@@ -124,7 +125,7 @@ function reset_button_click(sender,type) {
         document.getElementById('emailerror').innerHTML = '';
     }
     else {
-        document.getElementById('nnumber').value = 'N';
+        document.getElementById('nnumber').value = '';
         document.getElementById('nnumber').focus();
         document.getElementById('nnerror').innerHTML = '';
     }
@@ -162,7 +163,7 @@ $(document).ready(function ()  {
                 //The data to send to the server
                 data: { 
                     userId : DOMPurify.sanitize(document.getElementById('main').getAttribute("data-UserId")),
-                    email : DOMPurify.sanitize(document.getElementById('email')).value,
+                    email : DOMPurify.sanitize(document.getElementById('email').value),
                 },
     
                 //The response from the server
@@ -192,7 +193,7 @@ $(document).ready(function ()  {
 
     $('#nnumber').on('input',function(event) {
         if($('#nnumber').val() == '') {
-            document.getElementById('nnumber').value = 'N'
+            document.getElementById('nnumber').value = ''
         }
         if(!checkNNumber())
         {

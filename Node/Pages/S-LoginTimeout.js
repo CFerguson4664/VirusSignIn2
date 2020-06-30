@@ -63,7 +63,7 @@ function Template()
         <body>
             <header class="bg-dark">
                 <div class="logo">
-                    <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+                    img src="companyLogo.png" alt="Xor Via logo">
                 </div>
             </header>
             <main class="bg-light">
