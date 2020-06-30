@@ -216,7 +216,7 @@ function Template(userHTML) {
         <main class="bg-light">
             <div id="users">${userHTML}</div>
         </main>
-        <input type="text" id="nNumber" placeholder="Input N-number here:">
+        <input type="text" id="nNumber" placeholder="Input ID Number here:">
 
         <footer class="bg-dark-float-off" id="subFoot">
                     

@@ -79,7 +79,7 @@ function button_click(sender)
     for (var i = 0; i < buttons.length; i++)
     {
         // reset the css formatting and change id (essentially resets buttons)
-        buttons[i].className = "";
+        buttons[i].className = "unselected";
         buttons[i].id = "";
 
         // if this is the button that was clicked
@@ -163,7 +163,7 @@ $(document).ready(function ()  {
                 //The data to send to the server
                 data: { 
                     userId : DOMPurify.sanitize(document.getElementById('main').getAttribute("data-UserId")),
-                    email : DOMPurify.sanitize(document.getElementById('email')).value,
+                    email : DOMPurify.sanitize(document.getElementById('email').value),
                 },
     
                 //The response from the server
