@@ -25,7 +25,7 @@ var serverKeyLifetime = 24 * 60; //In minutes
 function getKeys(callback) {
     //table, columns, params, operators, values, extraSQL, callback
 
-    var table = 'encryptionKeys';
+    var table = 'encryptionkeys';
     var columns = [`publicKey`,`privateKey`,`age`];
     var params = [];
     var operators = [];
@@ -51,21 +51,21 @@ exports.getPublicKey = function(callback) {
 }
 
 exports.init = function(callback) {
-    var table = 'encryptionKeys';
+    var table = 'encryptionkeys';
     var params = [];
     var values = [];
 
     SQL.delete(table,params,values, function(err,done) {
         var keys = sodium.crypto_box_keypair();
     
-        var table = 'encryptionKeys';
+        var table = 'encryptionkeys';
         var columns = ['publicKey','privateKey','age'];
         var values = [`'${keys.publicKey}'`,`'${keys.privateKey}'`,`2`];
 
         SQL.insert(table,columns,values, function(err,done) {
             var keys = sodium.crypto_box_keypair();
     
-            var table = 'encryptionKeys';
+            var table = 'encryptionkeys';
             var columns = ['publicKey','privateKey','age'];
             var values = [`'${keys.publicKey}'`,`'${keys.privateKey}'`,`1`];
 
@@ -145,12 +145,12 @@ exports.encodeResponse = function(newMessage, oldMessage, callback)
 }
 
 setInterval(function() {
-    var table = 'encryptionKeys';
+    var table = 'encryptionkeys';
     var params = ['age'];
     var values = ['2'];
 
     SQL.delete(table,params,values, function(err,done) {
-        var table = 'encryptionKeys';
+        var table = 'encryptionkeys';
         var columns = ['age'];
         var colValues = ['2'];
         var params = ['age'];
@@ -159,7 +159,7 @@ setInterval(function() {
         SQL.update(table,columns,colValues,params,parValues, function(err,done) {
             var keys = sodium.crypto_box_keypair();
     
-            var table = 'encryptionKeys';
+            var table = 'encryptionkeys';
             var columns = ['publicKey','privateKey','age'];
             var values = [`'${keys.publicKey}'`,`'${keys.privateKey}'`,`1`];
     
