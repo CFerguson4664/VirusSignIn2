@@ -52,7 +52,7 @@ function Template()
     <!DOCTYPE html>
     <html>
         <head>
-            <title>NSCC Sign In</title>
+            <title>Via Sign In</title>
             <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link rel="stylesheet" type="text/css" href="style.css">
@@ -63,7 +63,7 @@ function Template()
         <body>
             <header class="bg-dark">
                 <div class="logo">
-                    img src="companyLogo.png" alt="Xor Via logo">
+                    <img src="companyLogo.png" alt="Xor Via logo">
                 </div>
             </header>
             <main class="bg-light">

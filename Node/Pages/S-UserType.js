@@ -94,7 +94,7 @@ function Template() {
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="usertype.js"></script>
-            <title>NSCC Sign In</title>
+            <title>Via Sign In</title>
         </head>
         <header class="bg-dark">
             <div class="logo">

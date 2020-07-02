@@ -15,6 +15,9 @@ const express = require('express');
 //Requires the TimeUtils utility
 const time = require('../Utils/TimeUtils');
 
+
+//const axios = require('axios')
+
 //***************************************************** SETUP ***************************************************
 
 //router to handle moving the get/post requests around
@@ -122,6 +125,7 @@ router.post('/submit',function(req,res) {
     sessionMan.sessionIdValid(cookie, 2, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+
             // add the user data to useractivity
             addUserActivity(req.body.userId, req.body.allowed, function(success1) {
                 // remove user from buffer
@@ -153,6 +157,7 @@ router.post('/deny',function(req,res) {
     sessionMan.sessionIdValid(cookie, 2, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+
             // remove user from buffer
             deleteUserFromBuffer(req.body.userId, function(success2) {
                 // update the buffer
@@ -199,7 +204,7 @@ function Template(userHTML) {
             <link rel="stylesheet" type="text/css" href="style.css">
             <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>NSCC Sign In</title>
+            <title>Via Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="security.js"></script>
@@ -216,7 +221,7 @@ function Template(userHTML) {
         <main class="bg-light">
             <div id="users">${userHTML}</div>
         </main>
-        <input type="text" id="nNumber" placeholder="Input ID Number here:">
+        <input type="text" id="nNumber" placeholder="Input N-number here:">
 
         <footer class="bg-dark-float-off" id="subFoot">
                     
@@ -231,6 +236,16 @@ function Template(userHTML) {
 }
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
+
+//Get Request for NSCC API integration
+// const getNSCC = async () => {
+//     try {
+//         return await axios.get('http://127.0.0.1:31415/api/signin?NNUM=N00000000&OFFICE=REG')
+//     } catch (error) {
+//         console.error(error)
+//     }
+// }
+
 
 // function to add user to buffer based on nNumber
 function addUserToBufferNNumber(nNumber,callback) {
@@ -509,7 +524,7 @@ function genUserBufferInnerHTML(data) {
                 <h2 class="label text-center">Visitor allowed entry?</h2>
                 <div class="sidenav-open">
                     <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Yes</button>
-                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="unselected">No</button>
+                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="">No</button>
                 </div>
                 <button id="submit-userId-${data[i][0]}" onclick="submit_button_click(this)" class="ready">Submit</button>
             </div>`;
@@ -520,14 +535,14 @@ function genUserBufferInnerHTML(data) {
                 </div>
                 <div class="sidenav-open">
                     <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Override and allow</button>
-                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="unselected">Dismiss</button>
+                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="">Dismiss</button>
                 </div>
                 <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Submit</button>
             </div>`;
         var unknownHTML = `<div class="button-like">
                 <h2 class="label text-center">Visitor allowed entry?</h2>
                 <div class="sidenav-open">
-                    <button name="allowed-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="unselected">Visitor does not have an account. <br> They need to create an account using the QR code.<br> Or click the button above to create it here.</button>
+                    <button name="allowed-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Visitor does not have an account. <br> They need to create an account using the QR code.<br> Or click the button above to create it here.</button>
                 </div>
                 <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Ok</button>
             </div>`;

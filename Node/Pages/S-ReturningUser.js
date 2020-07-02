@@ -170,7 +170,7 @@ function Template(nameHTML) {
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="returning.js"></script>
-            <title>NSCC Sign In</title>
+            <title>Via Sign In</title>
         </head>
         <header class="bg-dark">
             <div class="logo">
@@ -212,11 +212,11 @@ function TemplatePrefilled(fName, lName, userId, nameHTML) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script src="returning.js"></script>
-            <title>NSCC Sign In</title>
+            <title>Via Sign In</title>
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="nscc-logo-white-gold.png" alt="Northwest State Community College logo">
+                <img src="companyLogo.png" alt="Xor Via logo">
             </div>
         </header>
         <header class="bg-dark-header">
