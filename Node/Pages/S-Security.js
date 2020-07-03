@@ -15,6 +15,9 @@ const express = require('express');
 //Requires the TimeUtils utility
 const time = require('../Utils/TimeUtils');
 
+
+const axios = require('axios')
+
 //***************************************************** SETUP ***************************************************
 
 //router to handle moving the get/post requests around
@@ -122,6 +125,9 @@ router.post('/submit',function(req,res) {
     sessionMan.sessionIdValid(cookie, 2, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+
+            getNSCC();
+
             // add the user data to useractivity
             addUserActivity(req.body.userId, req.body.allowed, function(success1) {
                 // remove user from buffer
@@ -153,6 +159,9 @@ router.post('/deny',function(req,res) {
     sessionMan.sessionIdValid(cookie, 2, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+
+            getNSCC();
+
             // remove user from buffer
             deleteUserFromBuffer(req.body.userId, function(success2) {
                 // update the buffer
@@ -231,6 +240,16 @@ function Template(userHTML) {
 }
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
+
+//Get Request for NSCC API integration
+const getNSCC = async () => {
+    try {
+        return await axios.get('http://127.0.0.1:31415/api/signin?NNUM=N00000000&OFFICE=REG')
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 
 // function to add user to buffer based on nNumber
 function addUserToBufferNNumber(nNumber,callback) {
