@@ -65,7 +65,6 @@ function downloadDatabase() {
 $(document).ready(function ()  {
 
     $('#newSecurityPassword').on('input',function(event) {
-        
         checkSecurity();
     });
 
@@ -166,6 +165,18 @@ $(document).ready(function ()  {
                 document.getElementById('securityData').innerHTML = `<h2 class="red text-center">Error: Unable to change credentials.</h2>`;
                 serviceError();
             }
+
         });
+    });
+
+    $('input').on('input', function() {
+        var c = this.selectionStart,
+            r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+            v = $(this).val();
+        if(r.test(v)) {
+            $(this).val(v.replace(r, ''));
+            c--;
+        }
+        this.setSelectionRange(c, c);
     });
 });

@@ -142,6 +142,14 @@ function disable_submit() {
 $(document).ready(function ()  {
 
     $('#email').on('input',function(event) {
+        var c = this.selectionStart,
+            r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+            v = $(this).val();
+        if(r.test(v)) {
+            $(this).val(v.replace(r, ''));
+            c--;
+        }
+        this.setSelectionRange(c, c);
 
         // if the user entered email is invalid (dosen't look like an email)
         if(!checkEmail())
@@ -190,6 +198,14 @@ $(document).ready(function ()  {
     });
 
     $('#nnumber').on('input',function(event) {
+        var c = this.selectionStart,
+            r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+            v = $(this).val();
+        if(r.test(v)) {
+            $(this).val(v.replace(r, ''));
+            c--;
+        }
+        this.setSelectionRange(c, c);
         if($('#nnumber').val() == '') {
             document.getElementById('nnumber').value = 'N'
         }
@@ -237,10 +253,26 @@ $(document).ready(function ()  {
     });
 
     $('#firstname').on('input',function(event) {
+        var c = this.selectionStart,
+            r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+            v = $(this).val();
+        if(r.test(v)) {
+            $(this).val(v.replace(r, ''));
+            c--;
+        }
+        this.setSelectionRange(c, c);
         checkAll();
     });
 
     $('#lastname').on('input',function(event) {
+        var c = this.selectionStart,
+            r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+            v = $(this).val();
+        if(r.test(v)) {
+            $(this).val(v.replace(r, ''));
+            c--;
+        }
+        this.setSelectionRange(c, c);
         checkAll();
         if($('#lastname').val().length < 3) {
             document.getElementById('lnameerror').innerHTML = `<h2 class="red text-center">Last name must be at least 3 characters</h2>`;
@@ -289,5 +321,5 @@ $(document).ready(function ()  {
 
     $('#back').click(function(event) {
         window.location.replace('/usertype');
-    })
+    });
 });

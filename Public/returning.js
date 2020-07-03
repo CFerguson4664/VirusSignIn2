@@ -44,6 +44,17 @@ function disable_submit() {
 
 }
 
+function replaceSpecial(text) {
+    var c = text.selectionStart,
+            r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+            v = text;
+        if(r.test(v)) {
+            $(this).val(v.replace(r, ''));
+            c--;
+        }
+        this.setSelectionRange(c, c);
+}
+
 //Called when the backspace button is pressed. Handles seaching when backspace key is pressed because
 //pressing backspace doesn't call the keypress event the other handler is looking for
 $(document).ready(function () {
@@ -60,6 +71,15 @@ $(document).ready(function () {
         var data = document.getElementById('nameText').value;
         document.getElementById("submit-event").className = "not-ready";
         document.getElementById("subFoot").className = "bg-dark-float-off";
+
+        var c = this.selectionStart,
+            r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+            v = $(this).val();
+        if(r.test(v)) {
+            $(this).val(v.replace(r, ''));
+            c--;
+        }
+        this.setSelectionRange(c, c);
 
         if(data.length >= 3){
             $.ajax({
@@ -94,6 +114,15 @@ $(document).ready(function () {
 
         document.getElementById("submit-event").className = "not-ready";
         document.getElementById("subFoot").className = "bg-dark-float-off";
+
+        var c = this.selectionStart,
+            r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+            v = $(this).val();
+        if(r.test(v)) {
+            $(this).val(v.replace(r, ''));
+            c--;
+        }
+        this.setSelectionRange(c, c);
         
         if(document.getElementById('nameText').value.length >= 3) {
             $.ajax({

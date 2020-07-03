@@ -50,5 +50,5 @@ $(document).ready(function () {
 
     $('#back').click(function(event) {
         window.location.replace('/welcome');
-    })
+    });
 });

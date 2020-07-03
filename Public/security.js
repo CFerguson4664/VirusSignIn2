@@ -174,6 +174,14 @@ function input_to_textBox() {
     if (checkNNumberLength()) {
 
         var n = document.getElementById('nNumber').value;
+        var c = document.getElementById('nNumber').selectionStart,
+            r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+            v = $(document.getElementById('nNumber')).val();
+        if(r.test(v)) {
+            $(document.getElementById('nNumber')).val(v.replace(r, ''));
+            c--;
+        }
+        document.getElementById('nNumber').setSelectionRange(c, c);
 
         // post to server the nnumber and clear the box
         $.ajax({
@@ -313,7 +321,17 @@ $(document).ready(function ()  {
             document.getElementById('nNumber').value = text.substring(0,text.length-1);
         }
         else if (event.key.length == 1){
+            
             document.getElementById('nNumber').value += event.key;
+            var n = document.getElementById('nNumber').value;
+            var c = document.getElementById('nNumber').selectionStart,
+                r = /[^a-z0-9\@\.\-\!\#\%\(\)]/gi,
+                v = $(document.getElementById('nNumber')).val();
+            if(r.test(v)) {
+                $(document.getElementById('nNumber')).val(v.replace(r, ''));
+                c--;
+        }
+        document.getElementById('nNumber').setSelectionRange(c, c);
             
         }
         event.preventDefault();
