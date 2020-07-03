@@ -66,8 +66,6 @@ function submit_button_click(sender) {
 
     var officeChoice = 0;
     var buttons2 = document.getElementsByName('office-userId-'+userId);
-    console.log(buttons2)
-    console.log('office-userId-'+userId)
 
     for (let i = 0; i < buttons2.length; i++) {
         if (buttons2[i].className == "selected") {
@@ -129,8 +127,6 @@ function deny_button_click(sender) {
 
     var officeChoice = 0;
     var buttons2 = document.getElementsByName('office-'+userId);
-    console.log(buttons2)
-    console.log('office-'+userId)
 
     for (let i = 0; i < buttons2.length; i++) {
         if (buttons2[i].className == "selected") {

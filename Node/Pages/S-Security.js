@@ -125,24 +125,13 @@ router.post('/submit',function(req,res) {
     sessionMan.sessionIdValid(cookie, 2, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            console.log('Normal Path');
-            console.log('Values:');
-            console.log(`User ID: ${req.body.userId}`);
-            console.log(`Allowed: ${req.body.allowed}`);
-            console.log(`Office : ${req.body.office}`);
-            
-            //getNSCC();
 
             if(req.body.allowed == 1) {
-                console.log('User was allowed entry');
-                console.log('contact API');
                 getUserInfo(req.body.userId, function(data) {
                     callAPI(req.body.office, data[0], data[1], data[2], function(done) {
-                        console.log('API called')
                     })
                 })
             }
-            console.log();
 
             // add the user data to useractivity
             addUserActivity(req.body.userId, req.body.allowed, function(success1) {
@@ -175,28 +164,19 @@ router.post('/deny',function(req,res) {
     sessionMan.sessionIdValid(cookie, 2, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            console.log('Deny Path');
-            console.log('Values:');
-            console.log(`User ID: ${req.body.userId}`);
-            console.log(`Allowed: ${req.body.allowed}`);
-            console.log(`Office : ${req.body.office}`);
 
             //IF the userId is not an nnumber (The request didnt come from a randomly entered nnumber)
             if(req.body.userId[0] != 'N') {
-                console.log('Deny with userID');
-
+                //If the user was allowed to enter we need to call the nscc API
                 if(req.body.allowed == 1) {
-                    console.log('User was allowed entry');
-                    console.log('contact API');
+                    //Get the users information from their userId
                     getUserInfo(req.body.userId, function(data) {
+                        //Call the NSCC API
                         callAPI(req.body.office, data[0], data[1], data[2], function(done) {
-                            console.log('API called')
                         })
                     })
                 }
             }
-            console.log();
-            //getNSCC();
 
             // remove user from buffer
             deleteUserFromBuffer(req.body.userId, function(success2) {
@@ -280,7 +260,7 @@ function Template(userHTML) {
 //Get Request for NSCC API integration
 var getNSCCNNumber = async (nNumber,office) => {
     try {
-        return await axios.get(`http://127.0.0.1:31415/api/signin?NNUM=${nNumber}&OFFICE=${office}`)
+        return await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin??NNUM=${nNumber}&OFFICE=${office}`)
     } catch (error) {
         console.error(error)
     }
@@ -288,7 +268,7 @@ var getNSCCNNumber = async (nNumber,office) => {
 
 var getNSCCName = async (fname,lname,office) => {
     try {
-        return await axios.get(`http://127.0.0.1:31415/api/signin?GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`)
+        return await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin??GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`)
     } catch (error) {
         console.error(error)
     }
@@ -729,8 +709,6 @@ function getUserInfo(userId, callback) {
             res[0][0] == 0;
         }
 
-        console.log(err);
-        console.log(`UserID of ${userId} resolved to NNumber of ${res[0][0]}`)
         callback(res[0]);
     })
 }
