@@ -125,8 +125,24 @@ router.post('/submit',function(req,res) {
     sessionMan.sessionIdValid(cookie, 2, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+            console.log('Normal Path');
+            console.log('Values:');
+            console.log(`User ID: ${req.body.userId}`);
+            console.log(`Allowed: ${req.body.allowed}`);
+            console.log(`Office : ${req.body.office}`);
+            
+            //getNSCC();
 
-            getNSCC();
+            if(req.body.allowed == 1) {
+                console.log('User was allowed entry');
+                console.log('contact API');
+                getUserInfo(req.body.userId, function(data) {
+                    callAPI(req.body.office, data[0], data[1], data[2], function(done) {
+                        console.log('API called')
+                    })
+                })
+            }
+            console.log();
 
             // add the user data to useractivity
             addUserActivity(req.body.userId, req.body.allowed, function(success1) {
@@ -159,8 +175,28 @@ router.post('/deny',function(req,res) {
     sessionMan.sessionIdValid(cookie, 2, function(valid) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+            console.log('Deny Path');
+            console.log('Values:');
+            console.log(`User ID: ${req.body.userId}`);
+            console.log(`Allowed: ${req.body.allowed}`);
+            console.log(`Office : ${req.body.office}`);
 
-            getNSCC();
+            //IF the userId is not an nnumber (The request didnt come from a randomly entered nnumber)
+            if(req.body.userId[0] != 'N') {
+                console.log('Deny with userID');
+
+                if(req.body.allowed == 1) {
+                    console.log('User was allowed entry');
+                    console.log('contact API');
+                    getUserInfo(req.body.userId, function(data) {
+                        callAPI(req.body.office, data[0], data[1], data[2], function(done) {
+                            console.log('API called')
+                        })
+                    })
+                }
+            }
+            console.log();
+            //getNSCC();
 
             // remove user from buffer
             deleteUserFromBuffer(req.body.userId, function(success2) {
@@ -242,11 +278,35 @@ function Template(userHTML) {
 //*********************************************** SPECIAL FUNCTIONS *********************************************
 
 //Get Request for NSCC API integration
-const getNSCC = async () => {
+var getNSCCNNumber = async (nNumber,office) => {
     try {
-        return await axios.get('http://127.0.0.1:31415/api/signin?NNUM=N00000000&OFFICE=REG')
+        return await axios.get(`http://127.0.0.1:31415/api/signin?NNUM=${nNumber}&OFFICE=${office}`)
     } catch (error) {
         console.error(error)
+    }
+}
+
+var getNSCCName = async (fname,lname,office) => {
+    try {
+        return await axios.get(`http://127.0.0.1:31415/api/signin?GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`)
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+function callAPI(office,fname,lname,NNumber,callback) {
+    if(office != 0) {
+        if(NNumber == 0) {
+            getNSCCName(fname,lname,office);
+            callback(true);
+        }
+        else {
+            getNSCCNNumber(NNumber,office);
+            callback(true);
+        }
+    }
+    else {
+        callback(true);
     }
 }
 
@@ -290,6 +350,7 @@ function addUserToBufferNNumber(nNumber,callback) {
 }
 
 // function to update from userbuffer table
+//This function handles updating the negative NNumbers in the table
 function updateUserBuffer(callback) {
     // set up data for selectExtra statement
     var table = 'userbuffer';
@@ -335,6 +396,7 @@ function updateUserBuffer(callback) {
     })
 }
 
+//This function handles updating everthing else
 function updateNormalUserBuffer(callback,needLoaded) {
 
     var table = 'userbuffer';
@@ -404,6 +466,7 @@ function updateNormalUserBuffer(callback,needLoaded) {
 }
 
 // function to get all from userbuffer table
+//This function handles creating the data for the negative NNumbers
 function getUserBuffer(callback) {
     // set up data for selectExtra statement
     var table = 'userbuffer';
@@ -448,6 +511,7 @@ function getUserBuffer(callback) {
     })
 }
 
+//This function handles creating the data for everything else
 function getNormalUserBuffer(callback, needLoaded) {
     // set up data for selectExtra statement
     var table = 'userbuffer';
@@ -559,6 +623,17 @@ function genUserBufferInnerHTML(data) {
                     <input type="text" name="name-userId-${data[i][0]}" id="userId-${data[i][0]}" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
                     <button name="edit-userId-${data[i][0]}" onclick="edit_click(this)" id="edit-userId-${data[i][0]}" class="ready">Edit User Information</button>
                 </div>
+                <div class='button-like'>
+                    <h2 class="label text-center">Select Office being Visited:</h2>
+                    <div class="sidenav-open">
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="0" id="None-userId-${data[i][0]}" class="selected">None</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="ADM" id="ADM-userId-${data[i][0]}" class="">Admissions</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="ADVR" id="ADVR-userId-${data[i][0]}" class="">Advising</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="BUS" id="BUS-userId-${data[i][0]}" class="">Business</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="FINA" id="FINA-userId-${data[i][0]}" class="">Financial Aid</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="REG" id="REG-userId-${data[i][0]}" class="">Registrar</button>
+                    </div>
+                </div>
                     ${allowedHTML}
                 </div>`;
         }
@@ -568,6 +643,17 @@ function genUserBufferInnerHTML(data) {
                     <h2 class="label text-center">Visitor identification:</h2>
                     <input type="text" name="name-userId-${data[i][0]}" id="userId-${data[i][0]}" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
                     <button name="edit-userId-${data[i][0]}" onclick="edit_click(this)" id="edit-userId-${data[i][0]}" class="ready">Edit User Information</button>
+                </div>
+                <div class='button-like'>
+                    <h2 class="label text-center">Select Office being Visited:</h2>
+                    <div class="sidenav-open">
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="0" id="None-userId-${data[i][0]}" class="selected">None</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="ADM" id="ADM-userId-${data[i][0]}" class="">Admissions</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="ADVR" id="ADVR-userId-${data[i][0]}" class="">Advising</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="BUS" id="BUS-userId-${data[i][0]}" class="">Business</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="FINA" id="FINA-userId-${data[i][0]}" class="">Financial Aid</button>
+                        <button name="office-userId-${data[i][0]}" onclick="office_click(this)" data-choiceId="REG" id="REG-userId-${data[i][0]}" class="">Registrar</button>
+                    </div>
                 </div>
                     ${deniedHTML}
                 </div>`;
@@ -607,16 +693,16 @@ function deleteUserFromBuffer(userId,callback) {
 }
 
 // function to remove user from buffer based on nNumber
-function removeNNumberFromBuffer(nNumber,callback) {
-    var table = 'userbuffer';
-    var params = ['userId'];
-    var values = [`${parseInt(nNumber.substring(1)) * -1}`];
+// function removeNNumberFromBuffer(nNumber,callback) {
+//     var table = 'userbuffer';
+//     var params = ['userId'];
+//     var values = [`${parseInt(nNumber.substring(1)) * -1}`];
 
-    // insert user into userbuffer
-    SQL.delete(table, params, values, function(err,success) {
-        callback(success);
-    });
-}
+//     // insert user into userbuffer
+//     SQL.delete(table, params, values, function(err,success) {
+//         callback(success);
+//     });
+// }
 
 // function to add user results to useractivity table
 function addUserActivity(userId, allowed, callback) {
@@ -631,6 +717,26 @@ function addUserActivity(userId, allowed, callback) {
     });
 }
 
+function getUserInfo(userId, callback) {
+    var table = 'users';
+    var columns = ['fname','lname','nNumber'];
+    var params = ['userId'];
+    var values = [`${userId}`]
+
+    SQL.select(table,columns,params,values,function(err,res) {
+
+        if(res[0][0] == '') {
+            res[0][0] == 0;
+        }
+
+        console.log(err);
+        console.log(`UserID of ${userId} resolved to NNumber of ${res[0][0]}`)
+        callback(res[0]);
+    })
+}
+
+
+//Determines when a user was last denied
 function userWasDenied(userId,callback) {
 
     var table = 'useractivity';

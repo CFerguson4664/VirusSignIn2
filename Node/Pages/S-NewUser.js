@@ -134,6 +134,10 @@ router.post('/newUser',function(req,res) {
             var email = req.body.email.toLowerCase();
             var nNumber = req.body.nNumber;
 
+            if(nNumber == '') {
+                nNumber = 0;
+            }
+
             addNewUser(lName, fName, email, nNumber, function(success,userId) {
                 addUserToBuffer(userId, function(success2) {
 

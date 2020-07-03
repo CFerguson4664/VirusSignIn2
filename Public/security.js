@@ -23,7 +23,20 @@ function button_click(sender) {
 
     // for every button in the name group
     for (var i = 0; i < buttons.length; i++) {
-        // clear the css and ids
+        // clear the css
+        buttons[i].className = "";
+    }
+
+    // set the css for the clicked button
+    sender.className = "selected";
+}
+
+function office_click(sender) {
+    var buttons = document.getElementsByName(sender.name);
+
+    // for every button in the name group
+    for (var i = 0; i < buttons.length; i++) {
+        // clear the css
         buttons[i].className = "";
     }
 
@@ -39,17 +52,29 @@ function submit_button_click(sender) {
     var userId = sender.id.substring(sender.id.indexOf('-')+8, sender.id.length);
 
     // initialize entryAllowed so no else statement is needed
-    var entryAllowed = false;
+    var entryAllowed = 0;
 
     var buttons = document.getElementsByName('allowed-userId-'+userId)
 
     for (let i = 0; i < buttons.length; i++) {
         if (buttons[i].getAttribute('data-choiceId') == 1 && buttons[i].className == "selected") {
             // set entryAllowed to true
-            entryAllowed = true;
+            entryAllowed = 1;
         }
     }
     // if selected button is yes  
+
+    var officeChoice = 0;
+    var buttons2 = document.getElementsByName('office-userId-'+userId);
+    console.log(buttons2)
+    console.log('office-userId-'+userId)
+
+    for (let i = 0; i < buttons2.length; i++) {
+        if (buttons2[i].className == "selected") {
+            // set entryAllowed to true
+            officeChoice = buttons2[i].getAttribute('data-choiceId');
+        }
+    }
     
 
     // ajax post with the userId and whether or not the user was allowed
@@ -64,7 +89,8 @@ function submit_button_click(sender) {
         data: {
             // parse the userId number from the userId string
             userId  : userId,
-            allowed : entryAllowed
+            allowed : entryAllowed,
+            office  : officeChoice
         },
 
         //The response from the server; result is the data sent back from server; i.e. html code
@@ -101,6 +127,18 @@ function deny_button_click(sender) {
         }
     }
 
+    var officeChoice = 0;
+    var buttons2 = document.getElementsByName('office-'+userId);
+    console.log(buttons2)
+    console.log('office-'+userId)
+
+    for (let i = 0; i < buttons2.length; i++) {
+        if (buttons2[i].className == "selected") {
+            // set entryAllowed to true
+            officeChoice = buttons2[i].getAttribute('data-choiceId');
+        }
+    }
+
     // ajax post with the userId and whether or not the user was allowed
     $.ajax({
 
@@ -113,7 +151,8 @@ function deny_button_click(sender) {
         data: {
             // parse the userId number from the userId string
             userId  : userId.substring(userId.indexOf('-')+1,userId.length),
-            allowed : entryAllowed
+            allowed : entryAllowed,
+            office  : officeChoice
         },
 
         //The response from the server; result is the data sent back from server; i.e. html code

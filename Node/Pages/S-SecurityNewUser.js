@@ -168,6 +168,10 @@ router.post('/newUser',function(req,res) {
             var remove = req.body.remove;
             var dataNNumber = req.body.dataNNumber;
 
+            if(nNumber == '') {
+                nNumber = 0;
+            }
+
             if(remove == 1) {
                 removeNNumberFromBuffer(dataNNumber, function(success) {
                     addNewUser(lName, fName, email, nNumber, function(success,userId) {
