@@ -260,7 +260,7 @@ function Template(userHTML) {
 //Get Request for NSCC API integration
 var getNSCCNNumber = async (nNumber,office) => {
     try {
-        return await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin??NNUM=${nNumber}&OFFICE=${office}`)
+        return await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin?NNUM=${nNumber}&OFFICE=${office}`)
     } catch (error) {
         console.error(error)
     }
@@ -268,7 +268,7 @@ var getNSCCNNumber = async (nNumber,office) => {
 
 var getNSCCName = async (fname,lname,office) => {
     try {
-        return await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin??GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`)
+        return await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin?GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`)
     } catch (error) {
         console.error(error)
     }
