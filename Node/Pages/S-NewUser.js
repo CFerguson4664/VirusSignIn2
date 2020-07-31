@@ -36,27 +36,18 @@ router.get('/', function(req,res) {
     // helmet makes the page not render html, unless the content type is set
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-    //This cookie is the session id stored on welcome page
-    var cookie = req.cookies.SignInLvl1;
-
-    //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
-        //If the client is valid prepare the page
-        if(valid) {
-            //Get the starting form of the webpage
-            getPage(function(HTML) {
-                //Send the HTML to the client
-                res.write(HTML);
-                //End our response to the client
-                res.end();
-            });
-        }
-        //Otherwise redirect them to the timeout page
-        else {
-            res.redirect('/timeout');
+    createSession(function(sessionId) {
+        //Get the starting form of the webpage
+        getPage(function(HTML) {
+            //Send the seesion id to the client
+            res.cookie('SignInLvl1',sessionId, { httpOnly: true });
+            //Send the HTML to the client
+            res.write(HTML);
+            //End our response to the client
             res.end();
-        }
+        });
     });
+    
 });
 
 router.post('/checkNNumber',function(req,res) {
@@ -104,7 +95,6 @@ router.post('/checkEmail',function(req,res) {
                 if (exists) {
                     getButton(userId, 'email', function(dead,HTML) {
                         res.send(HTML);
-                        
                     });
                 }
                 else {
@@ -131,10 +121,10 @@ router.post('/newUser',function(req,res) {
         if(valid) {
             var fName = req.body.fname;
             var lName = req.body.lname;
-            var email = req.body.email.toLowerCase();
-            var nNumber = req.body.nNumber;
+            var email = req.body.address;
+            // var nNumber = req.body.nNumber;
 
-            addNewUser(lName, fName, email, nNumber, function(success,userId) {
+            addNewUser(lName, fName, email, '0', function(success,userId) {
                 addUserToBuffer(userId, function(success2) {
 
                     res.send('/thankyou');
@@ -188,37 +178,45 @@ function Template() {
                 <div id='lnameerror'></div>
             </div>
             <div class="button-like">
-                <h2 class="label text-center">Enter your email</h2>
-                <input type="text" name="email" id="email" autocomplete="off" class="text2" maxlength="75">
-                
-                <div id='emailerror'></div>
-            </div>
-            <div class="button-like">
-                <h2 class="label text-center">Do you have an ID Number?</h2>
-                <div class="sidenav-open">
-                    <button name="student" onclick="button_click(this)" data-choiceId="1" class="unselected">Yes</button>
-                    <button name="student" onclick="button_click(this)" data-choiceId="0" id='selected' class="selected">No</button>
-                </div>
-            </div>
-            <div class="button-like" id="nndiv" style="display:none;">
-                <h2 class="label text-center">Enter your ID Number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='' maxlength="9">
-                <div id='nnerror'></div>
+                <h2 class="label text-center">Enter your address</h2>
+                <input type="text" name="addr" id="addr" autocomplete="off" class="text2" maxlength="75">
+                <div id='addresserror'></div>
             </div>
         </main>
         <footer class="bg-dark-float-off" id="subFoot">
             <button id="submit-event" class="not-ready">Submit</button>
         </footer>
-        <footer class="bg-dark">
-            <div id="social-icons">
+        <header class="bg-dark">
+            <div class="logo">
+                <img src="Xor.png" alt="Xor logo">
             </div>
-        </footer>
+        </header>
     </html>`;
 
     return html;
 }
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
+
+//Creates a new session and sessionData entry
+function createSession(callback) {
+    //Get the current time to use as the session's creation time
+    var sessionTime = time.getTime();
+
+    //Get a new session id to use for the session
+    sessionMan.getNewSessionId(1, function(sessionId) {
+
+        var table = 'sessionData';
+        var columns = ['sessionId','sessionDatetime'];
+        var values = [`'${sessionId}'`,`'${sessionTime}'`];
+
+        //Insert the session id and creation time into the database
+        SQL.insert(table, columns, values, function(err, success) {
+            //callback the session id so it can be sent to the client
+            callback(sessionId);
+        });
+    });
+}
 
 //Adds a new user to the database. Return true and the userid if user could be added or false if not
 function addNewUser(lName,fName,email,nNumber,callback) {

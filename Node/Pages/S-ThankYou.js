@@ -68,15 +68,16 @@ function Template()
                 </div>
             </header>
             <main class="bg-light">
-                <h2 class="text-center">Thank you for providing your information.<br>Please wait for a member of our team to verify your entry.<br><br> Click the button to restart</h2>
+                <h2 class="text-center">Thank you for providing your information.<br><br> Click the button to restart</h2>
             </main>
             <footer class="bg-dark-float-off" id="subFoot">
                     <button id="submit-event" class="ready">Restart</button>
             </footer>
-            <footer class="bg-dark">
-                <div id="social-icons">
+            <header class="bg-dark">
+                <div class="logo">
+                    <img src="Xor.png" alt="Xor logo">
                 </div>
-            </footer>
+            </header>
         </body>
     </html>
     `;

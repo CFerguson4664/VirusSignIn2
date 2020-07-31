@@ -136,39 +136,39 @@ function deny_button_click(sender) {
 
 function input_to_textBox() {
     // if the text in the box is long enough
-    if (checkNNumberLength()) {
+    // if (checkNNumberLength()) {
 
-        var n = document.getElementById('nNumber').value;
+    //     var n = document.getElementById('nNumber').value;
 
-        // post to server the nnumber and clear the box
-        $.ajax({
-            global: false,
-            type: 'POST',
-            url: '/security/nNumber', //The url to post to on the server
-            dataType: 'html',
+    //     // post to server the nnumber and clear the box
+    //     $.ajax({
+    //         global: false,
+    //         type: 'POST',
+    //         url: '/security/nNumber', //The url to post to on the server
+    //         dataType: 'html',
 
-            //The data to send to the server
-            data: { 
-                nNumber : n,
-            },
+    //         //The data to send to the server
+    //         data: { 
+    //             nNumber : n,
+    //         },
 
-            //The response from the server
-            success: function (result) { 
-                if (result == '/logintimeout') {
-                    window.location.replace(result);
-                }
-                else {
-                    refresh();
-                }
-                checkForUsers();
-            },
+    //         //The response from the server
+    //         success: function (result) { 
+    //             if (result == '/logintimeout') {
+    //                 window.location.replace(result);
+    //             }
+    //             else {
+    //                 refresh();
+    //             }
+    //             checkForUsers();
+    //         },
 
-            //Handle any errors
-            error: function (request, status, error) {
-                serviceError();
-            }
-        });
-    } 
+    //         //Handle any errors
+    //         error: function (request, status, error) {
+    //             serviceError();
+    //         }
+    //     });
+    // } 
 }
 
 function checkNNumberInput() {
@@ -289,95 +289,114 @@ $(document).ready(function ()  {
     });
 });
 
-window.onload = setInterval(function() {
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-    checkNNumberInput();
-    // document.getElementById('nNumber').focus();
-    $.ajax({
-        global: false,
-        type: 'POST',
-        url: '/security/reload', //The url to post to on the server
-        dataType: 'html',
+window.onscroll = function(ev) {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        sleep(1000).then(() => { window.scrollTo(0,0); });
+    }
+};
 
-        //The data to send to the server
-        data: {
-        },
+window.onload = function doStuff() {
+    setInterval(function() {
 
-        //The response from the server
-        success: function (result) {
-            if (result == '/logintimeout') {
-                window.location.replace(result);
-            }
-            else {
-                if(result != '') {
-                    if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
-                        document.getElementById('users').innerHTML = "";
-                    }
+        // checkNNumberInput();
+        // document.getElementById('nNumber').focus();
+        $.ajax({
+            global: false,
+            type: 'POST',
+            url: '/security/reload', //The url to post to on the server
+            dataType: 'html',
 
-                    var test = JSON.parse(result);
-                    console.log(test)
+            //The data to send to the server
+            data: {
+            },
 
-                    var prompts = document.getElementsByName('prompt');
-                    var ids = [];
-                    
-
-                    for (var i = 0; i < prompts.length; i++) {
-                        var found = false;
-
-                        for (var j = 0; j < test.length; j++) {
-                            if(prompts[i].id == test[j].bufferId) {
-                                console.log('Found match ' + prompts[i].id);
-                                ids.push(prompts[i].id);
-                                found = true;
-                            }
-                        }
-
-                        if(!found) {
-                            console.log('Removed '+ prompts[i].id) 
-                            prompts[i].parentNode.removeChild(prompts[i]);
-                        }
-                    }
-
-                    prompts = document.getElementsByName('prompt');
-
-                    for (var k = 0; k < test.length; k++) {
-                        var found = false;
-
-                        for (var l = 0; l < prompts.length; l++) {
-                            if(test[k].bufferId == prompts[l].id) {
-
-                                console.log('Not removing ' + test[k].bufferId);
-                                found = true;
-                            }
-                        }
-                        
-                        if(!found) {
-                            console.log('Added ' + test[k].bufferId);
-                            document.getElementById('users').innerHTML += test[k].HTML;
-                        }
-                    }
-
-                    // for (var k = 0; k < result.length; k++){
-                    //     document.getElementById('users').innerHTML += result[k].HTML;
-                    // }
-                    // if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
-                    //     document.getElementById('users').innerHTML = result;
-                    // }
-                    // else {
-                    //     document.getElementById('users').innerHTML += result;
-                    // }
+            //The response from the server
+            success: function (result) {
+                if (result == '/logintimeout') {
+                    window.location.replace(result);
                 }
-                
-            }
-            checkForUsers();
-        },
+                else {
+                    if(result != '') {
+                        if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
+                            document.getElementById('users').innerHTML = "";
+                        }
 
-        //Handle any errors
-        error: function (request, status, error) {
-            serviceError();
+                        var test = JSON.parse(result);
+                        console.log(test)
+
+                        var prompts = document.getElementsByName('prompt');
+                        var ids = [];
+                        
+
+                        for (var i = 0; i < prompts.length; i++) {
+                            var found = false;
+
+                            for (var j = 0; j < test.length; j++) {
+                                if(prompts[i].id == test[j].bufferId) {
+                                    console.log('Found match ' + prompts[i].id);
+                                    ids.push(prompts[i].id);
+                                    found = true;
+                                }
+                            }
+
+                            if(!found) {
+                                console.log('Removed '+ prompts[i].id) 
+                                prompts[i].parentNode.removeChild(prompts[i]);
+                            }
+                        }
+
+                        prompts = document.getElementsByName('prompt');
+
+                        for (var k = 0; k < test.length; k++) {
+                            var found = false;
+
+                            for (var l = 0; l < prompts.length; l++) {
+                                if(test[k].bufferId == prompts[l].id) {
+
+                                    console.log('Not removing ' + test[k].bufferId);
+                                    found = true;
+                                }
+                            }
+                            
+                            if(!found) {
+                                console.log('Added ' + test[k].bufferId);
+                                document.getElementById('users').innerHTML += test[k].HTML;
+                            }
+                        }
+
+                        // for (var k = 0; k < result.length; k++){
+                        //     document.getElementById('users').innerHTML += result[k].HTML;
+                        // }
+                        // if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
+                        //     document.getElementById('users').innerHTML = result;
+                        // }
+                        // else {
+                        //     document.getElementById('users').innerHTML += result;
+                        // }
+                    }
+                    
+                }
+                checkForUsers();
+            },
+
+            //Handle any errors
+            error: function (request, status, error) {
+                serviceError();
+            }
+        });
+    },5000);
+
+
+    setInterval(function() {
+        if ($("body").height() > $(window).height()) {
+            window.scrollBy(0, 1);
         }
-    });
-},5000);
+    },20)
+}
 
 function refresh() {
     $.ajax({

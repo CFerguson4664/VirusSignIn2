@@ -37,7 +37,7 @@ router.get('/', function(req,res) {
 
 router.post('/data',function(req,res) {
     //Send the user to the next page
-    res.send('/usertype');
+    res.send('/new');
     res.end();
 });
 
@@ -68,16 +68,17 @@ function Template()
                 </div>
             </header>
             <main class="bg-light">
-                <h2 class="text-center">Welcome!<br> Please use this app to sign in. <br> 
-                An official will verify your entry.<br><br>Thank you for your patience as we <br>work to keep everyone safe and to <br>serve our community effectively.</h2>
+                <h2 class="text-center">Welcome!<br> Thank you for coming. <br><br> 
+                The next page will ask you to enter your name so that I have a record of who came and an address to assist me in sending out thank yous.<br><br>Thank you!</h2>
             </main>
             <footer class="bg-dark-float-off" id="subFoot">
                     <button id="submit-event" class="ready">Continue</button>
             </footer>
-            <footer class="bg-dark">
-                <div id="social-icons">
+            <header class="bg-dark">
+                <div class="logo">
+                    <img src="Xor.png" alt="Xor logo">
                 </div>
-            </footer>
+            </header>
         </body>
     </html>
     `;

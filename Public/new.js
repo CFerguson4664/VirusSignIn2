@@ -13,19 +13,19 @@ function checkAll() {
     var good = document.getElementById('firstname').value != '';
 
     //Make sure the last name is atleast 3 characters long
-    good = good && document.getElementById('lastname').value.length >= 3; //Needs to be changed with min length of returning search
+    good = good && document.getElementById('lastname').value != ''; //Needs to be changed with min length of returning search
 
-    //Make sure the email passes its regex
-    good = good && checkEmail(email);
+    // //Make sure the email passes its regex
+    // good = good && checkEmail(email);
 
-    //Make sure the email is not a duplicate
-    good = good && EmailNotDuplicate; 
+    // //Make sure the email is not a duplicate
+    // good = good && EmailNotDuplicate; 
 
-    //Make sure the NNumber passes its regex
-    good = good && checkNNumber();
+    // //Make sure the NNumber passes its regex
+    // good = good && checkNNumber();
 
-    //Make sure the nNumber is not a duplicate
-    good = good && NNumberNotDuplicate; 
+    // //Make sure the nNumber is not a duplicate
+    // good = good && NNumberNotDuplicate; 
     
     //If everything passes display the submit button
     if(good) {
@@ -244,7 +244,7 @@ $(document).ready(function ()  {
     $('#lastname').on('input',function(event) {
         checkAll();
         if($('#lastname').val().length < 3) {
-            document.getElementById('lnameerror').innerHTML = `<h2 class="red text-center">Last name must be at least 3 characters</h2>`;
+            document.getElementById('lnameerror').innerHTML = ``;
         }
         else {
             document.getElementById('lnameerror').innerHTML = '';
@@ -254,12 +254,6 @@ $(document).ready(function ()  {
     //Called when user clicks 'New User' button
     $('#submit-event').click(function(event) { 
         
-        var studentBox = document.getElementById('selected').getAttribute('data-choiceId');
-
-        var nNumberVal = 0;
-        if(studentBox == 1) {
-            nNumberVal = document.getElementById('nnumber').value;
-        }
           
         $.ajax({
             global: false,
@@ -271,8 +265,7 @@ $(document).ready(function ()  {
             data: { 
                 fname : DOMPurify.sanitize(document.getElementById('firstname').value),
                 lname : DOMPurify.sanitize(document.getElementById('lastname').value),
-                email : DOMPurify.sanitize(document.getElementById('email').value),
-                nNumber : DOMPurify.sanitize(nNumberVal)
+                address : document.getElementById('addr').value
             },
 
             //The response from the server
@@ -289,17 +282,17 @@ $(document).ready(function ()  {
     });
 
     $('#back').click(function(event) {
-        window.location.replace('/usertype');
+        window.location.replace('/welcome');
     });
 
-    $('input').on('input', function() {
-        var c = this.selectionStart,
-            r = /[^a-z0-9@.-]/gi,
-            v = $(this).val();
-        if(r.test(v)) {
-            $(this).val(v.replace(r, ''));
-            c--;
-        }
-        this.setSelectionRange(c, c);
-    });
+    // $('input').on('input', function() {
+    //     var c = this.selectionStart,
+    //         r = /[^a-z0-9@.-]/gi,
+    //         v = $(this).val();
+    //     if(r.test(v)) {
+    //         $(this).val(v.replace(r, ''));
+    //         c--;
+    //     }
+    //     this.setSelectionRange(c, c);
+    // });
 });

@@ -211,21 +211,25 @@ function Template(userHTML) {
             </div>
         </header>
         <header class="bg-dark-header" id="header">
-            <button id="new-userId-0" class="ready" onclick="new_click(this)">Add new user</button>
         </header>
         
         <main class="bg-light">
-            <div id="users">${userHTML}</div>
-        </main>
-        <input type="text" id="nNumber" placeholder="Input N-number here:">
-
-        <footer class="bg-dark-float-off" id="subFoot">
-                    
-        </footer>
-        <footer class="bg-dark">
-            <div id="social-i ">
+            <h1 class='big text-center'>Attendies</h1>
+            <div class="admin">
+                <div class="button-like">
+                    <div id="users">
+                        ${userHTML}
+                    </div>
+                </div>
             </div>
+        </main>
+        <footer class="bg-dark-float-off" id="subFoot">
         </footer>
+        <header class="bg-dark">
+            <div class="logo">
+                <img src="Xor.png" alt="Xor logo">
+            </div>
+        </header>
     </html>`;
 
     return html;
@@ -342,57 +346,57 @@ function genHTML(data, asJson, callback) {
     if(asJson) {
         finalData = [];
     }
+
+    
     
     for(var i = 0; i < data.length; i++) {
         //Get the next record from the data object
         var record = data[i];
         var innerHTML = '';
 
-        if(record.type == 0) {
-            //Special HTML for an unknown user
-            innerHTML = `<div class="button-like">
-                <h2 class="label text-center">Visitor allowed entry?</h2>
-                <div class="sidenav-open">
-                    <button name="allowed-userId-${record.userId}" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Visitor does not have an account. <br> They need to create an account using the QR code.<br> Or click the button above to create it here.</button>
-                </div>
-                <button id="submit-userId-${record.userId}" onclick="deny_button_click(this)" class="ready">Ok</button>
-            </div>`;
-        }
-        else if (record.type == 1) {
-            //Special HTML for a recently denied user
-            innerHTML = `<div class="button-like">
-                <h2 class="label text-center">Visitor allowed entry?</h2>
-                <div class="sidenav-open">
-                    <h2 name="denied-info-userId-${record.userId}" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="label-b text-center">Visitor was denied ${record.daysSinceDeny} day(s) ago. <br> Date denied: ${record.dateOfDeny}</button>
-                </div>
-                <div class="sidenav-open">
-                    <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Override and allow</button>
-                    <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${record.userId}" class="unselected">Dismiss</button>
-                </div>
-                <button id="submit-userId-${record.userId}" onclick="deny_button_click(this)" class="ready">Submit</button>
-            </div>`;
-        }
-        else if (record.type == 2) {
-            //Special HTML for a normal user
-            innerHTML = `<div class="button-like">
-                <h2 class="label text-center">Visitor allowed entry?</h2>
-                <div class="sidenav-open">
-                    <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Yes</button>
-                    <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${record.userId}" class="unselected">No</button>
-                </div>
-                <button id="submit-userId-${record.userId}" onclick="submit_button_click(this)" class="ready">Submit</button>
-            </div>`;
-        }
+        // if(record.type == 0) {
+        //     //Special HTML for an unknown user
+        //     innerHTML = `<div class="button-like">
+        //         <h2 class="label text-center">Visitor allowed entry?</h2>
+        //         <div class="sidenav-open">
+        //             <button name="allowed-userId-${record.userId}" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Visitor does not have an account. <br> They need to create an account using the QR code.<br> Or click the button above to create it here.</button>
+        //         </div>
+        //         <button id="submit-userId-${record.userId}" onclick="deny_button_click(this)" class="ready">Ok</button>
+        //     </div>`;
+        // }
+        // else if (record.type == 1) {
+        //     //Special HTML for a recently denied user
+        //     innerHTML = `<div class="button-like">
+        //         <h2 class="label text-center">Visitor allowed entry?</h2>
+        //         <div class="sidenav-open">
+        //             <h2 name="denied-info-userId-${record.userId}" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="label-b text-center">Visitor was denied ${record.daysSinceDeny} day(s) ago. <br> Date denied: ${record.dateOfDeny}</button>
+        //         </div>
+        //         <div class="sidenav-open">
+        //             <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Override and allow</button>
+        //             <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${record.userId}" class="unselected">Dismiss</button>
+        //         </div>
+        //         <button id="submit-userId-${record.userId}" onclick="deny_button_click(this)" class="ready">Submit</button>
+        //     </div>`;
+        // }
+        // else if (record.type == 2) {
+        //     //Special HTML for a normal user
+        //     innerHTML = `<div class="button-like">
+        //         <h2 class="label text-center">Visitor allowed entry?</h2>
+        //         <div class="sidenav-open">
+        //             <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Yes</button>
+        //             <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${record.userId}" class="unselected">No</button>
+        //         </div>
+        //         <button id="submit-userId-${record.userId}" onclick="submit_button_click(this)" class="ready">Submit</button>
+        //     </div>`;
+        // }
 
         //Add the full html for the security prompt
-        var html = `<div class="admin" id=${record.bufferId} name='prompt'>
+        var html = `<div class="admin">
             <div class="button-like">
-                <h2 class="label text-center">Visitor identification:</h2>
-                <input type="text" name="name-userId-${record.userId}" id="userId-${record.userId}" data-userId="${record.userId}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${record.name}">
-                <button name="edit-userId-${record.userId}" onclick="edit_click(this)" id="edit-userId-${record.userId}" class="ready">Edit User Information</button>
             </div>
-            ${innerHTML}
         </div>`;
+
+        var html = `<h1 id=${record.bufferId} name='prompt' data-userId="${record.userId}" class='mid text-center'>${record.name}</h1>`;
 
         //asJson determines whether the response of this funcion is the raw HTML or the html separated by bufferId in a json object
         if(asJson) {
@@ -407,6 +411,8 @@ function genHTML(data, asJson, callback) {
             finalData += html;
         }
     }
+
+    console.log(finalData)
 
     //Callback with either the html or the json object
     callback(finalData);
