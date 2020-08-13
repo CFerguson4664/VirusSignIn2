@@ -1,14 +1,17 @@
-// Copyright 2020
+// Copyright 2020 
 // Xor Softworks LLC
+
+//"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\bin\Hostx64\x64\editbin.exe"
 
 var express = require('express');
 var helmet = require('helmet'); // package to help prevent attacks
-
 var app = express();
 
 
 const SQL = require('./Utils/GeneralSql');
+
 const cookieParser = require('cookie-parser'); //Library to allow the use of cookies to track sessions
+
 const bodyParser = require('body-parser'); //Parses AJAX from client
 const http = require('http');
 const https = require('https');
