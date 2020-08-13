@@ -94,11 +94,11 @@ function Template() {
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="usertype.js"></script>
-            <title>Via Sign In</title>
+            <title>Sign In</title>
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="companyLogo.png" alt="Xor Via logo">
+                <img src="active.png" alt="Company Logo">
             </div>
         </header>
         <header class="bg-dark-header">

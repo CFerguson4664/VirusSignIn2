@@ -166,7 +166,7 @@ function Template(publicKey) {
             <link rel="stylesheet" type="text/css" href="style.css">
             <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Via Sign In</title>
+            <title>Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="sodium.js"></script>
@@ -175,7 +175,7 @@ function Template(publicKey) {
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="companyLogo.png" alt="Xor Via logo">
+                <img src="active.png" alt="Company Logo">
             </div>
         </header>
         <header class="bg-dark-header">
