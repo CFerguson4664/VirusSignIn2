@@ -18,6 +18,9 @@ const https = require('https');
 const fs = require('fs');
 const encryption = require('./Utils/CryptoServer'); //Requires server encryption
 
+const Console = require('console').Console; // module to write console output to other streams, i.e. file
+const timeUtils = require('./Utils/TimeUtils'); // need to format the time in the ouptut file
+
 app.use(helmet()); // use attack prevention strategies
 
 app.use(cookieParser());
@@ -68,11 +71,37 @@ app.get('/',function(req,res) {
     res.redirect('/welcome');
 });
 
+
+// is there a way to not use public variables for the logger?
+var logger = undefined;
+
+// middleware to catch error messages, log them, and pass them on
+app.use(function (err,req,res,next) {
+    // data to be printed in log file
+    var json_error = {
+        datetime : timeUtils.getTime(),
+        error_message : err
+    };
+
+    console.log('error');
+
+    // log the error data
+    logger.error(json_error);
+
+    // pass the error 'up the chain'
+    next(err);
+});
+
 function init() {
     // fs.readFile('C:/signin-app/bin/setup.json', function(err,content) {
     fs.readFile('../bin/setup.json', function(err,content) {
         if (err) return console.log('Error loading setup file:\n' + err);
         var parsed = JSON.parse(content);
+
+        // set up append file stream for logger
+        var consoleOutputFilename = fs.createWriteStream(parsed.console_output_filename, {'flags': 'a'});
+        // send console output to the file stream
+        logger = new Console({stdout: consoleOutputFilename});
 
         const options = {
             key: fs.readFileSync(parsed.key_path),
