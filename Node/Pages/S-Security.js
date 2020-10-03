@@ -30,7 +30,7 @@ module.exports = router;
 //********************************************* GET / POST Requests *********************************************
 
 //Handles the get request for the starting form of this page
-router.get('/',function(req,res) {
+router.get('/',function(req,res,next) {
 
     // helmet makes the page not render html, unless the content type is set
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -39,12 +39,14 @@ router.get('/',function(req,res) {
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
 
             //Get the starting form of the webpage
-            getPage(function(HTML) {
+            getPage(function(err2,HTML) {
+                if (err2) return next(err2);
 
                 //Send the HTML to the client
                 res.write(HTML);
@@ -61,18 +63,20 @@ router.get('/',function(req,res) {
 });
 
 // when the client posts to nNumber
-router.post('/nNumber',function(req,res) {
+router.post('/nNumber',function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             var nNumber = req.body.nNumber;
 
             // add the user with the nNumber to the buffer
-            addUserToBufferNNumber(nNumber, function(success) {
+            addUserToBufferNNumber(nNumber, function(err2,success) {
+                if (err2) return next(err2);
                 // if the user was added
                 if (success) {
                     //Send something
@@ -91,16 +95,18 @@ router.post('/nNumber',function(req,res) {
 });
 
 // when the client interval resets (not actual reload)
-router.post('/reload', function(req,res) {
+router.post('/reload', function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             // update the buffer
-            getAllData(true,function(HTML) {
+            getAllData(true,function(err2,HTML) {
+                if (err2) return next(err2);
 
                 // send updated innerHTML to client
                 res.send(JSON.stringify(HTML));
@@ -117,19 +123,22 @@ router.post('/reload', function(req,res) {
 });
 
 // when the client posts to submit
-router.post('/submit',function(req,res) {
+router.post('/submit',function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
 
             // add the user data to useractivity
-            addUserActivity(req.body.userId, req.body.allowed, function(success1) {
+            addUserActivity(req.body.userId, req.body.allowed, function(err2,success1) {
+                if (err2) return next(err2);
                 // remove user from buffer
-                deleteUserFromBuffer(req.body.userId, function(success2) {
+                deleteUserFromBuffer(req.body.userId, function(err3,success2) {
+                    if (err3) return next(err3);
                     //End our response to the client
                     res.end();
                 });
@@ -144,21 +153,26 @@ router.post('/submit',function(req,res) {
 });
 
 // when the client posts to deny
-router.post('/deny',function(req,res) {
+router.post('/deny',function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
 
             // remove user from buffer
-            deleteUserFromBuffer(req.body.userId, function(success2) {
+            deleteUserFromBuffer(req.body.userId, function(err2,success2) {
+                if (err2) return next(err2);
                 // update the buffer
-                getUserBuffer(function(HTML) {
+                getUserBuffer(function(err3,HTML) {
+                    if (err3) return next(err3);
+
                     if (req.body.allowed == 1 || req.body.allowed == 2) {
-                        addUserActivity(req.body.userId, req.body.allowed, function(success1) {
+                        addUserActivity(req.body.userId, req.body.allowed, function(err4,success1) {
+                            if (err4) return next(err4);
                             // send updated innerHTML to client
                             res.send(HTML);
                             //End our response to the client
@@ -187,9 +201,10 @@ router.post('/deny',function(req,res) {
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
-    getAllData(false,function(HTML) {
+    getAllData(false,function(err,HTML) {
+        if (err) return callback(err,undefined);
 
-        callback(Template(HTML));
+        callback(undefined,Template(HTML));
     });
 }
 
@@ -255,6 +270,7 @@ function getAllData(asJson, callback) {
 
     // select userId, name, and bufferId from database
     SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
+        if (err) return callback(err,undefined);
         //List of the users that need to be added to the security terminal
 
         //Store the data stubs
@@ -289,7 +305,8 @@ function getAllData(asJson, callback) {
                     // record is for a normal user with an associated account
 
                     //Check to see if this user has been denied in the last 14 days
-                    userWasDenied(res[i][0], function(wasDenied, daysSinceDeny, dateOfDeny) {
+                    userWasDenied(res[i][0], function(err2,wasDenied, daysSinceDeny, dateOfDeny) {
+                        if (err) return callback(err2,undefined);
                         if(wasDenied) {
 
                             //if the user was denied in the last 14 days
@@ -307,6 +324,7 @@ function getAllData(asJson, callback) {
                             if(data.length == res.length) {
                                 //If this is the last loop, move onto the next step
                                 return genHTML(data, asJson, callback); //**************************************** RETURN ***********************************************/
+                                // why is this just callback ^^^^^^^^  What is it doing?
                             }
                         }
                         else {
@@ -323,6 +341,7 @@ function getAllData(asJson, callback) {
                             if(data.length == res.length) {
                                 //If this is the last loop, move onto the next step
                                 return genHTML(data, asJson, callback); //**************************************** RETURN ***********************************************/
+                                // why is this just callback ^^^^^^^^  What is it doing?
                             }
                         }
                     });
@@ -424,6 +443,7 @@ function addUserToBufferNNumber(nNumber,callback) {
 
     // select userId with matching nNumber
     SQL.select(table, columns, params, values, function(err,userId) {
+        if (err) return callback(err,undefined);
 
         if (userId.length > 0) {
             // set up data for insert statement
@@ -432,8 +452,9 @@ function addUserToBufferNNumber(nNumber,callback) {
             values = [`${userId}`,`0`];
 
             // insert user into userbuffer
-            SQL.insert(table, columns, values, function(err,success) {
-                return callback(success);
+            SQL.insert(table, columns, values, function(err2,success) {
+                if (err2) return callback(err2,undefined);
+                return callback(undefined,success);
             });
         }                
         else {
@@ -442,12 +463,13 @@ function addUserToBufferNNumber(nNumber,callback) {
             var values = [`${parseInt(nNumber.substring(1)) * -1}`,`0`];
 
             // insert user into userbuffer
-            SQL.insert(table, columns, values, function(err,success) {
-                return callback(success);
+            SQL.insert(table, columns, values, function(err3,success) {
+                if (err3) return callback(err3,undefined);
+                return callback(undefined,success);
             });
         }
 
-        return callback(false);
+        return callback(undefined,false);
     });
 }
 
@@ -464,7 +486,8 @@ function deleteUserFromBuffer(userId,callback) {
 
     // delete record with userId
     SQL.delete(table, params, values, function(err,res) {
-        return callback(res);
+        if (err) return callback(err,undefined);
+        return callback(undefined,res);
     });
 }
 
@@ -477,7 +500,8 @@ function addUserActivity(userId, allowed, callback) {
 
     // insert user activity into database
     SQL.insert(table, columns, values, function(err,success) {
-        return callback(success);
+        if (err) return callback(err,undefined);
+        return callback(undefined,success);
     });
 }
 
@@ -489,6 +513,7 @@ function userWasDenied(userId,callback) {
     var values = [userId,0];
 
     SQL.select(table, columns, params, values, function(err,res) {
+        if (err) return callback(err,undefined,undefined,undefined,undefined);
 
         if(res.length != 0) {
             res.sort();
@@ -502,14 +527,14 @@ function userWasDenied(userId,callback) {
 
             if (daysSinceLastDeny < 14) {
                 
-                return callback(true,daysSinceLastDeny, lastDeniedDate.toLocaleString());
+                return callback(undefined,true,daysSinceLastDeny, lastDeniedDate.toLocaleString());
             }
             else {
-                return callback(false,undefined,undefined);
+                return callback(undefined,false,undefined,undefined);
             }
         }
         else {
-            return callback(false,undefined,undefined);
+            return callback(undefined,false,undefined,undefined);
         }
     });
 }

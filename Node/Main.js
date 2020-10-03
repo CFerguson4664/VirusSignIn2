@@ -53,6 +53,7 @@ var Login = require('./Pages/S-Login');
 var LoginTimeout = require('./Pages/S-LoginTimeout');
 var ThankYou = require('./Pages/S-ThankYou');
 var SecurityNew = require('./Pages/S-SecurityNewUser');
+var ServerError = require('./Pages/S-Error');
 
 // Import my test routes into the path '/test'
 app.use('/welcome', Welcome);
@@ -66,6 +67,7 @@ app.use('/login', Login);
 app.use('/logintimeout', LoginTimeout);
 app.use('/thankyou', ThankYou);
 app.use('/securitynew', SecurityNew);
+app.use('/error', ServerError);
 
 app.get('/',function(req,res) {
     res.redirect('/welcome');
@@ -83,10 +85,12 @@ app.use(function (err,req,res,next) {
         error_message : err
     };
 
-    console.log('error');
+    // console.log(json_error);
 
     // log the error data
     logger.error(json_error);
+
+    res.status(500).redirect('/error');
 
     // pass the error 'up the chain'
     next(err);
@@ -108,8 +112,8 @@ function init() {
             cert: fs.readFileSync(parsed.cert_path)
         };
 
-        SQL.init(parsed.database_host, parsed.database_user, parsed.database_password, parsed.database_name, function(done) {
-            encryption.init(function(done) {
+        SQL.init(parsed.database_host, parsed.database_user, parsed.database_password, parsed.database_name, function(err,done) {
+            encryption.init(function(err,done) {
                 https.createServer(options, app).listen(parsed.secure_server_port, function() {
                     http.createServer(app,function(req, res) { // create http to redirect to https
                         res.writeHead(307, { "Location": "https://" + req.headers['host'] + req.url });

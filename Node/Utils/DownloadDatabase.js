@@ -5,14 +5,18 @@ const sql = require('./GeneralSql');
 const fs = require('fs');
 
 exports.dumpFormattedData = function(filename, callback) {
-    getUsers(function(users) {
-        getUserActivity(function(userActivity) {
+    getUsers(function(err,users) {
+        if (err) return callback(err,undefined);
+
+        getUserActivity(function(err2,userActivity) {
+            if (err2) return callback(err2,undefined);
+
             var data = JSON.stringify(matchData(users,userActivity), null, '\t');
 
-            fs.writeFile(filename, data, function(err) {
-                if (err) throw err;
+            fs.writeFile(filename, data, function(err3) {
+                if (err3) return callback(err3,undefined);
                 
-                callback(data);
+                callback(undefined,data);
             });
 
         });
@@ -46,14 +50,14 @@ function matchData(users,userActivity) {
 
 function getUsers(callback) {
     sql.select('users',['userId', 'lName', 'fName', 'email', 'nNumber'],[],[],function(err,users) {
-        if (err) throw err;
-        callback(users);
+        if (err) callback(err,undefined);
+        callback(undefined,users);
     });
 }
 
 function getUserActivity(callback) {
     sql.select('useractivity',['activityId', 'userId', 'admitted', 'userActivityDatetime'],[],[],function(err,users) {
-        if (err) throw err;
-        callback(users);
+        if (err) callback(err,undefined);
+        callback(undefined,users);
     });
 }

@@ -16,7 +16,7 @@ exports.init = function(host,user,password,name,callback) {
         database        : name
     });
 
-    callback('done')
+    callback(undefined,'done');
 }
 
 exports.select = function(table, columns, params, values, callback) {

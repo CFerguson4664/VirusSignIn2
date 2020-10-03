@@ -26,7 +26,7 @@ module.exports = router;
 //********************************************* GET / POST Requests *********************************************
 
 //Handles the get request for the starting form of this page
-router.get('/', function(req,res) {
+router.get('/', function(req,res,next) {
 
     //Headers to try to prevent the page from being cached 
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -37,7 +37,8 @@ router.get('/', function(req,res) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
     //Get a new session id to represent this client
-    createSession(function(sessionId) {
+    createSession(function(err, sessionId) {
+        if (err) return next(err);
         //Get the starting form of the webpage
         getPage(function(HTML) {
             //Send the seesion id to the client
@@ -50,7 +51,7 @@ router.get('/', function(req,res) {
     });
 });
 
-router.post('/data',function(req,res) {
+router.post('/data',function(req,res,next) {
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl1;
 
@@ -58,7 +59,8 @@ router.post('/data',function(req,res) {
     var data = req.body.response
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+    sessionMan.sessionIdValid(cookie, 1, function(err, valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             if(data == 0) {
@@ -127,16 +129,18 @@ function createSession(callback) {
     var sessionTime = time.getTime();
 
     //Get a new session id to use for the session
-    sessionMan.getNewSessionId(1, function(sessionId) {
+    sessionMan.getNewSessionId(1, function(err,sessionId) {
+        if (err) return callback(err,undefined);
 
         var table = 'sessionData';
         var columns = ['sessionId','sessionDatetime'];
         var values = [`'${sessionId}'`,`'${sessionTime}'`];
 
         //Insert the session id and creation time into the database
-        SQL.insert(table, columns, values, function(err, success) {
+        SQL.insert(table, columns, values, function(err2, success) {
+            if (err2) return callback(err,undefined);
             //callback the session id so it can be sent to the client
-            callback(sessionId);
+            callback(undefined,sessionId);
         });
     });
 }
@@ -149,10 +153,11 @@ exports.deleteOldSessionData = function() {
     var values = [];
 
     SQL.select(table,columns,params,values,function(err,data) {
+        if (err) return callback(err);
         if(data.length > 0) {
             //Delete the data if it is old
-            deleteOnId(data, function(done) {
-
+            deleteOnId(data, function(err2,done) {
+                if (err2) return callback(err2);
             });
         }
     });
@@ -163,23 +168,27 @@ exports.deleteOldSessionData = function() {
 function deleteOnId(data, callback) {
     var current = data.shift();
     var sessionId = current[0];
-    sessionMan.sessionIdValid(sessionId, 1, function(valid) {
+    sessionMan.sessionIdValid(sessionId, 1, function(err,valid) {
+        if (err) return callback(err,undefined);
         if(!valid) {
             var table = 'sessiondata';
             var params = ['sessionId'];
             var values = [`'${sessionId}'`];
 
-            SQL.delete(table,params,values, function(err,success) {
+            SQL.delete(table,params,values, function(err2,success) {
+                if (err) return callback(err2,undefined);
+                callback(undefined,success);
             });
         }
     });
 
     if(data.length > 0) {
-        deleteOnId(data, function(done) {
-            callback(done);
-        })
+        deleteOnId(data, function(err3, done) {
+            if (err3) return callback(err3,undefined);
+            callback(undefined,done);
+        });
     }
     else {
-        callback(true);
+        callback(undefined,true);
     }
 }
