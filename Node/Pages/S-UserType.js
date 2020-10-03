@@ -152,12 +152,14 @@ exports.deleteOldSessionData = function() {
     var params = [];
     var values = [];
 
+    // ***************************
+    // can't deal with errors here
+    // there's no callback or next
+    // ***************************
     SQL.select(table,columns,params,values,function(err,data) {
-        if (err) return callback(err);
         if(data.length > 0) {
             //Delete the data if it is old
             deleteOnId(data, function(err2,done) {
-                if (err2) return callback(err2);
             });
         }
     });
