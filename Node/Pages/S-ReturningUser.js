@@ -105,11 +105,11 @@ router.post('/create',function(req,res,next) {
         if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            addUserToBuffer(req.body.userId, function(err2,success) {
-                if (err2) return next(err2);
+            // addUserToBuffer(req.body.userId, function(err2,success) {
+                // if (err2) return next(err2);
                 res.send('/new');
                 res.end();
-            });
+            // });
         }
         //Otherwise redirect them to the timeout page
         else {
