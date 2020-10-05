@@ -18,7 +18,10 @@ const https = require('https');
 const fs = require('fs');
 const encryption = require('./Utils/CryptoServer'); //Requires server encryption
 
-const Console = require('console').Console; // module to write console output to other streams, i.e. file
+// const Console = require('console').Console; // module to write console output to other streams, i.e. file
+const winston = require('winston'); // module for enhanced logging
+    const expressWinston = require('express-winston');
+    require('winston-daily-rotate-file');
 const timeUtils = require('./Utils/TimeUtils'); // need to format the time in the ouptut file
 
 app.use(helmet()); // use attack prevention strategies
@@ -75,26 +78,28 @@ app.get('/',function(req,res) {
 
 
 // is there a way to not use public variables for the logger?
-var logger = undefined;
+// var logger = undefined;
+// global.logger = logger;
 
-// middleware to catch error messages, log them, and pass them on
+// // middleware to catch error messages, log them, and pass them on
 app.use(function (err,req,res,next) {
     // data to be printed in log file
-    var json_error = {
-        datetime : timeUtils.getTime(),
-        error_message : err
-    };
+    // var json_error = {
+    //     datetime : timeUtils.getTime(),
+    //     error_message : err
+    // };
 
     // console.log(json_error);
 
     // log the error data
-    logger.error(json_error);
+    // logger.error(json_error);
 
     res.status(500).redirect('/error');
 
     // pass the error 'up the chain'
     next(err);
 });
+
 
 function init() {
     // fs.readFile('C:/signin-app/bin/setup.json', function(err,content) {
@@ -103,9 +108,62 @@ function init() {
         var parsed = JSON.parse(content);
 
         // set up append file stream for logger
-        var consoleOutputFilename = fs.createWriteStream(parsed.console_output_filename, {'flags': 'a'});
+        // var consoleOutputFilename = fs.createWriteStream(parsed.console_output_filename, {'flags': 'a'});
         // send console output to the file stream
-        logger = new Console({stdout: consoleOutputFilename});
+        // logger = new Console({stdout: consoleOutputFilename});
+
+        winston.loggers.add('logger', {
+            transports: [
+                new winston.transports.Console({
+                    level: 'info',
+                    format: winston.format.simple()
+                }),
+                new winston.transports.DailyRotateFile({
+                    filename: parsed.console_output_folder + 'consoleOutput-%DATE%.log',
+                    datePattern: 'YYYY-MM-DD',
+                    level: 'info',
+                    maxFiles: parsed.console_output_folder_lifetime_days+'d',
+                    format: winston.format.combine(
+                        winston.format.timestamp(),
+                        winston.format.json()
+                    )
+                })
+            ]
+        });
+
+        const logger = winston.loggers.get('logger');
+
+        app.use(expressWinston.logger({
+            transports: [
+                new winston.transports.Console(),
+                new winston.transports.DailyRotateFile({
+                    filename: parsed.console_output_folder + 'req%DATE%.log',
+                    datePattern: 'YYYY-MM-DD',
+                    maxFile: parsed.console_output_folder_lifetime_days+'d',
+                    format: winston.format.combine(
+                        winston.format.timestamp(),
+                        winston.format.json()
+                    )
+                })
+            ]
+        }));
+        
+        app.use(expressWinston.errorLogger({
+            transports: [
+                new winston.transports.Console(),
+                new winston.transports.DailyRotateFile({
+                    level: 'error',
+                    filename: parsed.console_output_folder + 'error%DATE%.log',
+                    datePattern: 'YYYY-MM-DD',
+                    maxFile: parsed.console_output_folder_lifetime_days+'d',
+                    format: winston.format.combine(
+                        winston.format.timestamp(),
+                        winston.format.json()
+                    )
+                    
+                })
+            ]
+        }));
 
         const options = {
             key: fs.readFileSync(parsed.key_path),
@@ -120,7 +178,8 @@ function init() {
                         res.end();
                     }).listen(parsed.insecure_server_port, function() {
                         
-                        console.log(`SignIn listening on port ${parsed.secure_server_port}`);
+                        // console.log(`SignIn listening on port ${parsed.secure_server_port}`);
+                        logger.info(`SignIn listening on port ${parsed.secure_server_port}`);
                     });
                 });
             });
