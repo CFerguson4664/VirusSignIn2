@@ -18,7 +18,6 @@ const https = require('https');
 const fs = require('fs');
 const encryption = require('./Utils/CryptoServer'); //Requires server encryption
 
-// const Console = require('console').Console; // module to write console output to other streams, i.e. file
 const winston = require('winston'); // module for enhanced logging
     const expressWinston = require('express-winston');
     require('winston-daily-rotate-file');
@@ -76,23 +75,8 @@ app.get('/',function(req,res) {
     res.redirect('/welcome');
 });
 
-
-// is there a way to not use public variables for the logger?
-// var logger = undefined;
-// global.logger = logger;
-
-// // middleware to catch error messages, log them, and pass them on
+// middleware to catch error messages, log them, and pass them on
 app.use(function (err,req,res,next) {
-    // data to be printed in log file
-    // var json_error = {
-    //     datetime : timeUtils.getTime(),
-    //     error_message : err
-    // };
-
-    // console.log(json_error);
-
-    // log the error data
-    // logger.error(json_error);
 
     res.status(500).redirect('/error');
 
@@ -107,11 +91,13 @@ function init() {
         if (err) return console.log('Error loading setup file:\n' + err);
         var parsed = JSON.parse(content);
 
-        // set up append file stream for logger
-        // var consoleOutputFilename = fs.createWriteStream(parsed.console_output_filename, {'flags': 'a'});
-        // send console output to the file stream
-        // logger = new Console({stdout: consoleOutputFilename});
+        // if the number of days in the setup file is set to 0, no files should be deleted
+        var days = parsed.console_output_folder_lifetime_days+'d'
+        if (days = '0d') {
+            days = null;
+        }
 
+        // adds logger for programmer logs
         winston.loggers.add('logger', {
             transports: [
                 new winston.transports.Console({
@@ -122,7 +108,7 @@ function init() {
                     filename: parsed.console_output_folder + 'consoleOutput-%DATE%.log',
                     datePattern: 'YYYY-MM-DD',
                     level: 'info',
-                    maxFiles: parsed.console_output_folder_lifetime_days+'d',
+                    maxFiles: days,
                     format: winston.format.combine(
                         winston.format.timestamp(),
                         winston.format.json()
@@ -131,15 +117,17 @@ function init() {
             ]
         });
 
+        // brings the logger into this file
         const logger = winston.loggers.get('logger');
 
+        // adds the request logger
         app.use(expressWinston.logger({
             transports: [
                 new winston.transports.Console(),
                 new winston.transports.DailyRotateFile({
                     filename: parsed.console_output_folder + 'req%DATE%.log',
                     datePattern: 'YYYY-MM-DD',
-                    maxFile: parsed.console_output_folder_lifetime_days+'d',
+                    maxFile: days,
                     format: winston.format.combine(
                         winston.format.timestamp(),
                         winston.format.json()
@@ -148,6 +136,7 @@ function init() {
             ]
         }));
         
+        // adds the error logger
         app.use(expressWinston.errorLogger({
             transports: [
                 new winston.transports.Console(),
@@ -155,7 +144,7 @@ function init() {
                     level: 'error',
                     filename: parsed.console_output_folder + 'error%DATE%.log',
                     datePattern: 'YYYY-MM-DD',
-                    maxFile: parsed.console_output_folder_lifetime_days+'d',
+                    maxFile: days,
                     format: winston.format.combine(
                         winston.format.timestamp(),
                         winston.format.json()
