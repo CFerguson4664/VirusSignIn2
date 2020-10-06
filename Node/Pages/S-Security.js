@@ -428,7 +428,7 @@ function genHTML(data, asJson, callback) {
     }
 
     //Callback with either the html or the json object
-    callback(finalData);
+    callback(undefined,finalData);
 }
 
 
