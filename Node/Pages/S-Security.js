@@ -99,6 +99,8 @@ router.post('/reload', function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
+    console.log('Reload Called');
+
     //Validate the client using the session Id
     sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
         if (err) return next(err);
@@ -162,32 +164,23 @@ router.post('/deny',function(req,res,next) {
         if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+            console.log('Awaiting deny return');
 
             // remove user from buffer
             deleteUserFromBuffer(req.body.userId, function(err2,success2) {
                 if (err2) return next(err2);
                 // update the buffer
-                getUserBuffer(function(err3,HTML) {
-                    if (err3) return next(err3);
+                if (req.body.allowed == 1 || req.body.allowed == 2) {
+                    addUserActivity(req.body.userId, req.body.allowed, function(err4,success1) {
+                        if (err4) return next(err4);
+                    });
+                }
+                console.log('Responding to Deny');
 
-                    if (req.body.allowed == 1 || req.body.allowed == 2) {
-                        addUserActivity(req.body.userId, req.body.allowed, function(err4,success1) {
-                            if (err4) return next(err4);
-                            // send updated innerHTML to client
-                            res.send(HTML);
-                            //End our response to the client
-                            res.end();
-                        });
-                    }
-                    else {
-                    
-                        // send updated innerHTML to client
-                        res.send(HTML);
-                        //End our response to the client
-                        res.end();
-                    }
-                    
-                });
+                // send response to client
+                res.send('Done');
+                //End our response to the client
+                res.end();
             });   
         }
         //Otherwise redirect them to the timeout page
@@ -349,8 +342,13 @@ function getAllData(asJson, callback) {
             }
         }
         else {
-            //If there is no one in the buffer we can callback no data
-            callback('');
+            if(asJson){
+                callback(undefined,'');
+            }
+            else {
+                //If there is no one in the buffer we can callback no data
+                callback(undefined,'<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>');
+            }
         }
     });
 }
