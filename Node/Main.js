@@ -23,6 +23,9 @@ const winston = require('winston'); // module for enhanced logging
     require('winston-daily-rotate-file');
 const timeUtils = require('./Utils/TimeUtils'); // need to format the time in the ouptut file
 
+const mailer = require('./Utils/Mailer');
+var recipient = 'nsccsignin@gmail.com';
+
 app.use(helmet()); // use attack prevention strategies
 
 app.use(cookieParser());
@@ -78,10 +81,13 @@ app.get('/',function(req,res) {
 // middleware to catch error messages, log them, and pass them on
 app.use(function (err,req,res,next) {
 
-    res.status(500).redirect('/error');
+    mailer.sendEmail(recipient, 'SignInError', 'This is a drill.', function(sucess) {
+        
+        res.status(500).redirect('/error');
 
-    // pass the error 'up the chain'
-    next(err);
+        // pass the error 'up the chain'
+        next(err);
+    });
 });
 
 
@@ -90,6 +96,9 @@ function init() {
     fs.readFile('../bin/setup.json', function(err,content) {
         if (err) return console.log('Error loading setup file:\n' + err);
         var parsed = JSON.parse(content);
+        
+        // changes the recipient email if the setup file defines an email
+        recipient = (parsed.error_email != '') ? parsed.error_email : recipient; 
 
         // if the number of days in the setup file is set to 0, no files should be deleted
         var days = parsed.console_output_folder_lifetime_days+'d'
