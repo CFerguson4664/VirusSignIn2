@@ -3,50 +3,80 @@
 
 //"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\bin\Hostx64\x64\editbin.exe"
 
+// Main library offering may functionalities to ease web development
 var express = require('express');
-var helmet = require('helmet'); // package to help prevent attacks
-var app = express();
+
+// Package to help mitigate attacks
+var helmet = require('helmet'); 
+
+// Package to allow enhanced logging and error handling 
+const winston = require('winston'); 
+const expressWinston = require('express-winston');
+require('winston-daily-rotate-file');
 
 
+
+// Package to enable accessing data stored in browser cookies
+const cookieParser = require('cookie-parser'); 
+
+// Package to parse AJAX requests from client
+const bodyParser = require('body-parser');
+
+// Package to allow clients to connect over http
+const http = require('http');
+
+// Package to allow clients to connect over https
+const https = require('https');
+
+// Package to allow the server to open files on the local computer
+const fs = require('fs');
+
+
+
+// Utility file to allow the server to access an SQL database
 const SQL = require('./Utils/GeneralSql');
 
-const cookieParser = require('cookie-parser'); //Library to allow the use of cookies to track sessions
+// Utility file to ease in accessing time data
+const timeUtils = require('./Utils/TimeUtils');
 
-const bodyParser = require('body-parser'); //Parses AJAX from client
-const http = require('http');
-const https = require('https');
-const fs = require('fs');
-const encryption = require('./Utils/CryptoServer'); //Requires server encryption
-
-const winston = require('winston'); // module for enhanced logging
-    const expressWinston = require('express-winston');
-    require('winston-daily-rotate-file');
-const timeUtils = require('./Utils/TimeUtils'); // need to format the time in the ouptut file
-
+// Utility file to allow SignIn to send automated emails
 const mailer = require('./Utils/Mailer');
-var recipient = 'nsccsignin@gmail.com';
 
-app.use(helmet()); // use attack prevention strategies
+// Utility file to enable encryptions between clients and the server
+const encryption = require('./Utils/CryptoServer');
 
+
+//*************************** Create and Configure express Node.JS application ********************************
+//Create express Node.JS application
+var app = express();
+
+// Include the helmet library's attack prevention strategies
+app.use(helmet()); 
+
+// Use the cookieParser library to extract the data from our cookies
 app.use(cookieParser());
 
-app.use(bodyParser.urlencoded({  //   body-parser to
-    extended: true               //   parse data
-}));                             //
+// Parses data returned to the server in AJAX requests
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(bodyParser.json()); //Tells the body parser it will be parsing json.
+// Allows the body parser to parse json.
+app.use(bodyParser.json()); 
 
+// Make all files in the public folder accessable to clients
+app.use(express.static('../Public')); 
 
-// app.use(express.static('C:/signin-app/Public')); //Makes all files in the public folder accessable to clients
-app.use(express.static('../Public')); //Makes all files in the public folder accessable to clients
-
-app.use(function(req, res, next) { // redirect http to https
+// If a client connects over http redirect them to https
+app.use(function(req, res, next) { 
     if(!req.secure) {
         return res.redirect(['https://', req.headers.host, req.url].join(''));
     }
     next();
 });
 
+// app.use(express.static('C:/signin-app/Public')); //Makes all files in the public folder accessable to clients
+
+
+// Import the pages of the application 
 var Welcome = require('./Pages/S-Welcome');
 var UserType = require('./Pages/S-UserType');
 var New = require('./Pages/S-NewUser');
@@ -60,7 +90,7 @@ var ThankYou = require('./Pages/S-ThankYou');
 var SecurityNew = require('./Pages/S-SecurityNewUser');
 var ServerError = require('./Pages/S-Error');
 
-// Import my test routes into the path '/test'
+// Add the imported pages to the express Node.JS application
 app.use('/welcome', Welcome);
 app.use('/usertype', UserType);
 app.use('/new', New);
@@ -74,9 +104,14 @@ app.use('/thankyou', ThankYou);
 app.use('/securitynew', SecurityNew);
 app.use('/error', ServerError);
 
+
+
+// If users do not specify what page they want to visit, redirect them to the welcome page
 app.get('/',function(req,res) {
     res.redirect('/welcome');
 });
+
+var recipient = 'nsccsignin@gmail.com';
 
 // middleware to catch error messages, log them, and pass them on
 app.use(function (err,req,res,next) {
