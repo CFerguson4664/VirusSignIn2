@@ -136,7 +136,7 @@ function init() {
         recipient = (parsed.error_email != '') ? parsed.error_email : recipient; 
 
         // if the number of days in the setup file is set to 0, no files should be deleted
-        var days = parsed.console_output_folder_lifetime_days+'d'
+        var days = parsed.console_output_folder_lifetime_days+'d';
         if (days = '0d') {
             days = null;
         }

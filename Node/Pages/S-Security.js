@@ -99,8 +99,6 @@ router.post('/reload', function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
-    console.log('Reload Called');
-
     //Validate the client using the session Id
     sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
         if (err) return next(err);
