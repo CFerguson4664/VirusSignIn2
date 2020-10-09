@@ -22,9 +22,34 @@ Xor Softworks LLC
     --img-width: 100%;
 } */
 
+/*Via Colors*/
+/*:root {
+    --banner-color: #000000;
+    --bg-dark-color: #121212;
+    --header-color: darkblue;
+    --bg-dark-header-color: #696969;
+    --bg-light-color: #e4e4e4;
+    --button-color1: #0b2c5e;
+    --text-color1: #ffffff;
+    --button-color-ready: #e4e4e4;
+    --text-color-ready: #000000;
+    --button-color-select: #0b2c5e;
+    --text-color-select: #ffffff;
+    --button-color-unselect: #b3b3b3;
+    --text-color-unselect: #000000;
+    --admin-div-color: #7e7e7e;
+    --admin-text-color: #ffffff;
+    --text-box-color: #000000;
+    --text-box-text: #ffffff;
+    --welcome-text-color: #011f4b;
+    --img-width: 100%;
+}*/
+
+/*NSCC Colors*/
 :root {
     --banner-color: #000000;
     --bg-dark-color: #121212;
+    --header-color: darkblue;
     --bg-dark-header-color: #696969;
     --bg-light-color: #e4e4e4;
     --button-color1: #0b2c5e;
@@ -55,7 +80,7 @@ body {
 }
 
 header {
-    background-color:darkblue; 
+    background-color: var(--header-color); 
     padding-top:25px;
     padding-bottom:25px;
 }

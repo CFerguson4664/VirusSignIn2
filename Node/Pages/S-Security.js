@@ -14,6 +14,7 @@ const express = require('express');
 
 //Requires the TimeUtils utility
 const time = require('../Utils/TimeUtils');
+const { json } = require('express');
 
 
 //const axios = require('axios')
@@ -29,20 +30,24 @@ module.exports = router;
 //********************************************* GET / POST Requests *********************************************
 
 //Handles the get request for the starting form of this page
-router.get('/',function(req,res) {
+router.get('/',function(req,res,next) {
 
     // helmet makes the page not render html, unless the content type is set
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    
+
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+
             //Get the starting form of the webpage
-            getPage(function(HTML) {
+            getPage(function(err2,HTML) {
+                if (err2) return next(err2);
+
                 //Send the HTML to the client
                 res.write(HTML);
                 //End our response to the client
@@ -58,27 +63,26 @@ router.get('/',function(req,res) {
 });
 
 // when the client posts to nNumber
-router.post('/nNumber',function(req,res) {
+router.post('/nNumber',function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             var nNumber = req.body.nNumber;
 
             // add the user with the nNumber to the buffer
-            addUserToBufferNNumber(nNumber, function(success) {
+            addUserToBufferNNumber(nNumber, function(err2,success) {
+                if (err2) return next(err2);
                 // if the user was added
                 if (success) {
-                    // update the buffer with no nNumber
-                    updateUserBuffer(function(HTML) {
-                        // send updated innerHTML to client
-                        res.send(HTML);
-                        //End our response to the client
-                        res.end();
-                    });
+                    //Send something
+                    res.send('done');
+                    //End our response to the client
+                    res.end();
                 }
             });
         }
@@ -91,19 +95,21 @@ router.post('/nNumber',function(req,res) {
 });
 
 // when the client interval resets (not actual reload)
-router.post('/reload', function(req,res) {
+router.post('/reload', function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             // update the buffer
-            updateUserBuffer(function(HTML) {
+            getAllData(true,function(err2,HTML) {
+                if (err2) return next(err2);
 
                 // send updated innerHTML to client
-                res.send(HTML);
+                res.send(JSON.stringify(HTML));
                 //End our response to the client
                 res.end();
             });
@@ -117,26 +123,24 @@ router.post('/reload', function(req,res) {
 });
 
 // when the client posts to submit
-router.post('/submit',function(req,res) {
+router.post('/submit',function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
 
             // add the user data to useractivity
-            addUserActivity(req.body.userId, req.body.allowed, function(success1) {
+            addUserActivity(req.body.userId, req.body.allowed, function(err2,success1) {
+                if (err2) return next(err2);
                 // remove user from buffer
-                deleteUserFromBuffer(req.body.userId, function(success2) {
-                    // update the buffer
-                    getUserBuffer(function(HTML) {
-                        // send updated innerHTML to client
-                        res.send(HTML);
-                        //End our response to the client
-                        res.end();
-                    });
+                deleteUserFromBuffer(req.body.userId, function(err3,success2) {
+                    if (err3) return next(err3);
+                    //End our response to the client
+                    res.end();
                 });
             });   
         }
@@ -149,36 +153,32 @@ router.post('/submit',function(req,res) {
 });
 
 // when the client posts to deny
-router.post('/deny',function(req,res) {
+router.post('/deny',function(req,res,next) {
     //This cookie is the session id stored on login page
     var cookie = req.cookies.SignInLvl2;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 2, function(valid) {
+    sessionMan.sessionIdValid(cookie, 2, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+            console.log('Awaiting deny return');
 
             // remove user from buffer
-            deleteUserFromBuffer(req.body.userId, function(success2) {
+            deleteUserFromBuffer(req.body.userId, function(err2,success2) {
+                if (err2) return next(err2);
                 // update the buffer
-                getUserBuffer(function(HTML) {
-                    if (req.body.allowed == 1 || req.body.allowed == 2) {
-                        addUserActivity(req.body.userId, req.body.allowed, function(success1) {
-                            // send updated innerHTML to client
-                            res.send(HTML);
-                            //End our response to the client
-                            res.end();
-                        });
-                    }
-                    else {
-                    
-                        // send updated innerHTML to client
-                        res.send(HTML);
-                        //End our response to the client
-                        res.end();
-                    }
-                    
-                });
+                if (req.body.allowed == 1 || req.body.allowed == 2) {
+                    addUserActivity(req.body.userId, req.body.allowed, function(err4,success1) {
+                        if (err4) return next(err4);
+                    });
+                }
+                console.log('Responding to Deny');
+
+                // send response to client
+                res.send('Done');
+                //End our response to the client
+                res.end();
             });   
         }
         //Otherwise redirect them to the timeout page
@@ -192,8 +192,10 @@ router.post('/deny',function(req,res) {
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
-    getUserBuffer(function(HTML) {
-        callback(Template(HTML));
+    getAllData(false,function(err,HTML) {
+        if (err) return callback(err,undefined);
+
+        callback(undefined,Template(HTML));
     });
 }
 
@@ -204,14 +206,14 @@ function Template(userHTML) {
             <link rel="stylesheet" type="text/css" href="style.css">
             <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Via Sign In</title>
+            <title>Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="security.js"></script>
         </head>
         <header class="bg-dark" >
             <div class="logo">
-                <img src="companyLogo.png" alt="Xor Via logo">
+                <img src="active.png" alt="Company Logo">
             </div>
         </header>
         <header class="bg-dark-header" id="header">
@@ -237,14 +239,193 @@ function Template(userHTML) {
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
 
-//Get Request for NSCC API integration
-// const getNSCC = async () => {
-//     try {
-//         return await axios.get('http://127.0.0.1:31415/api/signin?NNUM=N00000000&OFFICE=REG')
-//     } catch (error) {
-//         console.error(error)
-//     }
-// }
+function convertNNumberFromDatabase(nNumberIn) {
+    var nNumber = '' + (nNumberIn * -1)
+    
+    while(nNumber.length < 8) {
+        nNumber = '0' + nNumber;
+    }
+
+    nNumber = 'N' + nNumber;
+
+    return nNumber;
+}
+
+function getAllData(asJson, callback) {
+    var table = 'userbuffer';
+    var columns = ['userbuffer.userId','users.fName','users.lName','userbuffer.bufferId'];
+    var params = [];
+    var operators = [];
+    var values = [];
+    var extraSQL = `LEFT OUTER JOIN users on userbuffer.userId = users.userId`;
+
+    // select userId, name, and bufferId from database
+    SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
+        if (err) return callback(err,undefined);
+        //List of the users that need to be added to the security terminal
+
+        //Store the data stubs
+        var data = []; 
+
+        if(res.length > 0) {
+            //If we got some records from the database
+            for(let i = 0; i < res.length; i++) { 
+                //Loop throught every record from the database
+                if(res[i][0] < 0) { 
+                    //If the userId is less than 0 it means that the record 
+                    // is an NNumber without an associated account
+
+                    //Convert the nNumber back to the normal format
+                    var nNumber = convertNNumberFromDatabase(res[i][0]);
+
+                    //Push the data to the buffer
+                    data.push({
+                        type:       0,                          //The type of record this is
+                        bufferId:   res[i][3],                  //The bufferId of this record 
+                        userId:     nNumber,                    //The userId of the user referenced by the record
+                        name:       nNumber                     //The name of the user referenced by this record
+                    });
+
+                    if(data.length == res.length) {
+                        //If this is the last loop, move onto the next step
+                        return genHTML(data, asJson, callback); //**************************************** RETURN ***************************************************/
+                    }
+                }
+                else {
+                    //If the userId is not less than 0 it mean that the 
+                    // record is for a normal user with an associated account
+
+                    //Check to see if this user has been denied in the last 14 days
+                    userWasDenied(res[i][0], function(err2,wasDenied, daysSinceDeny, dateOfDeny) {
+                        if (err) return callback(err2,undefined);
+                        if(wasDenied) {
+
+                            //if the user was denied in the last 14 days
+
+                            //Push the data to the buffer
+                            data.push({
+                                type:           1,                              //The type of record this is
+                                bufferId:       res[i][3],                      //The bufferId of this record 
+                                userId:         res[i][0],                      //The userId of the user referenced by the record
+                                name:           res[i][1] + ' ' + res[i][2],    //The name of the user referenced by this record
+                                daysSinceDeny:  daysSinceDeny,                  //The number of days since the user referenced by this record was denied 
+                                dateOfDeny:     dateOfDeny                      //The data fo the last time the user referenced by this record was denied
+                            });
+
+                            if(data.length == res.length) {
+                                //If this is the last loop, move onto the next step
+                                return genHTML(data, asJson, callback); //**************************************** RETURN ***********************************************/
+                                // why is this just callback ^^^^^^^^  What is it doing?
+                            }
+                        }
+                        else {
+                            //If the user was not denied in the last 14 days
+
+                            //Push the data to the buffer
+                            data.push({
+                                type:       2,                              //The type of record this is
+                                bufferId:   res[i][3],                      //The bufferId of this record 
+                                userId:     res[i][0],                      //The userId of the user referenced by the record
+                                name:       res[i][1] + ' ' + res[i][2]     //The name of the user referenced by this record
+                            });
+
+                            if(data.length == res.length) {
+                                //If this is the last loop, move onto the next step
+                                return genHTML(data, asJson, callback); //**************************************** RETURN ***********************************************/
+                                // why is this just callback ^^^^^^^^  What is it doing?
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        else {
+            if(asJson){
+                callback(undefined,'');
+            }
+            else {
+                //If there is no one in the buffer we can callback no data
+                callback(undefined,'<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>');
+            }
+        }
+    });
+}
+
+function genHTML(data, asJson, callback) {
+    var finalData = '';
+
+    if(asJson) {
+        finalData = [];
+    }
+    
+    for(var i = 0; i < data.length; i++) {
+        //Get the next record from the data object
+        var record = data[i];
+        var innerHTML = '';
+
+        if(record.type == 0) {
+            //Special HTML for an unknown user
+            innerHTML = `<div class="button-like">
+                <h2 class="label text-center">Visitor allowed entry?</h2>
+                <div class="sidenav-open">
+                    <button name="allowed-userId-${record.userId}" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Visitor does not have an account. <br> They need to create an account using the QR code.<br> Or click the button above to create it here.</button>
+                </div>
+                <button id="submit-userId-${record.userId}" onclick="deny_button_click(this)" class="ready">Ok</button>
+            </div>`;
+        }
+        else if (record.type == 1) {
+            //Special HTML for a recently denied user
+            innerHTML = `<div class="button-like">
+                <h2 class="label text-center">Visitor allowed entry?</h2>
+                <div class="sidenav-open">
+                    <h2 name="denied-info-userId-${record.userId}" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="label-b text-center">Visitor was denied ${record.daysSinceDeny} day(s) ago. <br> Date denied: ${record.dateOfDeny}</button>
+                </div>
+                <div class="sidenav-open">
+                    <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Override and allow</button>
+                    <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${record.userId}" class="unselected">Dismiss</button>
+                </div>
+                <button id="submit-userId-${record.userId}" onclick="deny_button_click(this)" class="ready">Submit</button>
+            </div>`;
+        }
+        else if (record.type == 2) {
+            //Special HTML for a normal user
+            innerHTML = `<div class="button-like">
+                <h2 class="label text-center">Visitor allowed entry?</h2>
+                <div class="sidenav-open">
+                    <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Yes</button>
+                    <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${record.userId}" class="unselected">No</button>
+                </div>
+                <button id="submit-userId-${record.userId}" onclick="submit_button_click(this)" class="ready">Submit</button>
+            </div>`;
+        }
+
+        //Add the full html for the security prompt
+        var html = `<div class="admin" id=${record.bufferId} name='prompt'>
+            <div class="button-like">
+                <h2 class="label text-center">Visitor identification:</h2>
+                <input type="text" name="name-userId-${record.userId}" id="userId-${record.userId}" data-userId="${record.userId}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${record.name}">
+                <button name="edit-userId-${record.userId}" onclick="edit_click(this)" id="edit-userId-${record.userId}" class="ready">Edit User Information</button>
+            </div>
+            ${innerHTML}
+        </div>`;
+
+        //asJson determines whether the response of this funcion is the raw HTML or the html separated by bufferId in a json object
+        if(asJson) {
+            //Store each prompt separately with the bufferId
+            finalData.push({
+                bufferId: record.bufferId,
+                HTML: html
+            })
+        }
+        else {
+            //Concatinate all of the html together
+            finalData += html;
+        }
+    }
+
+    //Callback with either the html or the json object
+    callback(undefined,finalData);
+}
 
 
 // function to add user to buffer based on nNumber
@@ -258,6 +439,7 @@ function addUserToBufferNNumber(nNumber,callback) {
 
     // select userId with matching nNumber
     SQL.select(table, columns, params, values, function(err,userId) {
+        if (err) return callback(err,undefined);
 
         if (userId.length > 0) {
             // set up data for insert statement
@@ -266,8 +448,9 @@ function addUserToBufferNNumber(nNumber,callback) {
             values = [`${userId}`,`0`];
 
             // insert user into userbuffer
-            SQL.insert(table, columns, values, function(err,success) {
-                return callback(success);
+            SQL.insert(table, columns, values, function(err2,success) {
+                if (err2) return callback(err2,undefined);
+                return callback(undefined,success);
             });
         }                
         else {
@@ -276,313 +459,14 @@ function addUserToBufferNNumber(nNumber,callback) {
             var values = [`${parseInt(nNumber.substring(1)) * -1}`,`0`];
 
             // insert user into userbuffer
-            SQL.insert(table, columns, values, function(err,success) {
-                return callback(success);
+            SQL.insert(table, columns, values, function(err3,success) {
+                if (err3) return callback(err3,undefined);
+                return callback(undefined,success);
             });
         }
 
-        return callback(false);
+        return callback(undefined,false);
     });
-}
-
-// function to update from userbuffer table
-function updateUserBuffer(callback) {
-    // set up data for selectExtra statement
-    var table = 'userbuffer';
-    var columns = ['userId','loaded'];
-    var params = ['userId','loaded'];
-    var operators = ['<','='];
-    var values = [`0`,`0`];
-    var extraSQL = ``;
-
-    SQL.selectExtra(table,columns,params,operators,values,extraSQL, function(err,res) {
-
-        //List of the users that need to be added to the security terminal
-        var needLoaded = []; 
-
-        if(res.length > 0) {
-            for(let j = 0; j < res.length; j++) {
-                var nNumber = '' + (res[j][0] * -1)
-    
-                while(nNumber.length < 8) {
-                    nNumber = '0' + nNumber;
-                }
-    
-                nNumber = 'N' + nNumber;
-                
-                needLoaded.push([nNumber,nNumber,'','','']);
-    
-                columns = ['loaded'];
-                colValues = ['1'];
-                params = ['userId'];
-                parValues = [res[j][0]];
-    
-                SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
-                    if(j == res.length-1) {
-                        updateNormalUserBuffer(callback, needLoaded)
-                    }
-                })
-            }
-        }
-        else {
-            updateNormalUserBuffer(callback, needLoaded)
-        }
-        
-    })
-}
-
-function updateNormalUserBuffer(callback,needLoaded) {
-
-    var table = 'userbuffer';
-    var columns = ['userbuffer.userId','users.fName','users.lName','userbuffer.loaded'];
-    var params = [];
-    var operators = [];
-    var values = [];
-    var extraSQL = `INNER JOIN users on userbuffer.userId = users.userId WHERE userbuffer.loaded = 0`;
-
-    // select userId and name from database
-    SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
-
-        
-
-        //If there was a response to the database query
-        if(res.length != 0) {
-            //For every response to the database query
-            for (let i = 0; i < res.length; i++) {
-                //If the user has not been loaded
-                if (res[i][3] == 0) {
-
-                    //Add them to the list of users that need loaded
-                    needLoaded.push(res[i]);
-
-                    //Log that the user has been loaded
-                    columns = ['loaded'];
-                    colValues = ['1'];
-                    params = ['userId'];
-                    parValues = [res[i][0]];
-    
-                    SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
-
-                        //Check if the user was denied within the last 14 days
-                        userWasDenied(needLoaded[needLoaded.length-1][0], function(denied,deniedAgo, deniedDate) {
-                            if (denied) {
-                                needLoaded[needLoaded.length-1].push(deniedAgo);
-                                needLoaded[needLoaded.length-1].push(deniedDate);
-                            }
-
-                            if (i == res.length-1) {
-                                return callback(genUserBufferInnerHTML(needLoaded));
-                            }
-                        }); //End userWasDenied
-                    }); //End SQL.update
-                } //End if loaded 0
-                else {
-                    if(i == res.length-1) {
-                        if (needLoaded.length > 0) {
-                            return callback(genUserBufferInnerHTML(needLoaded));
-                        }
-                        else {
-                            return callback('');
-                        } 
-                    } //End if last loop
-                } //End else loaded 0
-            } //End for every response
-        } //End if res.length != 0
-        else {
-            if(needLoaded.length > 0) {
-                return callback(genUserBufferInnerHTML(needLoaded));
-            }
-            else {
-                return callback('');
-            }
-        } //End else res.length > 0
-    }); //End SQL.selectExtra
-}
-
-// function to get all from userbuffer table
-function getUserBuffer(callback) {
-    // set up data for selectExtra statement
-    var table = 'userbuffer';
-    var columns = ['userId','loaded'];
-    var params = ['userId'];
-    var operators = ['<'];
-    var values = [`0`];
-    var extraSQL = ``;
-
-    SQL.selectExtra(table,columns,params,operators,values,extraSQL, function(err,res) {
-
-        //List of the users that need to be added to the security terminal
-        var needLoaded = []; 
-        
-        if(res.length > 0) {
-            for(let j = 0; j < res.length; j++) {
-                var nNumber = '' + (res[j][0] * -1)
-    
-                while(nNumber.length < 8) {
-                    nNumber = '0' + nNumber;
-                }
-    
-                nNumber = 'N' + nNumber;
-                
-                needLoaded.push([nNumber,nNumber,'','','']);
-    
-                columns = ['loaded'];
-                colValues = ['1'];
-                params = ['userId'];
-                parValues = [res[j][0]];
-    
-                SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
-                    if(j == res.length-1) {
-                        getNormalUserBuffer(callback, needLoaded)
-                    }
-                })
-            }
-        }
-        else {
-            getNormalUserBuffer(callback, needLoaded)
-        }
-    })
-}
-
-function getNormalUserBuffer(callback, needLoaded) {
-    // set up data for selectExtra statement
-    var table = 'userbuffer';
-    var columns = ['userbuffer.userId','users.fName','users.lName','userbuffer.loaded'];
-    var params = [];
-    var operators = [];
-    var values = [];
-    var extraSQL = `INNER JOIN users on userbuffer.userId = users.userId`;
-
-    // select userId and name from database
-    SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err, res) {
-
-        //Makes sure res 
-        if(res.length != 0) {
-            for (let i = 0; i < res.length; i++) {
-
-
-
-                //Add them to the list of users that need loaded
-                needLoaded.push(res[i]);
-
-                if(res[i][3] == 0) {
-                    //Log that the user has been loaded
-                    columns = ['loaded'];
-                    colValues = ['1'];
-                    params = ['userId'];
-                    parValues = [res[i][0]];
-
-                    SQL.update(table, columns, colValues, params, parValues, function(err2,res2) {
-
-                        //Check if the user was denied within the last 14 days
-                        userWasDenied(needLoaded[needLoaded.length-1][0], function(denied,deniedAgo, deniedDate) {
-                            if (denied) {
-                                needLoaded[needLoaded.length-1].push(deniedAgo);
-                                needLoaded[needLoaded.length-1].push(deniedDate);
-                            }
-
-                            if (i == res.length-1) {
-                                return callback(genUserBufferInnerHTML(needLoaded));
-                            }
-                        }); //End userWasDenied
-                    }); //End SQL.update
-                }
-                else {
-                    //Check if the user was denied within the last 14 days
-                    userWasDenied(needLoaded[needLoaded.length-1][0], function(denied,deniedAgo, deniedDate) {
-                        if (denied) {
-                            needLoaded[needLoaded.length-1].push(deniedAgo);
-                            needLoaded[needLoaded.length-1].push(deniedDate);
-                        }
-
-                        if (i == res.length-1) {
-                            return callback(genUserBufferInnerHTML(needLoaded));
-                        }
-                    }); //End userWasDenied
-                }
-            }
-        }
-        else {
-            if(needLoaded.length > 0) {
-                return callback(genUserBufferInnerHTML(needLoaded));
-            }
-            else {
-                return callback('');
-            }
-        } //End else res.length > 0
-    });
-}
-
-// function to generate the innerHTML based on result from selectExtra statement
-function genUserBufferInnerHTML(data) {
-    // data array: [userId,firstName, lastName(, deniedAgo, deniedDate)]
-
-    var innerHTML = '';
-    
-    for(var i = 0; i < data.length; i++) {
-        var allowedHTML = `<div class="button-like">
-                <h2 class="label text-center">Visitor allowed entry?</h2>
-                <div class="sidenav-open">
-                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Yes</button>
-                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="">No</button>
-                </div>
-                <button id="submit-userId-${data[i][0]}" onclick="submit_button_click(this)" class="ready">Submit</button>
-            </div>`;
-        var deniedHTML = `<div class="button-like">
-                <h2 class="label text-center">Visitor allowed entry?</h2>
-                <div class="sidenav-open">
-                    <h2 name="denied-info-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="label-b text-center">Visitor was denied ${data[i][4]} day(s) ago. <br> Date denied: ${data[i][5]}</button>
-                </div>
-                <div class="sidenav-open">
-                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Override and allow</button>
-                    <button name="allowed-userId-${data[i][0]}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${data[i][0]}" class="">Dismiss</button>
-                </div>
-                <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Submit</button>
-            </div>`;
-        var unknownHTML = `<div class="button-like">
-                <h2 class="label text-center">Visitor allowed entry?</h2>
-                <div class="sidenav-open">
-                    <button name="allowed-userId-${data[i][0]}" data-choiceId="1" id="buttonYes-userId-${data[i][0]}" class="selected">Visitor does not have an account. <br> They need to create an account using the QR code.<br> Or click the button above to create it here.</button>
-                </div>
-                <button id="submit-userId-${data[i][0]}" onclick="deny_button_click(this)" class="ready">Ok</button>
-            </div>`;
-
-        // for every returned item
-        if (data[i].length == 4) {
-            innerHTML += `<div class="admin">
-                <div class="button-like">
-                    <h2 class="label text-center">Visitor identification:</h2>
-                    <input type="text" name="name-userId-${data[i][0]}" id="userId-${data[i][0]}" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
-                    <button name="edit-userId-${data[i][0]}" onclick="edit_click(this)" id="edit-userId-${data[i][0]}" class="ready">Edit User Information</button>
-                </div>
-                    ${allowedHTML}
-                </div>`;
-        }
-        else if (data[i].length == 6){
-            innerHTML += `<div class="admin">
-                <div class="button-like">
-                    <h2 class="label text-center">Visitor identification:</h2>
-                    <input type="text" name="name-userId-${data[i][0]}" id="userId-${data[i][0]}" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
-                    <button name="edit-userId-${data[i][0]}" onclick="edit_click(this)" id="edit-userId-${data[i][0]}" class="ready">Edit User Information</button>
-                </div>
-                    ${deniedHTML}
-                </div>`;
-        }
-        else {
-            innerHTML += `<div class="admin">
-                <div class="button-like">
-                    <h2 class="label text-center">Visitor identification:</h2>
-                    <input type="text" name="name-userId-${data[i][0]}" id="userId-${data[i][0]}" data-userId="${data[i][0]}" autocomplete="off" class="text2" maxlength="50" disabled="true" value="${data[i][1]} ${data[i][2]}">
-                    <button name="new-userId-${data[i][0]}" onclick="new_click(this)" id="new-userId-${data[i][0]}" class="ready">Add User Information</button>
-                </div>
-                    ${unknownHTML}
-                </div>`;
-        }
-
-    }
-
-    // return fully generated innerHTML
-    return innerHTML;
 }
 
 // function to delete user from userbuffer table
@@ -598,19 +482,8 @@ function deleteUserFromBuffer(userId,callback) {
 
     // delete record with userId
     SQL.delete(table, params, values, function(err,res) {
-        return callback(res);
-    });
-}
-
-// function to remove user from buffer based on nNumber
-function removeNNumberFromBuffer(nNumber,callback) {
-    var table = 'userbuffer';
-    var params = ['userId'];
-    var values = [`${parseInt(nNumber.substring(1)) * -1}`];
-
-    // insert user into userbuffer
-    SQL.delete(table, params, values, function(err,success) {
-        callback(success);
+        if (err) return callback(err,undefined);
+        return callback(undefined,res);
     });
 }
 
@@ -623,7 +496,8 @@ function addUserActivity(userId, allowed, callback) {
 
     // insert user activity into database
     SQL.insert(table, columns, values, function(err,success) {
-        return callback(success);
+        if (err) return callback(err,undefined);
+        return callback(undefined,success);
     });
 }
 
@@ -635,6 +509,7 @@ function userWasDenied(userId,callback) {
     var values = [userId,0];
 
     SQL.select(table, columns, params, values, function(err,res) {
+        if (err) return callback(err,undefined,undefined,undefined,undefined);
 
         if(res.length != 0) {
             res.sort();
@@ -648,14 +523,14 @@ function userWasDenied(userId,callback) {
 
             if (daysSinceLastDeny < 14) {
                 
-                return callback(true,daysSinceLastDeny, lastDeniedDate.toLocaleString());
+                return callback(undefined,true,daysSinceLastDeny, lastDeniedDate.toLocaleString());
             }
             else {
-                return callback(false,undefined,undefined);
+                return callback(undefined,false,undefined,undefined);
             }
         }
         else {
-            return callback(false,undefined,undefined);
+            return callback(undefined,false,undefined,undefined);
         }
     });
 }

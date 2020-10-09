@@ -26,7 +26,7 @@ module.exports = router;
 //********************************************* GET / POST Requests *********************************************
 
 //Handles the get request for the starting form of this page
-router.get('/',function(req,res) {
+router.get('/',function(req,res,next) {
 
     // helmet makes the page not render html, unless the content type is set
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -35,14 +35,16 @@ router.get('/',function(req,res) {
     var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+    sessionMan.sessionIdValid(cookie, 1, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             var queryObject = URL.parse(req.url,true).query;
             
             if(queryObject.userId != null) {
                 //Get the starting form of the webpage
-                getPagePrefilled(queryObject.userId, function(HTML) {
+                getPagePrefilled(queryObject.userId, function(err2,HTML) {
+                    if (err2) return next(err2);
                     //Send the HTML to the client
                     res.write(HTML);
                     //End our response to the client
@@ -67,17 +69,19 @@ router.get('/',function(req,res) {
     });
 });
 
-router.post('/names',function(req,res) {
+router.post('/names',function(req,res,next) {
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+    sessionMan.sessionIdValid(cookie, 1, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             var search = req.body.name;
             
-            getNames(search, function(HTML) {
+            getNames(search, function(err2,HTML) {
+                if (err2) return next(err2);
                 //Send the HTML to the client
                 res.send(HTML);
                 //End our response to the client
@@ -92,18 +96,20 @@ router.post('/names',function(req,res) {
     });
 });
 
-router.post('/create',function(req,res) {
+router.post('/create',function(req,res,next) {
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+    sessionMan.sessionIdValid(cookie, 1, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            addUserToBuffer(req.body.userId, function(success) {
+            // addUserToBuffer(req.body.userId, function(err2,success) {
+                // if (err2) return next(err2);
                 res.send('/new');
                 res.end();
-            });
+            // });
         }
         //Otherwise redirect them to the timeout page
         else {
@@ -113,15 +119,17 @@ router.post('/create',function(req,res) {
     });
 });
 
-router.post('/submit',function(req,res) {
+router.post('/submit',function(req,res,next) {
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+    sessionMan.sessionIdValid(cookie, 1, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            addUserToBuffer(req.body.userId, function(success) {
+            addUserToBuffer(req.body.userId, function(err2,success) {
+                if (err2) return next(err2);
                 res.send('/thankyou');
                 res.end();
             });
@@ -151,11 +159,12 @@ function getPagePrefilled(userId, callback) {
 
     //Try to select the first and last names from the database
     SQL.select(table,columns,params,values, function(err,data) {
+        if (err) return callback(err,undefined);
         var fName = data[0][0];
         var lName = data[0][1];
 
         //Calls the template function with no names to avoid displaying too much user data
-        callback(TemplatePrefilled(fName, lName, userId, `<h2 class="label-b">There are no names that match that search</h2>`));
+        callback(undefined,TemplatePrefilled(fName, lName, userId, `<h2 class="label-b">There are no names that match that search</h2>`));
     });
 }
 
@@ -170,11 +179,11 @@ function Template(nameHTML) {
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="returning.js"></script>
-            <title>Via Sign In</title>
+            <title>Sign In</title>
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="companyLogo.png" alt="Xor Via logo">
+                <img src="active.png" alt="Company Logo">
             </div>
         </header>
         <header class="bg-dark-header">
@@ -212,11 +221,11 @@ function TemplatePrefilled(fName, lName, userId, nameHTML) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script src="returning.js"></script>
-            <title>Via Sign In</title>
+            <title>Sign In</title>
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="companyLogo.png" alt="Xor Via logo">
+                <img src="active.png" alt="Company Logo">
             </div>
         </header>
         <header class="bg-dark-header">
@@ -265,16 +274,17 @@ function getNames(search, callback)
         //Selects lName, fName, and userId from users where lName starts with the search term with a
         //  limit of 20 records.
         SQL.selectExtra(table, columns, params, operators, values, extraSQL, function(err,names) {
+            if (err) return callback(err,undefined);
             //After getting the names uses them to generate the HTML to display them and 
             //  calls back with the HTML.
-            callback(genNameHTML(names))
+            callback(undefined,genNameHTML(names))
         })
     }
     //Otherwise return no names to avoid displaying too much user data
     else {
         //Tries to generate HTML with no names and therefore fails and returns that no names
         //  match the search.
-        callback(genNameHTML([]))
+        callback(undefined,genNameHTML([]))
     }
 }
 
@@ -346,6 +356,7 @@ function addUserToBuffer(userId,callback) {
 
     // insert user into userbuffer
     SQL.insert(table, columns, values, function(err,success) {
-        callback(success);
+        if (err) return callback(err,undefined);
+        callback(undefined,success);
     });
 }

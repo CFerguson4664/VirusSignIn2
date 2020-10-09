@@ -73,7 +73,7 @@ function submit_button_click(sender) {
                 window.location.replace(result);
             }
             else {
-                document.getElementById('users').innerHTML = result;
+                refresh();
             }
             checkForUsers();
         },
@@ -93,7 +93,7 @@ function deny_button_click(sender) {
     var entryAllowed = 2;
 
     var buttons = document.getElementsByName('allowed-'+userId);
-
+    
     for (let i = 0; i < buttons.length; i++) {
         if (buttons[i].getAttribute('data-choiceId') == 1 && buttons[i].className == "selected") {
             // set entryAllowed to true
@@ -118,17 +118,20 @@ function deny_button_click(sender) {
 
         //The response from the server; result is the data sent back from server; i.e. html code
         success: function (result) { 
+            console.log('Result: ' + result);
             if (result == '/logintimeout') {
                 window.location.replace(result);
             }
             else {
-                document.getElementById('users').innerHTML = result;
+                console.log('Calling refresh');
+                refresh();
             }
             checkForUsers();
         },
 
         //Handle any errors
         error: function (request, status, error) { 
+            console.log('Error');
             serviceError();
         }
     });
@@ -158,15 +161,7 @@ function input_to_textBox() {
                     window.location.replace(result);
                 }
                 else {
-                    if(result != '') {
-                        if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
-                            document.getElementById('users').innerHTML = result;
-                        }
-                        else {
-                            document.getElementById('users').innerHTML += result;
-                        }
-                    }
-                    document.getElementById('nNumber').value = '';
+                    refresh();
                 }
                 checkForUsers();
             },
@@ -301,6 +296,11 @@ window.onload = setInterval(function() {
 
     checkNNumberInput();
     // document.getElementById('nNumber').focus();
+    refresh();
+    
+},5000);
+
+function refresh() {
     $.ajax({
         global: false,
         type: 'POST',
@@ -313,16 +313,77 @@ window.onload = setInterval(function() {
 
         //The response from the server
         success: function (result) {
+
             if (result == '/logintimeout') {
                 window.location.replace(result);
             }
             else {
                 if(result != '') {
                     if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
-                        document.getElementById('users').innerHTML = result;
+                        document.getElementById('users').innerHTML = "";
                     }
-                    else {
-                        document.getElementById('users').innerHTML += result;
+
+                    var test = JSON.parse(result);
+                    console.log(test)
+
+                    var prompts = document.getElementsByName('prompt');
+                    var ids = [];
+                    
+
+                    for (var i = 0; i < prompts.length; i++) {
+                        var found = false;
+
+                        for (var j = 0; j < test.length; j++) {
+                            if(prompts[i].id == test[j].bufferId) {
+                                console.log('Found match ' + prompts[i].id);
+                                ids.push(prompts[i].id);
+                                found = true;
+                            }
+                        }
+
+                        if(!found) {
+                            console.log('Removed '+ prompts[i].id) 
+                            prompts[i].parentNode.removeChild(prompts[i]);
+                        }
+                    }
+
+                    prompts = document.getElementsByName('prompt');
+
+                    for (var k = 0; k < test.length; k++) {
+                        var found = false;
+
+                        for (var l = 0; l < prompts.length; l++) {
+                            if(test[k].bufferId == prompts[l].id) {
+
+                                console.log('Not removing ' + test[k].bufferId);
+                                found = true;
+                            }
+                        }
+                        
+                        if(!found) {
+                            console.log('Added ' + test[k].bufferId);
+                            document.getElementById('users').innerHTML += test[k].HTML;
+                        }
+                    }
+
+                    // for (var k = 0; k < result.length; k++){
+                    //     document.getElementById('users').innerHTML += result[k].HTML;
+                    // }
+                    // if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
+                    //     document.getElementById('users').innerHTML = result;
+                    // }
+                    // else {
+                    //     document.getElementById('users').innerHTML += result;
+                    // }
+                }
+                else {
+                    console.log('Empty Response')
+
+                    prompts = document.getElementsByName('prompt');
+
+                    for (var i = 0; i < prompts.length; i++) {
+                        console.log('Removed '+ prompts[i].id) 
+                        prompts[i].parentNode.removeChild(prompts[i]);
                     }
                 }
                 
@@ -335,4 +396,4 @@ window.onload = setInterval(function() {
             serviceError();
         }
     });
-},5000);
+}

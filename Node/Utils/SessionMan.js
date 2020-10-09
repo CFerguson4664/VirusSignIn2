@@ -20,13 +20,17 @@ var lifetimes = {
 var keys = Object.keys(lifetimes);
 for(let i = 0; i < keys.length; i++) {
     //Function to remove old sessions after a given number of minutes
+
+    //*******************************************************
+    // *** unsure how to get this to error logging middleware
+    // ******************************************************
     setInterval(function() {
         //Every sessionLifetimeCheckTime delete the old sessions from the database.
         
-        deleteOldSessions(keys[i], lifetimes[keys[i]], function(success) {
+        deleteOldSessions(keys[i], lifetimes[keys[i]], function(err, success) {
 
             //Call the program specific funcion to manasge sessonData
-            UserType.deleteOldSessionData()
+            UserType.deleteOldSessionData();
         });
     }, lifetimes[keys[i]] * 60 * 1000);
 }
@@ -44,7 +48,8 @@ exports.renewSessionId = function(sessionId, callback) {
 
     //update renewedDatetime to the current time
     SQL.update(table,columns,colValues,params,parValues, function(err, success) {
-        callback(success);
+        if (err) return callback(err,undefined);
+        callback(undefined, success);
     });
 }
 
@@ -54,11 +59,14 @@ exports.getNewSessionId = function(level, callback) {
 
     //Get 16 random bytes
     crypto.randomBytes(16, function(err, buf) {
+        if (err) return callback(err,undefined);
+
         //Convert the 16 random bytes to a 32 character hexadecimal number
         var id = buf.toString('hex');
 
         //Check to see if the newly generated id already exists
-        idExists(id, function(exists) {
+        idExists(id, function(err2,exists) {
+            if (err2) return callback(err2,undefined);
 
             //If the id does not exist it is valid and can be used, otherwise it is not valid and we
             //  need to try again
@@ -67,18 +75,20 @@ exports.getNewSessionId = function(level, callback) {
                 valid = true;
 
                 //Insert the id into the database
-                insertId(id, level, function(success){
+                insertId(id, level, function(err3, success){
+                    if (err3) return callback(err3,undefined);
 
                     //callback with the valid id
-                    return callback(id);
+                    return callback(undefined,id);
                 });
             }
             else
             {
                 //If the session id was invalid, try again.
-                getNewSessionId(level, function(id) {
-                    callback(id);
-                })
+                getNewSessionId(level, function(err4,id) {
+                    if (err4) return callback(err4,undefined);
+                    callback(undefined,id);
+                });
             }
         });
     });
@@ -88,8 +98,9 @@ exports.getNewSessionId = function(level, callback) {
 exports.sessionIdValid = function(sessionId, level, callback) {
 
     //Query the database and callback with the result
-    idExistsAtLevel(sessionId, level, function(exists) {
-        callback(exists);
+    idExistsAtLevel(sessionId, level, function(err,exists) {
+        if (err) return callback(err,undefined);
+        callback(undefined,exists);
     });
 }
 
@@ -101,11 +112,14 @@ function getNewSessionId(level, callback) {
 
     //Get 16 random bytes
     crypto.randomBytes(16, function(err, buf) {
+        if (err) return callback(err,undefined);
+
         //Convert the 16 random bytes to a 32 character hexadecimal number
         var id = buf.toString('hex');
 
         //Check to see if the newly generated id already exists
-        idExists(id, function(exists) {
+        idExists(id, function(err2,exists) {
+            if (err2) return callback(err2,undefined);
 
             //If the id does not exist it is valid and can be used, otherwise it is not valid and we
             //  need to try again
@@ -114,16 +128,18 @@ function getNewSessionId(level, callback) {
                 valid = true;
 
                 //Insert the id into the database
-                insertId(id, level, function(success){
+                insertId(id, level, function(err3,success){
+                    if (err3) return callback(err3,undefined);
 
                     //callback with the valid id
-                    return callback(id);
+                    return callback(undefined,id);
                 });
             }
             else
             {
-                getNewSessionId(level, function(id) {
-                    callback(id);
+                getNewSessionId(level, function(err4,id) {
+                    if (err4) return callback(err4,undefined);
+                    callback(undefined,id);
                 })
             }
         });
@@ -142,23 +158,25 @@ function deleteOldSessions(level, lifetime, callback) {
 
     //Delete any sessions older than deleteTime
     SQL.deleteExtra(table, params, operators, values, extraSQL, function(err,res){ 
+        if (err) return callback(err,undefined);
 
         //Calls back with true if successful or false if not
-        callback(res);
-    })
+        callback(undefined,res);
+    });
 }
 
 function insertId(id, level, callback) {
     //Get the current time to use as the session's creation time
-    var currentTime = time.getTime()
+    var currentTime = time.getTime();
 
     var table = 'sessions';
     var columns = ['sessionId','level','creationDatetime','renewedDatetime'];
     var values = [`'${id}'`,`${level}`,`'${currentTime}'`,`'${currentTime}'`];
 
     SQL.insert(table,columns,values,function(err,success) {
-        callback(success);
-    })
+        if (err) return callback(err,undefined);
+        callback(undefined,success);
+    });
 }
 
 //Querys the database to see if the sessionId exists
@@ -170,12 +188,14 @@ function idExists(id, callback) {
 
     //Will only return values if the session id exists
     SQL.select(table, columns, params, values, function(err,ids) {
+        if (err) return callback(err,undefined);
+
         //After checking callback if the id was found and false if it was not
         if(ids.length == 0) {
-            return callback(false);
+            return callback(undefined,false);
         }
         else {
-            return callback(true);
+            return callback(undefined,true);
         }
     });
 }
@@ -189,13 +209,14 @@ function idExistsAtLevel(id, level, callback) {
 
     //Will only return values if the session id exists
     SQL.select(table, columns, params, values, function(err,ids) {
+        if (err) return callback(err,undefined);
 
         //After checking callback true if the id was found and false if it was not
         if(ids.length == 0) {
-            return callback(false);
+            return callback(undefined,false);
         }
         else {
-            return callback(true);
+            return callback(undefined,true);
         }
     });
 }

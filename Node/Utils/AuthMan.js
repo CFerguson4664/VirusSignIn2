@@ -15,7 +15,7 @@ function hash(password,callback) {
         sodium.crypto_pwhash_OPSLIMIT_MODERATE,
         sodium.crypto_pwhash_MEMLIMIT_MODERATE);
     
-    callback(hashed);
+    callback(undefined,hashed);
 }
 
 exports.getUserNames = function(callback) {
@@ -26,20 +26,24 @@ exports.getUserNames = function(callback) {
 
     //Try to select the first and last names from the database
     SQL.select(table,columns,params,values, function(err,data) {
-        callback(data[0])
+        if (err) return callback(err,undefined);
+        callback(undefined,data[0]);
     });
 }
 
 //Returns (success)
 exports.addAuthForLevel = function(level,username,password,callback) {
-    hash(password, function(hashed) {
+    hash(password, function(err,hashed) {
+        if (err) return callback(err,undefined);
+
         var table = 'authentication';
         var columns = ['level','username','hash'];
         var values = [`${level}`,`'${username}'`,`'${hashed}'`];
 
         //Add the new user to the database
         SQL.insert(table,columns,values, function(err,done) {
-            callback(done);
+            if (err) return callback(err,undefined);
+            callback(undefined,done);
         });
     });
 }
@@ -53,6 +57,8 @@ exports.authenticate = function(username,password,callback) {
 
     //Try to select the first and last names from the database
     SQL.select(table,columns,params,values, function(err,data) {
+        if (err) return callback(err,undefined,undefined,undefined);
+        
         for(var i = 0; i < data.length; i++) {
             var hash = data[0][0];
             var authId = data[0][1];
@@ -61,10 +67,10 @@ exports.authenticate = function(username,password,callback) {
             var valid = sodium.crypto_pwhash_str_verify(hash,password);
 
             if(valid) {
-                return callback(true,authId,level);
+                return callback(undefined,true,authId,level);
             }
         }
-        return callback(false,undefined,undefined);
+        return callback(undefined,false,undefined,undefined);
     });
 }
 
@@ -77,6 +83,8 @@ exports.authenticateAtLevel = function(username,password,level,callback) {
 
     //Try to select the first and last names from the database
     SQL.select(table,columns,params,values, function(err,data) {
+        if (err) return callback(err,undefined,undefined,undefined);
+
         for(var i = 0; i < data.length; i++) {
             var hash = data[0][0];
             var authId = data[0][1];
@@ -85,10 +93,10 @@ exports.authenticateAtLevel = function(username,password,level,callback) {
             var valid = sodium.crypto_pwhash_str_verify(hash,password);
 
             if(valid) {
-                return callback(true,authId,level);
+                return callback(undefined,true,authId,level);
             }
         }
-        return callback(false,undefined,undefined);
+        return callback(undefined,false,undefined,undefined);
     });
 }
 
@@ -99,7 +107,9 @@ exports.removeOnAuthId = function(authId,callback) {
     var values = [`${authId}`];
 
     SQL.delete(table,params,values, function(err,done) {
-        callback(done);
+        if (err) return callback(err,undefined);
+
+        callback(undefined,done);
     });
 }
 
@@ -110,6 +120,8 @@ exports.removeAllAuthForLevel = function(level, callback) {
     var values = [`${level}`];
 
     SQL.delete(table,params,values, function(err,done) {
-        callback(done);
+        if (err) return callback(err,undefined);
+
+        callback(undefined,done);
     });
 }

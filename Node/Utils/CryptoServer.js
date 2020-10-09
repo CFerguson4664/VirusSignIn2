@@ -5,7 +5,7 @@
 //Requires 'npm install libsodium-wrappers'
 
 //Require the npm module
-const sodium = require('libsodium-wrappers')
+const sodium = require('libsodium-wrappers');
 
 //Require the database module
 const SQL = require('./GeneralSql');
@@ -33,6 +33,8 @@ function getKeys(callback) {
     var extraSQL = 'ORDER BY age';
 
     SQL.selectExtra(table,columns,params,operators,values,extraSQL, function(err,data) {
+        if (err) return callback(err,undefined,undefined,undefined,undefined);
+
         //key1.public,key1.private,key2.public,key2.private
 
         var newPublic = Uint8Array.from(data[0][0].split`,`.map(x=>parseInt(x)));
@@ -40,13 +42,14 @@ function getKeys(callback) {
         var oldPublic = Uint8Array.from(data[1][0].split`,`.map(x=>parseInt(x)));
         var oldPrivate = Uint8Array.from(data[1][1].split`,`.map(x=>parseInt(x)));
 
-        callback(newPublic, newPrivate, oldPublic, oldPrivate);
+        callback(undefined,newPublic, newPrivate, oldPublic, oldPrivate);
     })
 }
 
 exports.getPublicKey = function(callback) {
-    getKeys(function(newPublic,newPrivate,oldPublic,oldPrivate) {
-        callback(newPublic);
+    getKeys(function(err,newPublic,newPrivate,oldPublic,oldPrivate) {
+        if (err) return callback(err,undefined);
+        callback(undefined,newPublic);
     });
 }
 
@@ -56,6 +59,8 @@ exports.init = function(callback) {
     var values = [];
 
     SQL.delete(table,params,values, function(err,done) {
+        if (err) return callback(err,undefined);
+
         var keys = sodium.crypto_box_keypair();
     
         var table = 'encryptionkeys';
@@ -63,6 +68,8 @@ exports.init = function(callback) {
         var values = [`'${keys.publicKey}'`,`'${keys.privateKey}'`,`2`];
 
         SQL.insert(table,columns,values, function(err,done) {
+            if (err) return callback(err,undefined);
+
             var keys = sodium.crypto_box_keypair();
     
             var table = 'encryptionkeys';
@@ -70,7 +77,8 @@ exports.init = function(callback) {
             var values = [`'${keys.publicKey}'`,`'${keys.privateKey}'`,`1`];
 
             SQL.insert(table,columns,values, function(err,done) {
-                callback(done);
+                if (err) return callback(err,undefined);
+                callback(undefined,done);
             });
         });
     });
@@ -78,19 +86,23 @@ exports.init = function(callback) {
 
 
 exports.encode = function(message, recipientPublicKey, callback) {
-    getKeys(function(newPublic,newPrivate,oldPublic,oldPrivate) {
+    getKeys(function(err,newPublic,newPrivate,oldPublic,oldPrivate) {
+        if (err) return callback(err,undefined);
+
         var nonce = sodium.randombytes_buf(window.sodium.crypto_box_NONCEBYTES);
 
         var box = sodium.crypto_box_easy(message, nonce, recipientPublicKey, newPrivate);
 
         var data = '' + newPublic + '.' + nonce + '.' + box;
 
-        callback(data);
+        callback(undefined,data);
     });
 }
 
 exports.decode = function(data, callback) {
-    getKeys(function(newPublic,newPrivate,oldPublic,oldPrivate) {
+    getKeys(function(err,newPublic,newPrivate,oldPublic,oldPrivate) {
+        if (err) return callback(err,undefined,undefined);
+
         var firstSplit = data.split('.');
         var ourPublicKey = Uint8Array.from(firstSplit[0].split`,`.map(x=>parseInt(x)));
         var theirPulbicKey = Uint8Array.from(firstSplit[1].split`,`.map(x=>parseInt(x)));
@@ -113,7 +125,7 @@ exports.decode = function(data, callback) {
             success = false;
         }
 
-        var decodedAsString
+        var decodedAsString;
         if(success)
         {
             decodedAsString = String.fromCharCode.apply(null, decoded);
@@ -123,14 +135,16 @@ exports.decode = function(data, callback) {
             decodedAsString = undefined;
         }
 
-        callback(success, decodedAsString);
+        callback(undefined, success, decodedAsString);
 
     });
 }
 
 exports.encodeResponse = function(newMessage, oldMessage, callback)
 {
-    getKeys(function(newPublic,newPrivate,oldPublic,oldPrivate) {
+    getKeys(function(err,newPublic,newPrivate,oldPublic,oldPrivate) {
+        if (err) return callback(err,undefined);
+
         var firstSplit = oldMessage.split('.');
         var theirPulbicKey = Uint8Array.from(firstSplit[1].split`,`.map(x=>parseInt(x)));
 
@@ -140,16 +154,19 @@ exports.encodeResponse = function(newMessage, oldMessage, callback)
 
         var data = '' + newPublic + '.' + nonce + '.' + box;
 
-        callback(data);
+        callback(undefined,data);
     });
 }
 
+// What exactly does this do?
+// *** not sure how to get this to the error logging middleware
 setInterval(function() {
     var table = 'encryptionkeys';
     var params = ['age'];
     var values = ['2'];
 
     SQL.delete(table,params,values, function(err,done) {
+
         var table = 'encryptionkeys';
         var columns = ['age'];
         var colValues = ['2'];
@@ -169,4 +186,4 @@ setInterval(function() {
             });
         });
     });
-}, serverKeyLifetime * 60 * 1000)
+}, serverKeyLifetime * 60 * 1000);

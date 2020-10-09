@@ -32,7 +32,7 @@ module.exports = router;
 //********************************************* GET / POST Requests *********************************************
 
 //Handles the get request for the starting form of this page
-router.get('/',function(req,res) {
+router.get('/',function(req,res,next) {
 
     // helmet makes the page not render html, unless the content type is set
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -41,11 +41,13 @@ router.get('/',function(req,res) {
     var cookie = req.cookies.SignInLvl3;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 3, function(valid) {
+    sessionMan.sessionIdValid(cookie, 3, function(err, valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             //Get the starting form of the webpage
-            getPage(function(HTML) {
+            getPage(function(err2,HTML) {
+                if (err2) return next(err2);
                 //Send the HTML to the client
                 res.write(HTML);
                 //End our response to the client
@@ -60,24 +62,28 @@ router.get('/',function(req,res) {
     });
 });
 
-router.post('/changesecurity',function(req,res) {
+router.post('/changesecurity',function(req,res,next) {
 
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl3;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 3, function(valid) {
+    sessionMan.sessionIdValid(cookie, 3, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
 
-            encryption.decode(req.body.data, function(success,decoded) {
+            encryption.decode(req.body.data, function(err2,success,decoded) {
+                if (err2) return next(err2);
                 var split = decoded.split(`,`);
 
                 var username = split[0];
                 var password = split[1];
 
-                auth.removeAllAuthForLevel(2, function(success) {
-                    auth.addAuthForLevel(2,username,password,function(success) {
+                auth.removeAllAuthForLevel(2, function(err3,success) {
+                    if (err3) return next(err3);
+                    auth.addAuthForLevel(2,username,password,function(err4,success) {
+                        if (err4) return next(err4);
                         if(success) {
                             res.send(true);
                             res.end();
@@ -94,24 +100,29 @@ router.post('/changesecurity',function(req,res) {
     });
 });
 
-router.post('/changeadmin',function(req,res) {
+router.post('/changeadmin',function(req,res,next) {
 
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl3;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 3, function(valid) {
+    sessionMan.sessionIdValid(cookie, 3, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
 
-            encryption.decode(req.body.data, function(success,decoded) {
+            encryption.decode(req.body.data, function(err2,success,decoded) {
+                if (err2) return next(err2);
+
                 var split = decoded.split(`,`);
 
                 var username = split[0];
                 var password = split[1];
 
-                auth.removeAllAuthForLevel(3, function(success) {
-                    auth.addAuthForLevel(3,username,password,function(success) {
+                auth.removeAllAuthForLevel(3, function(err3,success) {
+                    if (err3) return next(err3);
+                    auth.addAuthForLevel(3,username,password,function(err4,success) {
+                        if (err4) return next(err4);
                         if(success) {
                             res.send(true);
                             res.end()
@@ -128,17 +139,20 @@ router.post('/changeadmin',function(req,res) {
     });
 });
 
-router.get('/download',function(req,res) {
+router.get('/download',function(req,res,next) {
 
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl3;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 3, function(valid) {
+    sessionMan.sessionIdValid(cookie, 3, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            dbDownload.dumpFormattedData("UserActivities.txt", function(data) {
-                sendFileToUser(res,"UserActivities.txt", function(done) {
+            dbDownload.dumpFormattedData("UserActivities.txt", function(err2,data) {
+                if (err2) return next(err2);
+                sendFileToUser(res,"UserActivities.txt", function(err3,done) {
+                    if (err3) return next(err3);
                     res.end();
                 });
             });
@@ -154,8 +168,9 @@ router.get('/download',function(req,res) {
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
-    encryption.getPublicKey(function(publicKey) {
-        callback(Template(publicKey));
+    encryption.getPublicKey(function(err,publicKey) {
+        if (err) return callback(err,undefined);
+        callback(undefined,Template(publicKey));
     });
 }
 
@@ -166,7 +181,7 @@ function Template(publicKey) {
             <link rel="stylesheet" type="text/css" href="style.css">
             <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Via Sign In</title>
+            <title>Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="sodium.js"></script>
@@ -175,7 +190,7 @@ function Template(publicKey) {
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="companyLogo.png" alt="Xor Via logo">
+                <img src="active.png" alt="Company Logo">
             </div>
         </header>
         <header class="bg-dark-header">
@@ -250,6 +265,8 @@ function Template(publicKey) {
 }
 
 //*********************************************** SPECIAL FUNCTIONS *********************************************
+
+// why isnt this just imported from TimeUtils.js?
 function pad(number) {
     if (number < 10) {
         return '0' + number;
@@ -257,6 +274,7 @@ function pad(number) {
     return number;
 }
 
+// why isn't this just imported from TimeUtils.js?
 Date.prototype.toISONormString = function() {
     return this.getFullYear() +
         '-' + pad(this.getMonth() + 1) +
@@ -268,7 +286,8 @@ Date.prototype.toISONormString = function() {
 
 function sendFileToUser(res,filename,callback) {
     res.download('./' + filename,`UserActivity_Report_${new Date().toISONormString()}.json`,function(err) {
-        callback(true);
+        if (err) return callback(err,undefined);
+        callback(undefined,true);
     });
     
 }

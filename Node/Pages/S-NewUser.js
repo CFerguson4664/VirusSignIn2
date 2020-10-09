@@ -26,7 +26,7 @@ module.exports = router;
 //********************************************* GET / POST Requests *********************************************
 
 //Handles the get request for the starting form of this page
-router.get('/', function(req,res) {
+router.get('/', function(req,res,next) {
 
     //Headers to try to prevent the page from being cached 
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -40,7 +40,8 @@ router.get('/', function(req,res) {
     var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+    sessionMan.sessionIdValid(cookie, 1, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid prepare the page
         if(valid) {
             //Get the starting form of the webpage
@@ -59,19 +60,22 @@ router.get('/', function(req,res) {
     });
 });
 
-router.post('/checkNNumber',function(req,res) {
+router.post('/checkNNumber',function(req,res,next) {
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+    sessionMan.sessionIdValid(cookie, 1, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             var nNumber = req.body.nNumber;
 
-            checkIfNNumberExists(nNumber, function(exists,userId) {
+            checkIfNNumberExists(nNumber, function(err2,exists,userId) {
+                if (err2) return next(err2);
                 if (exists) {
-                    getButton(userId, 'N-number', function(dead,HTML) {
+                    getButton(userId, 'N-number', function(err3,dead,HTML) {
+                        if (err3) return next(err3);
                         res.send(HTML);
                         
                     });
@@ -89,20 +93,23 @@ router.post('/checkNNumber',function(req,res) {
     });
 });
 
-router.post('/checkEmail',function(req,res) {
+router.post('/checkEmail',function(req,res,next) {
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+    sessionMan.sessionIdValid(cookie, 1, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             var email = req.body.email.toLowerCase();
 
-            checkIfEmailExists(email, function(exists,userId) {
+            checkIfEmailExists(email, function(err2,exists,userId) {
+                if (err2) return next(err2);
             
                 if (exists) {
-                    getButton(userId, 'email', function(dead,HTML) {
+                    getButton(userId, 'email', function(err3,dead,HTML) {
+                        if (err3) return next(err3);
                         res.send(HTML);
                         
                     });
@@ -120,13 +127,14 @@ router.post('/checkEmail',function(req,res) {
     });
 });
 
-router.post('/newUser',function(req,res) {
+router.post('/newUser',function(req,res,next) {
 
     //This cookie is the session id stored on welcome page
     var cookie = req.cookies.SignInLvl1;
 
     //Validate the client using the session Id
-    sessionMan.sessionIdValid(cookie, 1, function(valid) {
+    sessionMan.sessionIdValid(cookie, 1, function(err,valid) {
+        if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
             var fName = req.body.fname;
@@ -134,8 +142,10 @@ router.post('/newUser',function(req,res) {
             var email = req.body.email.toLowerCase();
             var nNumber = req.body.nNumber;
 
-            addNewUser(lName, fName, email, nNumber, function(success,userId) {
-                addUserToBuffer(userId, function(success2) {
+            addNewUser(lName, fName, email, nNumber, function(err2,success,userId) {
+                if (err2) return next(err2);
+                addUserToBuffer(userId, function(err3,success2) {
+                    if (err3) return next(err3);
 
                     res.send('/thankyou');
                     res.end();
@@ -163,14 +173,14 @@ function Template() {
             <link rel="stylesheet" type="text/css" href="style.css">
             <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Via Sign In</title>
+            <title>Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="new.js"></script>
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="companyLogo.png" alt="Xor Via logo">
+                <img src="active.png" alt="Company Logo">
             </div>
         </header>
         <header class="bg-dark-header">
@@ -232,6 +242,7 @@ function addNewUser(lName,fName,email,nNumber,callback) {
 
     //Add the new user to the database
     SQL.insert(table,columns,values, function(err,done) {
+        if (err) return callback(err,undefined,undefined);
 
         //Now we need to get the userId of the newly created user
         var table = 'users';
@@ -240,10 +251,11 @@ function addNewUser(lName,fName,email,nNumber,callback) {
         var values = [`'${lName}'`,`'${fName}'`,`'${email}'`];
         
         //Select the userId from the database
-        SQL.select(table,columns,params,values,function(err,data) {
+        SQL.select(table,columns,params,values,function(err2,data) {
+            if (err2) return callback(err2,undefined,undefined);
 
             //Return true because the user could be created and the userId
-            return callback(true, data[0][0]);
+            return callback(undefined,true, data[0][0]);
         });
     });
 }
@@ -256,7 +268,8 @@ function addUserToBuffer(userId,callback) {
 
     // insert user into userbuffer
     SQL.insert(table, columns, values, function(err,success) {
-        callback(success);
+        if (err) return callback(err,undefined);
+        callback(undefined,success);
     });
 }
 
@@ -268,13 +281,14 @@ function checkIfNNumberExists(nNumber, callback) {
 
     //Try to select the nNumber from the database
     SQL.select(table,columns,params,values, function(err,data) {
+        if (err) return callback(err,undefined,undefined);
 
         //If we have the email return the corresponding userId otherwise return false
         if(data.length > 0) {
-            return callback(true, data[0][0]);
+            return callback(undefined,true, data[0][0]);
         }
         else {
-            return callback(false, undefined);
+            return callback(undefined,false, undefined);
         }
     });
 }
@@ -288,13 +302,14 @@ function checkIfEmailExists(email, callback) {
 
     //Try to select the email from the database
     SQL.select(table,columns,params,values,function(err,data) {
+        if (err) return callback(err,undefined,undefined);
 
         //If we have the email return the corresponding userId otherwise return false
         if(data.length > 0) {
-            return callback(true, data[0][0]);
+            return callback(undefined,true, data[0][0]);
         }
         else {
-            return callback(false, undefined);
+            return callback(undefined,false, undefined);
         }
     });
 }
@@ -308,6 +323,8 @@ function getButton(userId,type,callback) {
 
     //Select the name from the database
     SQL.select(table,columns,params,values,function(err,data) {
+        if (err) return callback(err,undefined,undefined);
+
         var fName = data[0][0];
         var lName = data[0][1];
         var template = `<br><h2 class="label text-center">Someone has that ${type} already. <br> Are you: </h2>
@@ -316,6 +333,6 @@ function getButton(userId,type,callback) {
             <button name="exists" onclick="reset_button_click(this,'${type}')" data-UserId="${userId}">This is not me <br>(enter new ${type})</button>
         </div>`
 
-        return callback(true, template);
+        return callback(undefined,true, template);
     });
 }

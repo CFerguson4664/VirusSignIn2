@@ -32,7 +32,7 @@ module.exports = router;
 //********************************************* GET / POST Requests *********************************************
 
 //Handles the get request for the starting form of this page
-router.get('/', function(req,res) {
+router.get('/', function(req,res,next) {
     //Headers to try to prevent the page from being cached 
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
@@ -42,7 +42,8 @@ router.get('/', function(req,res) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
     //Get the starting form of the webpage
-    getPage(function(HTML) {
+    getPage(function(err,HTML) {
+        if (err) return next(err);
         //Send the HTML to the client
         res.write(HTML);
         //End our response to the client
@@ -50,26 +51,30 @@ router.get('/', function(req,res) {
     });
 });
 
-router.post('/auth',function(req,res) {
+router.post('/auth',function(req,res,next) {
 
     var encrypted = req.body.data;
 
-    encryption.decode(encrypted, function(success,data) {
+    encryption.decode(encrypted, function(err,success,data) {
+        if (err) return next(err);
 
         var split = data.split(`,`);
 
-        auth.authenticate(split[0],split[1], function(success,authId,level) {
+        auth.authenticate(split[0],split[1], function(err2,success,authId,level) {
+            if (err2) return next(err2);
 
             if(success) {
                 if(level == 3) {
-                    createAdminSession(function(sessionId) {
+                    createAdminSession(function(err3,sessionId) {
+                        if (err3) return next(err3);
                         res.cookie('SignInLvl3',sessionId, { httpOnly: true });
                         res.send('/admin');
                         res.end();
                     })
                 }
                 else if(level == 2) {
-                    createSecuritySession(function(sessionId) {
+                    createSecuritySession(function(err4,sessionId) {
+                        if (err4) return next(err4);
                         res.cookie('SignInLvl2',sessionId, { httpOnly: true });
                         res.send('/security');
                         res.end();
@@ -94,8 +99,9 @@ router.post('/auth',function(req,res) {
 //********************************************** DEFAULT FUNCTIONS **********************************************
 
 function getPage(callback) {
-    encryption.getPublicKey(function(publickey) {
-        callback(Template(publickey));
+    encryption.getPublicKey(function(err,publickey) {
+        if (err) return callback(err,undefined);
+        callback(undefined,Template(publickey));
     });
 }
 
@@ -107,7 +113,7 @@ function Template(publickey)
             <link rel="stylesheet" type="text/css" href="style.css">
             <meta name="author" content="Xor Softworks LLC">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Via Sign In</title>
+            <title>Sign In</title>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <script type="text/javascript" src="DOMPurify-main/dist/purify.min.js"></script>
             <script src="sodium.js"></script>
@@ -116,7 +122,7 @@ function Template(publickey)
         </head>
         <header class="bg-dark">
             <div class="logo">
-                <img src="companyLogo.png" alt="Xor Via logo">
+                <img src="active.png" alt="Company logo">
             </div>
         </header>
         <header class="bg-dark-header">
@@ -160,16 +166,18 @@ function createAdminSession(callback) {
     var sessionTime = time.getTime();
 
     //Get a new session id to use for the session
-    sessionMan.getNewSessionId(3, function(sessionId) {
+    sessionMan.getNewSessionId(3, function(err,sessionId) {
+        if (err) return callback(err,undefined);
 
         var table = 'sessionData';
         var columns = ['sessionId','sessionDatetime'];
         var values = [`'${sessionId}'`,`'${sessionTime}'`];
 
         //Insert the session id and creation time into the database
-        SQL.insert(table, columns, values, function(err, success) {
+        SQL.insert(table, columns, values, function(err2, success) {
+            if (err2) return callback(err2,undefined);
             //callback the session id so it can be sent to the client
-            callback(sessionId);
+            callback(undefined,sessionId);
         });
     });
 }
@@ -180,16 +188,18 @@ function createSecuritySession(callback) {
     var sessionTime = time.getTime();
 
     //Get a new session id to use for the session
-    sessionMan.getNewSessionId(2, function(sessionId) {
+    sessionMan.getNewSessionId(2, function(err,sessionId) {
+        if (err) return callback(err,undefined);
 
         var table = 'sessionData';
         var columns = ['sessionId','sessionDatetime'];
         var values = [`'${sessionId}'`,`'${sessionTime}'`];
 
         //Insert the session id and creation time into the database
-        SQL.insert(table, columns, values, function(err, success) {
+        SQL.insert(table, columns, values, function(err2, success) {
+            if (err2) return callback(err2,undefined);
             //callback the session id so it can be sent to the client
-            callback(sessionId);
+            callback(undefined,sessionId);
         });
     });
 }
