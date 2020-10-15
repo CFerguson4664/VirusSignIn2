@@ -75,7 +75,6 @@ function submit_button_click(sender) {
             else {
                 refresh();
             }
-            checkForUsers();
         },
 
         //Handle any errors
@@ -126,7 +125,6 @@ function deny_button_click(sender) {
                 console.log('Calling refresh');
                 refresh();
             }
-            checkForUsers();
         },
 
         //Handle any errors
@@ -163,7 +161,6 @@ function input_to_textBox() {
                 else {
                     refresh();
                 }
-                checkForUsers();
             },
 
             //Handle any errors
@@ -180,12 +177,6 @@ function checkNNumberInput() {
         textBox.value = '';
     }
     previousInput = textBox.value;
-}
-
-function checkForUsers() {
-    if (document.getElementById('users').innerHTML == '') {
-        document.getElementById('users').innerHTML =  `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`;
-    }
 }
 
 function edit_click(sender) {
@@ -250,8 +241,8 @@ $(document).ready(function ()  {
                 else {
                     // window.location.replace(result);
                     document.getElementById('submit').className = 'selected';
+                    refresh();
                 }
-                checkForUsers();
             },
 
             //Handle any errors
@@ -261,11 +252,6 @@ $(document).ready(function ()  {
             }
         });
     });
-
-    // $(document).keypress(function(event) {
-    //     document.getElementById('nNumber').value += String.fromCharCode(event.charCode);
-    //     event.preventDefault();
-    // });
 
     $(document).keydown(function(event) {
         if (event.keyCode == 8) {
@@ -295,12 +281,11 @@ $(document).ready(function ()  {
 window.onload = setInterval(function() {
 
     checkNNumberInput();
-    // document.getElementById('nNumber').focus();
     refresh();
     
 },5000);
 
-function refresh() {
+function refresh2() {
     $.ajax({
         global: false,
         type: 'POST',
@@ -365,16 +350,6 @@ function refresh() {
                             document.getElementById('users').innerHTML += test[k].HTML;
                         }
                     }
-
-                    // for (var k = 0; k < result.length; k++){
-                    //     document.getElementById('users').innerHTML += result[k].HTML;
-                    // }
-                    // if(document.getElementById('users').innerHTML == `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`) {
-                    //     document.getElementById('users').innerHTML = result;
-                    // }
-                    // else {
-                    //     document.getElementById('users').innerHTML += result;
-                    // }
                 }
                 else {
                     console.log('Empty Response')
@@ -386,9 +361,95 @@ function refresh() {
                         prompts[i].parentNode.removeChild(prompts[i]);
                     }
                 }
-                
             }
-            checkForUsers();
+        },
+
+        //Handle any errors
+        error: function (request, status, error) {
+            serviceError();
+        }
+    });
+}
+
+function refresh() {
+    $.ajax({
+        global: false,
+        type: 'POST',
+        url: '/security/reload', //The url to post to on the server
+        dataType: 'html',
+
+        //The data to send to the server
+        data: {
+        },
+
+        //The response from the server
+        success: function (result) {
+
+            if (result == '/logintimeout') {
+                window.location.replace(result);
+            }
+            else {
+                console.log('Refresh');
+
+                //Get a list of all of the prompts currently being displayed
+                var prompts = document.getElementsByName('prompt');
+
+                //Control the 'No pending users display'
+                if(prompts.length == 0) {
+                    console.log('No Prompts')
+                    //If we are currently displaying nothing
+                    if(result != '""') {
+                        console.log('Yes Sent')
+                        //and we got sent something, clear the html
+                        document.getElementById('users').innerHTML = '';
+                    }
+                    else {
+                        console.log('No Sent')
+                        //and we got sent nothing, let the user know
+                        document.getElementById('users').innerHTML = `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`;
+                    }
+                }
+
+
+                //Create a list of the currently displayed ids
+                var currentIds = [];
+                for(var i = 0; i < prompts.length; i++) {
+                    currentIds.push(parseInt(prompts[i].id))
+                }
+
+                //Create a list of the sent ids
+                var sentIds = [];
+                var sent = [];
+                if(result != '""') {
+                    sent = JSON.parse(result);
+                    for(var j = 0; j < sent.length; j++) {
+                        sentIds.push(parseInt(sent[j].bufferId));
+                    }
+                }
+                
+                console.log('Current Ids: ' + currentIds);
+                console.log('Sent Ids: ' + sentIds);
+
+                //Loop through all of the current ids
+                for(var k = 0; k < currentIds.length; k++) {
+                    //If this id should no longer be displayed
+                    if(!sentIds.includes(currentIds[k])) {
+                        console.log('Removing: ' + currentIds[k]);
+                        //Remove the html displaying it
+                        prompts[k].parentNode.removeChild(prompts[k]);
+                    }
+                }
+
+                //Loop through all of the sent ids
+                for(var l = 0; l < sentIds.length; l++) {
+                    //If this sent id is not currently being displayed
+                    if(!currentIds.includes(sentIds[l])) {
+                        console.log('Adding: ' + sentIds[l]);
+                        //Append its html so it is displayed
+                        document.getElementById('users').innerHTML += sent[l].HTML;
+                    }
+                }
+            }
         },
 
         //Handle any errors
