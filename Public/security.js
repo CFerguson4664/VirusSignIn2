@@ -394,7 +394,7 @@ function refresh() {
                 //Get a list of all of the prompts currently being displayed
                 var prompts = document.getElementsByName('prompt');
 
-                //Control the 'No pending users display'
+                //Erase the 'No pending users display'
                 if(prompts.length == 0) {
                     console.log('No Prompts')
                     //If we are currently displaying nothing
@@ -402,11 +402,6 @@ function refresh() {
                         console.log('Yes Sent')
                         //and we got sent something, clear the html
                         document.getElementById('users').innerHTML = '';
-                    }
-                    else {
-                        console.log('No Sent')
-                        //and we got sent nothing, let the user know
-                        document.getElementById('users').innerHTML = `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`;
                     }
                 }
 
@@ -432,27 +427,39 @@ function refresh() {
 
                 var offset = 0;
                 //Loop through all of the current ids
-                for(var k = 0; k < currentIds.length-offset; k++) {
+                for(var k = 0; k < currentIds.length; k++) {
+                    console.log('Looping on current ids - ' + k);
                     //If this id should no longer be displayed
                     if(!sentIds.includes(currentIds[k])) {
-                        console.log('Removing: ' + currentIds[k]);
-                        //Remove the html displaying it
-                        // prompts[k].parentNode.removeChild(prompts[k]);
-                        // need to find 
-                        // use offset variable? subtract index
+                        console.log('Removing ID: ' + currentIds[k]);
+                        console.log('Which is index: ' + (+ k - offset));
+
+                        // remove the id's html
                         prompts[k-offset].outerHTML = '';
+
+                        // increment the offset variable since the array of DOM objects will shift by 1
                         offset++;
                     }
                 }
 
                 //Loop through all of the sent ids
                 for(var l = 0; l < sentIds.length; l++) {
+                    console.log('Looping on sent ids - ' + l)
                     //If this sent id is not currently being displayed
                     if(!currentIds.includes(sentIds[l])) {
                         console.log('Adding: ' + sentIds[l]);
                         //Append its html so it is displayed
                         document.getElementById('users').innerHTML += sent[l].HTML;
                     }
+                }
+
+
+                //Get a list of all of the prompts currently being displayed
+                var prompts2 = document.getElementsByName('prompt');
+
+                //Display that there are no pending requests if there was nothing to display
+                if(prompts2.length == 0) {
+                    document.getElementById('users').innerHTML = `<div class="button-like"><h2 class="label text-center">There are no pending requests.</h2></div>`;
                 }
             }
         },
