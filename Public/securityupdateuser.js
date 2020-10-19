@@ -78,27 +78,24 @@ function button_click(sender)
     for (var i = 0; i < buttons.length; i++)
     {
         // reset the css formatting and change id (essentially resets buttons)
-        buttons[i].className = "";
+        buttons[i].className = "unselected";
         buttons[i].id = "";
-
-        // if this is the button that was clicked
-        if(buttons[i] == sender){
-            // if the yes button was clicked
-            if(sender.getAttribute("data-choiceId") == '1') {
-                // show the nnumber prompt
-                document.getElementById('nndiv').style = '';
-            }
-            // if the no button was clicked
-            else
-            {
-                // hide the nnumber prompt
-                document.getElementById('nndiv').style = 'display:none;';
-            }
-
-            // graphically select button (change css class) ** this does not have to be here, it can go after the for loop
-            sender.className = "selected";
-        }
     }
+
+    // if the yes button was clicked
+    if(sender.getAttribute("data-choiceId") == '1') {
+        // show the nnumber prompt
+        document.getElementById('nndiv').style = '';
+    }
+    // if the no button was clicked
+    else
+    {
+        // hide the nnumber prompt
+        document.getElementById('nndiv').style = 'display:none;';
+    }
+
+    // graphically select button (change css class) ** this does not have to be here, it can go after the for loop
+    sender.className = "selected";
 
     // select button for the program to see
     sender.id = "selected";
