@@ -430,13 +430,18 @@ function refresh() {
                 console.log('Current Ids: ' + currentIds);
                 console.log('Sent Ids: ' + sentIds);
 
+                var offset = 0;
                 //Loop through all of the current ids
-                for(var k = 0; k < currentIds.length; k++) {
+                for(var k = 0; k < currentIds.length-offset; k++) {
                     //If this id should no longer be displayed
                     if(!sentIds.includes(currentIds[k])) {
                         console.log('Removing: ' + currentIds[k]);
                         //Remove the html displaying it
-                        prompts[k].parentNode.removeChild(prompts[k]);
+                        // prompts[k].parentNode.removeChild(prompts[k]);
+                        // need to find 
+                        // use offset variable? subtract index
+                        prompts[k-offset].outerHTML = '';
+                        offset++;
                     }
                 }
 
