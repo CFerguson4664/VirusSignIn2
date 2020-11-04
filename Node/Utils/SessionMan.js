@@ -28,6 +28,7 @@ for(let i = 0; i < keys.length; i++) {
         //Every sessionLifetimeCheckTime delete the old sessions from the database.
         
         deleteOldSessions(keys[i], lifetimes[keys[i]], function(err, success) {
+            // send email
 
             //Call the program specific funcion to manasge sessonData
             UserType.deleteOldSessionData();

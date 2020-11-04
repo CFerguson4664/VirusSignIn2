@@ -115,8 +115,9 @@ var recipient = 'nsccsignin@gmail.com';
 
 // middleware to catch error messages, log them, and pass them on
 app.use(function (err,req,res,next) {
+    var message = `There was an error with Sign In. Please send the log files to the developers.`;
 
-    mailer.sendEmail(recipient, 'SignInError', 'This is a drill.', function(sucess) {
+    mailer.sendEmail(recipient, 'SignInError', message, function(sucess) {
         
         res.status(500).redirect('/error');
 
@@ -136,10 +137,12 @@ function init() {
         recipient = (parsed.error_email != '') ? parsed.error_email : recipient; 
 
         // if the number of days in the setup file is set to 0, no files should be deleted
-        var days = parsed.console_output_folder_lifetime_days+'d';
-        if (days = '0d') {
+        // var days = parsed.console_output_folder_lifetime_days+'d';
+        var days = parsed.console_output_folder_lifetime_days;
+        if (days == '0d') {
             days = null;
         }
+        console.log(days);
 
         // adds logger for programmer logs
         winston.loggers.add('logger', {
@@ -167,7 +170,6 @@ function init() {
         // adds the request logger
         app.use(expressWinston.logger({
             transports: [
-                new winston.transports.Console(),
                 new winston.transports.DailyRotateFile({
                     filename: parsed.console_output_folder + 'req%DATE%.log',
                     datePattern: 'YYYY-MM-DD',
@@ -221,3 +223,4 @@ function init() {
 }
 
 init();
+

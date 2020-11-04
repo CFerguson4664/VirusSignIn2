@@ -117,12 +117,10 @@ function deny_button_click(sender) {
 
         //The response from the server; result is the data sent back from server; i.e. html code
         success: function (result) { 
-            console.log('Result: ' + result);
             if (result == '/logintimeout') {
                 window.location.replace(result);
             }
             else {
-                console.log('Calling refresh');
                 refresh();
             }
         },
@@ -309,7 +307,6 @@ function refresh2() {
                     }
 
                     var test = JSON.parse(result);
-                    console.log(test)
 
                     var prompts = document.getElementsByName('prompt');
                     var ids = [];
@@ -320,14 +317,12 @@ function refresh2() {
 
                         for (var j = 0; j < test.length; j++) {
                             if(prompts[i].id == test[j].bufferId) {
-                                console.log('Found match ' + prompts[i].id);
                                 ids.push(prompts[i].id);
                                 found = true;
                             }
                         }
 
                         if(!found) {
-                            console.log('Removed '+ prompts[i].id) 
                             prompts[i].parentNode.removeChild(prompts[i]);
                         }
                     }
@@ -340,24 +335,19 @@ function refresh2() {
                         for (var l = 0; l < prompts.length; l++) {
                             if(test[k].bufferId == prompts[l].id) {
 
-                                console.log('Not removing ' + test[k].bufferId);
                                 found = true;
                             }
                         }
                         
                         if(!found) {
-                            console.log('Added ' + test[k].bufferId);
                             document.getElementById('users').innerHTML += test[k].HTML;
                         }
                     }
                 }
                 else {
-                    console.log('Empty Response')
-
                     prompts = document.getElementsByName('prompt');
 
                     for (var i = 0; i < prompts.length; i++) {
-                        console.log('Removed '+ prompts[i].id) 
                         prompts[i].parentNode.removeChild(prompts[i]);
                     }
                 }
@@ -389,17 +379,14 @@ function refresh() {
                 window.location.replace(result);
             }
             else {
-                console.log('Refresh');
 
                 //Get a list of all of the prompts currently being displayed
                 var prompts = document.getElementsByName('prompt');
 
                 //Erase the 'No pending users display'
                 if(prompts.length == 0) {
-                    console.log('No Prompts')
                     //If we are currently displaying nothing
                     if(result != '""') {
-                        console.log('Yes Sent')
                         //and we got sent something, clear the html
                         document.getElementById('users').innerHTML = '';
                     }
@@ -421,18 +408,12 @@ function refresh() {
                         sentIds.push(parseInt(sent[j].bufferId));
                     }
                 }
-                
-                console.log('Current Ids: ' + currentIds);
-                console.log('Sent Ids: ' + sentIds);
 
                 var offset = 0;
                 //Loop through all of the current ids
                 for(var k = 0; k < currentIds.length; k++) {
-                    console.log('Looping on current ids - ' + k);
                     //If this id should no longer be displayed
                     if(!sentIds.includes(currentIds[k])) {
-                        console.log('Removing ID: ' + currentIds[k]);
-                        console.log('Which is index: ' + (+ k - offset));
 
                         // remove the id's html
                         prompts[k-offset].outerHTML = '';
@@ -444,10 +425,8 @@ function refresh() {
 
                 //Loop through all of the sent ids
                 for(var l = 0; l < sentIds.length; l++) {
-                    console.log('Looping on sent ids - ' + l)
                     //If this sent id is not currently being displayed
                     if(!currentIds.includes(sentIds[l])) {
-                        console.log('Adding: ' + sentIds[l]);
                         //Append its html so it is displayed
                         document.getElementById('users').innerHTML += sent[l].HTML;
                     }

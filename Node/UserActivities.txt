@@ -1,46 +1,501 @@
 [
 	{
-		"userId": 32,
+		"userId": 61,
 		"userName": "Joe Bob",
 		"userEmail": "jbob@mail.com",
-		"userNNumber": "N00192800",
-		"userActivity": []
-	},
-	{
-		"userId": 33,
-		"userName": "Christopher  Ferguson",
-		"userEmail": "email@email.com",
-		"userNNumber": "N00192801",
+		"userNNumber": "00111",
 		"userActivity": [
 			{
 				"admitted": 1,
-				"datetime": "2020-06-17T18:38:39.000Z"
+				"datetime": "2020-10-08T20:36:22.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:38:39.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:40:22.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:42:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:49:33.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T09:33:12.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:32:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:36:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:09:31.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:13:30.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T14:34:49.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:37:34.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:39:52.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T21:27:38.000Z"
 			}
 		]
 	},
 	{
-		"userId": 34,
-		"userName": "Sally Bob",
-		"userEmail": "sbob@gmail.com",
-		"userNNumber": "N13371337",
-		"userActivity": []
-	},
-	{
-		"userId": 35,
-		"userName": "Timmy Scorn",
-		"userEmail": "who@where.party",
-		"userNNumber": "N00234563",
-		"userActivity": []
-	},
-	{
-		"userId": 38,
-		"userName": "Joe Robert",
-		"userEmail": "blue@socks.com",
-		"userNNumber": "N00192802",
+		"userId": 62,
+		"userName": "John Doe",
+		"userEmail": "hello@mail.co.uk",
+		"userNNumber": "",
 		"userActivity": [
 			{
 				"admitted": 1,
-				"datetime": "2020-06-17T18:39:55.000Z"
+				"datetime": "2020-10-06T09:21:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-06T09:21:57.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-06T09:24:52.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-06T09:26:12.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:49:32.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T09:33:13.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:32:57.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:36:57.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:13:31.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T14:34:50.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:37:35.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:39:53.000Z"
+			}
+		]
+	},
+	{
+		"userId": 63,
+		"userName": "mary bob",
+		"userEmail": "mbob@mail.com",
+		"userNNumber": "",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-10-06T16:21:45.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:36:20.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:38:40.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:40:23.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:42:57.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:49:33.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T09:33:12.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:32:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:36:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:13:30.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T14:34:49.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:37:34.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:39:52.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T21:27:39.000Z"
+			}
+		]
+	},
+	{
+		"userId": 64,
+		"userName": "Ed Bob",
+		"userEmail": "edbob@mail.com",
+		"userNNumber": "ddd",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:07:25.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:08:14.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:08:15.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:35:30.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:40:23.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:42:58.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:49:33.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T09:33:13.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:32:57.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:36:57.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:13:30.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T14:34:49.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:37:34.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:39:53.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T21:27:39.000Z"
+			}
+		]
+	},
+	{
+		"userId": 65,
+		"userName": "Jake Add",
+		"userEmail": "wow@mail.co",
+		"userNNumber": "",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:17:44.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:36:23.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:40:24.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:43:01.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:13:32.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T14:34:50.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:37:35.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T21:27:38.000Z"
+			}
+		]
+	},
+	{
+		"userId": 66,
+		"userName": "Greg Sand",
+		"userEmail": "gsand@mail.com",
+		"userNNumber": "",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:33:30.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:35:28.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:38:33.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:40:25.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:42:59.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:49:33.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T09:33:09.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:32:22.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:32:57.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:36:55.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:13:31.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T14:34:48.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:37:33.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:39:51.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T21:27:39.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-11-04T12:38:23.000Z"
+			}
+		]
+	},
+	{
+		"userId": 67,
+		"userName": "George Sand",
+		"userEmail": "gsand@mail.com",
+		"userNNumber": "",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:33:24.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:40:26.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:43:00.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:49:34.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T09:33:11.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:32:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:36:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:13:31.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T14:34:48.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:37:33.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:39:51.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T21:27:39.000Z"
+			}
+		]
+	},
+	{
+		"userId": 68,
+		"userName": "hank sand",
+		"userEmail": "hsand@gmail.com",
+		"userNNumber": "",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:35:25.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:40:27.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:43:01.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-08T20:49:34.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T09:33:11.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:32:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:36:56.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:13:31.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T14:34:48.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:37:34.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:39:52.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T21:27:39.000Z"
+			}
+		]
+	},
+	{
+		"userId": 69,
+		"userName": "bert bert",
+		"userEmail": "bbert@mail.com",
+		"userNNumber": "N00192800",
+		"userActivity": [
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T11:32:55.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T13:13:31.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T14:34:51.000Z"
+			},
+			{
+				"admitted": 1,
+				"datetime": "2020-10-19T16:39:51.000Z"
 			}
 		]
 	}

@@ -166,6 +166,7 @@ setInterval(function() {
     var values = ['2'];
 
     SQL.delete(table,params,values, function(err,done) {
+        // send logging error with email
 
         var table = 'encryptionkeys';
         var columns = ['age'];
@@ -174,6 +175,7 @@ setInterval(function() {
         var parValues = ['1'];
         
         SQL.update(table,columns,colValues,params,parValues, function(err,done) {
+            // send logging error with email
             var keys = sodium.crypto_box_keypair();
     
             var table = 'encryptionkeys';
@@ -182,6 +184,7 @@ setInterval(function() {
     
             //Add the new user to the database
             SQL.insert(table,columns,values, function(err,done) {
+                // send email with error
                 getKeys(function(a,b,c,d){});
             });
         });
