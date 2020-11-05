@@ -95,23 +95,35 @@ router.post('/checkNNumber',function(req,res,next) {
             var nNumber = req.body.nNumber;
             var activeUserId = req.body.userId;
 
-
             checkIfNNumberExists(nNumber, function(err2,exists,userId) {
                 if (err2) return next(err2);
                 
                 var idValid = true;
-                if(activeUserId != 0){
-                    idValid = activeUserId != userId;
-                }
 
-                if (exists && idValid) {
-                    getButton(userId, 'N-number', function(err3,dead,HTML) {
+                if(exists && activeUserId != 0){
+                    idValid = activeUserId != userId;
+                    if (idValid) {
+                        getButtonUpdate(userId, 'N-number', function(err3,dead,HTML) {
+                            if (err3) return next(err3);
+                            res.send(HTML);
+                            res.end();
+                        });
+                    }
+                    else {
+                        res.send();
+                        res.end();
+                    }
+                }
+                else if (exists){
+                    getButtonNew(userId, 'N-number', function(err3,dead,HTML) {
                         if (err3) return next(err3);
                         res.send(HTML);
+                        res.end();
                     });
                 }
                 else {
                     res.send();
+                    res.end();
                 }
             });
         }
@@ -138,19 +150,33 @@ router.post('/checkEmail',function(req,res,next) {
             checkIfEmailExists(email, function(err2,exists,userId) {
                 if (err2) return next(err2);
                 var idValid = true;
-                if(activeUserId != 0){
+
+                // if the email and user exists already
+                if(exists && activeUserId != 0){
                     idValid = activeUserId != userId;
+                    if (idValid) {
+                        getButtonUpdate(userId, 'email', function(err3,dead,HTML) {
+                            if (err3) return next(err3);
+                            res.send(HTML);
+                            res.end();
+                        });
+                    }
+                    else {
+                        res.send();
+                        res.end();
+                    }
                 }
-                
-                if (exists && idValid) {
-                    getButton(userId, 'email', function(err3,dead,HTML) {
+                else if (exists){
+                    getButtonNew(userId, 'email', function(err3,dead,HTML) {
                         if (err3) return next(err3);
                         res.send(HTML);
+                        res.end();
                     });
                 }
                 else {
                     res.send();
-                }
+                    res.end();
+                }         
             });
         }
         //Otherwise redirect them to the timeout page
@@ -376,12 +402,12 @@ function TemplateUpdate(userId, fName,lName,email) {
             </div>
             <div class="button-like">
                 <h2 class="label text-center">Enter the user's last name</h2>
-                <input type="text" name="lastname" id="lastname" autocomplete="off" class="text2" maxlength="50" value=${lName}>
+                <input type="text" name="lastname" id="lastname" autocomplete="off" class="text2" maxlength="50" value="${lName}">
                 <div id='lnameerror'></div>
             </div>
             <div class="button-like">
                 <h2 class="label text-center">Enter the user's email</h2>
-                <input type="text" name="email" id="email" autocomplete="off" class="text2" maxlength="75" value=${email}>
+                <input type="text" name="email" id="email" autocomplete="off" class="text2" maxlength="75" value="${email}" data-initial="${email}">
                 
                 <div id='emailerror'></div>
             </div>
@@ -389,12 +415,12 @@ function TemplateUpdate(userId, fName,lName,email) {
                 <h2 class="label text-center">Does the user have an ID Number?</h2>
                 <div class="sidenav-open">
                     <button name="student" onclick="button_click(this)" data-choiceId="1" class="unselected">Yes</button>
-                    <button name="student" onclick="button_click(this)" data-choiceId="0" id='selected' class="selected">No</button>
+                    <button name="student" onclick="button_click(this)" data-choiceId="0" id="selected" class="selected">No</button>
                 </div>
             </div>
             <div class="button-like" id="nndiv" style="display:none;">
                 <h2 class="label text-center">Enter the user's ID Number</h2>
-                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value='' maxlength="9" data-initial='N'>
+                <input type="text" name="nnumber" id="nnumber" autocomplete="off" class="text2" value="" maxlength="9" data-initial="N">
                 <div id='nnerror'></div>
             </div>
         </main>
@@ -653,7 +679,7 @@ function checkIfEmailExists(email, callback) {
 }
 
 //Gets the button to go to returning user page
-function getButton(userId,type,callback) {
+function getButtonUpdate(userId,type,callback) {
     var table = 'users';
     var columns = ['fName','lName'];
     var params = ['userId'];
@@ -669,6 +695,28 @@ function getButton(userId,type,callback) {
             <div class="sidenav-open">
             <button name="exists" onclick="reset_button_click(this,'${type}')" data-UserId="${userId}">Enter a different ${type}</button>
             <button name="exists" onclick="restore_button_click(this,'${type}')" data-info="${userId}">Restore ${type}</button>
+        </div>`
+
+        return callback(undefined,true, template);
+    });
+}
+
+//Gets the button to go to returning user page
+function getButtonNew(userId,type,callback) {
+    var table = 'users';
+    var columns = ['fName','lName'];
+    var params = ['userId'];
+    var values = [`${userId}`]
+
+    //Select the name from the database
+    SQL.select(table,columns,params,values,function(err,data) {
+        if (err) return callback(err,undefined,undefined);
+
+        var fName = data[0][0];
+        var lName = data[0][1];
+        var template = `<br><h2 class="label text-center">A user with the name: <br><br> ${fName} ${lName} <br><br> has that ${type} already.</h2>
+            <div class="sidenav-open">
+            <button name="exists" onclick="reset_button_click(this,'${type}')" data-UserId="${userId}">Enter a different ${type}</button>
         </div>`
 
         return callback(undefined,true, template);

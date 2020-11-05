@@ -10,7 +10,7 @@
     "key_path"              :"../bin/key.pem",
     "cert_path"             :"../bin/cert.pem",
 
-    "console_output_folder"                 :"./",
+    "console_output_folder"                 :"./bin/",
     "console_output_folder_lifetime_days"   :"3",
 
     "error_email"   : "nsccsignin@gmail.com"

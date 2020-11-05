@@ -162,7 +162,6 @@ router.post('/deny',function(req,res,next) {
         if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
-            console.log('Awaiting deny return');
 
             // remove user from buffer
             deleteUserFromBuffer(req.body.userId, function(err2,success2) {
@@ -173,7 +172,6 @@ router.post('/deny',function(req,res,next) {
                         if (err4) return next(err4);
                     });
                 }
-                console.log('Responding to Deny');
 
                 // send response to client
                 res.send('Done');
