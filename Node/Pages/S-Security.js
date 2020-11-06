@@ -14,10 +14,9 @@ const express = require('express');
 
 //Requires the TimeUtils utility
 const time = require('../Utils/TimeUtils');
-const { json } = require('express');
 
-
-//const axios = require('axios')
+// NSCC Addition
+const axios = require('axios');
 
 //***************************************************** SETUP ***************************************************
 
@@ -133,6 +132,18 @@ router.post('/submit',function(req,res,next) {
         //If the client is valid redirect them to the appropiate page
         if(valid) {
 
+            // NSCC Addition
+            if (req.body.allowed == 1) {
+                getUserInfo(req.body.userId, function(err,data) {
+                    if (err) return next(err);
+                    // data is ['fname', 'lname', 'nNumber']
+                    callAPI(req.body.office, data[0], data[1], data[2], function(err,done) {
+                        if (err) return next(err);
+
+                    });
+                });
+            }
+
             // add the user data to useractivity
             addUserActivity(req.body.userId, req.body.allowed, function(err2,success1) {
                 if (err2) return next(err2);
@@ -162,6 +173,22 @@ router.post('/deny',function(req,res,next) {
         if (err) return next(err);
         //If the client is valid redirect them to the appropiate page
         if(valid) {
+
+            // NSCC Addition
+            //IF the userId is not an nnumber (The request didnt come from a randomly entered nnumber)
+            if(req.body.userId[0] != 'N') {
+                //If the user was allowed to enter we need to call the nscc API
+                if(req.body.allowed == 1) {
+                    //Get the users information from their userId
+                    getUserInfo(req.body.userId, function(data) {
+                        //Call the NSCC API
+                        
+                        // data is ['fname', 'lname', 'nNumber']
+                        callAPI(req.body.office, data[0], data[1], data[2], function(done) {
+                        });
+                    });
+                }
+            }
 
             // remove user from buffer
             deleteUserFromBuffer(req.body.userId, function(err2,success2) {
@@ -361,6 +388,22 @@ function genHTML(data, asJson, callback) {
         var record = data[i];
         var innerHTML = '';
 
+        // NSCC Addition
+        var visitingOfficeHTML = `
+            <div class='button-like'>
+                <h2 class="label text-center">Select Office being Visited:</h2>
+                <div class="sidenav-open">
+                    <select id="office-select-${record.userId}">
+                        <option value="0">None</option>
+                        <option value="ADM">Admissions</option>
+                        <option value="ADVR">Advising</option>
+                        <option value="BUS">Business</option>
+                        <option value="FINA">Financial Aid</option>
+                        <option value="REG">Registrar</option>
+                    </select>
+                </div>
+            </div>`;
+
         if(record.type == 0) {
             //Special HTML for an unknown user
             innerHTML = `<div class="button-like">
@@ -382,8 +425,9 @@ function genHTML(data, asJson, callback) {
                     <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Override and allow</button>
                     <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${record.userId}" class="unselected">Dismiss</button>
                 </div>
-                <button id="submit-userId-${record.userId}" onclick="deny_button_click(this)" class="ready">Submit</button>
-            </div>`;
+            </div>
+            ${visitingOfficeHTML}
+            <button id="submit-userId-${record.userId}" onclick="deny_button_click(this)" class="ready">Submit</button>`;
         }
         else if (record.type == 2) {
             //Special HTML for a normal user
@@ -393,8 +437,10 @@ function genHTML(data, asJson, callback) {
                     <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="1" id="buttonYes-userId-${record.userId}" class="selected">Yes</button>
                     <button name="allowed-userId-${record.userId}" onclick="button_click(this)" data-choiceId="0" id="buttonNo-userId-${record.userId}" class="unselected">No</button>
                 </div>
-                <button id="submit-userId-${record.userId}" onclick="submit_button_click(this)" class="ready">Submit</button>
-            </div>`;
+                
+            </div>
+            ${visitingOfficeHTML}
+            <button id="submit-userId-${record.userId}" onclick="submit_button_click(this)" class="ready">Submit</button>`;
         }
 
         //Add the full html for the security prompt
@@ -413,7 +459,7 @@ function genHTML(data, asJson, callback) {
             finalData.push({
                 bufferId: record.bufferId,
                 HTML: html
-            })
+            });
         }
         else {
             //Concatinate all of the html together
@@ -531,4 +577,65 @@ function userWasDenied(userId,callback) {
             return callback(undefined,false,undefined,undefined);
         }
     });
+}
+
+// ************************* NSCC Additions *************************
+
+function getUserInfo(userId,callback) {
+    var table = 'users';
+    var columns = ['fname','lname','nNumber'];
+    var params = ['userId'];
+    var values = [`${userId}`];
+
+    SQL.select(table,columns,params,values,function(err,res) {
+        if (err) return callback(err,undefined);
+
+        if (res[0][0] == '') {
+            // !! this was res[0][0] == 0; in the other nscc version. 
+            // Are we sure that is correct? I don't think so, so I made it assignment
+            res[0][0] = 0;
+        }
+        callback(undefined,res[0]);
+    });
+}
+
+//Get Request for NSCC API integration
+var getNSCCNNumber = async (nNumber,office) => {
+    try {
+        // url for nscc
+        // return await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin?NNUM=${nNumber}&OFFICE=${office}`)
+        // url for development
+        return await axios.get(`http://localhost:8080/api/signin?NNUM=${nNumber}&OFFICE=${office}`);
+    } catch (error) {
+        // !! change this to custom logger
+        console.error(error);
+    }
+}
+
+var getNSCCName = async (fname,lname,office) => {
+    try {
+        // url for nscc
+        // return await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin?GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`)
+        // url for development
+        return await axios.get(`http://localhost:8080/api/signin?GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`);
+    } catch (error) {
+        // !! change this to custom logger
+        console.error(error);
+    }
+}
+
+function callAPI(office,fname,lname,NNumber,callback) {
+    if (office != 0) {
+        if (NNumber == 0) {
+            getNSCCName(fname,lname,office);
+            callback(undefined,true);
+        }
+        else {
+            getNSCCNNumber(NNumber,office);
+            callback(undefined,true);
+        }
+    }
+    else {
+        callback(undefined,true);
+    }
 }

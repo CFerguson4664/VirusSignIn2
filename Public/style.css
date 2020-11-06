@@ -283,6 +283,26 @@ button.unselected {
     padding:10px;
 }
 
+select {
+    font-size:1.5em;
+    text-align:center;
+    width: 95%; /* 0 width - change this with JavaScript */
+    position: static; /* Stay in place */
+    z-index: 1;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    border:2px solid #121212;
+    background-color:var(--button-color-select);
+    color:var(--text-color-select);
+    border-radius:25px;
+    padding:10px;
+    outline:none;
+}
+
+option {
+    background-color:var(--button-color-unselect);
+    color:var(--text-color-unselect);
+}
+
 .admin {
     border:2px solid #121212;
     width:98%;

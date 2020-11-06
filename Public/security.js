@@ -45,11 +45,14 @@ function submit_button_click(sender) {
 
     for (let i = 0; i < buttons.length; i++) {
         if (buttons[i].getAttribute('data-choiceId') == 1 && buttons[i].className == "selected") {
-            // set entryAllowed to true
-            entryAllowed = true;
+            // set entryAllowed to 1
+            entryAllowed = 1;
         }
     }
     // if selected button is yes  
+
+    // NSCC Addition
+    var officeChoice = document.getElementById('office-select-'+userId).value;
     
 
     // ajax post with the userId and whether or not the user was allowed
@@ -64,7 +67,9 @@ function submit_button_click(sender) {
         data: {
             // parse the userId number from the userId string
             userId  : userId,
-            allowed : entryAllowed
+            allowed : entryAllowed,
+            // NSCC Addition
+            office  : officeChoice
         },
 
         //The response from the server; result is the data sent back from server; i.e. html code
@@ -100,6 +105,9 @@ function deny_button_click(sender) {
         }
     }
 
+    // NSCC Addition
+    var officeChoice = document.getElementById('office-select-'+userId).value;
+
     // ajax post with the userId and whether or not the user was allowed
     $.ajax({
 
@@ -112,7 +120,9 @@ function deny_button_click(sender) {
         data: {
             // parse the userId number from the userId string
             userId  : userId.substring(userId.indexOf('-')+1,userId.length),
-            allowed : entryAllowed
+            allowed : entryAllowed,
+            // NSCC Addition
+            office  : officeChoice
         },
 
         //The response from the server; result is the data sent back from server; i.e. html code
