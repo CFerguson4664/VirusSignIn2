@@ -31,6 +31,26 @@ function button_click(sender) {
     sender.className = "selected";
 }
 
+function toggleNav(navId) {
+    var nav = document.getElementById(navId);
+
+    if(nav.className == "dropdown-open") {
+        nav.className = "dropdown-closed";
+    }
+    else {
+        nav.className = "dropdown-open";
+    }
+}
+
+function office_click(sender,userId) {
+    var toggle = document.getElementById('toggle-userId-' + userId);
+    toggle.innerHTML = sender.innerHTML;
+    toggle.setAttribute('data-choiceId', sender.getAttribute('data-choiceId'));
+
+    var nav = document.getElementById('nav-userId-' + userId);
+    nav.className = "dropdown-closed";
+}
+
 // function to handle when a submit button is clicked
 function submit_button_click(sender) {
     // parse out the userId text from the id
