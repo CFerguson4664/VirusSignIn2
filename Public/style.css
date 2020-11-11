@@ -52,14 +52,14 @@ Xor Softworks LLC
     --header-color: darkblue;
     --bg-dark-header-color: #696969;
     --bg-light-color: #e4e4e4;
-    --button-color1: #0b2c5e;
+    --button-color1: #1d3532;
     --text-color1: #ffffff;
     --button-color-ready: #e4e4e4;
     --text-color-ready: #000000;
-    --button-color-select: #0b2c5e;
-    --text-color-select: #ffffff;
-    --button-color-unselect: #b3b3b3;
-    --text-color-unselect: #000000;
+    --button-color-select: #f9d72d;
+    --text-color-select: #121212;
+    --button-color-unselect: #1d3532;
+    --text-color-unselect: #ffffff;
     --admin-div-color: #7e7e7e;
     --admin-text-color: #ffffff;
     --text-box-color: #000000;
@@ -384,4 +384,9 @@ i {
     color:white;
     z-index: 1; /* Stay on top */
     transition: 0.25s;
+}
+
+.dropdown-option:hover {
+    background-color: var(--button-color-select);
+    color: var(--text-color-select);
 }

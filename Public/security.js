@@ -43,6 +43,13 @@ function toggleNav(navId) {
 }
 
 function office_click(sender,userId) {
+    // set the office that was clicked to be selected css
+    var dropdowns = document.getElementsByName('office-userId-'+userId);
+    for (var i = 0; i < dropdowns.length; i++) {
+        dropdowns[i].className = "unselected  dropdown-option";
+    }
+    sender.className = "selected dropdown-option";
+
     var toggle = document.getElementById('toggle-userId-' + userId);
     toggle.innerHTML = sender.innerHTML;
     toggle.setAttribute('data-choiceId', sender.getAttribute('data-choiceId'));
@@ -61,7 +68,7 @@ function submit_button_click(sender) {
     // initialize entryAllowed so no else statement is needed
     var entryAllowed = false;
 
-    var buttons = document.getElementsByName('allowed-userId-'+userId)
+    var buttons = document.getElementsByName('allowed-userId-'+userId);
 
     for (let i = 0; i < buttons.length; i++) {
         if (buttons[i].getAttribute('data-choiceId') == 1 && buttons[i].className == "selected") {
@@ -72,7 +79,8 @@ function submit_button_click(sender) {
     // if selected button is yes  
 
     // NSCC Addition
-    var officeChoice = document.getElementById('office-select-'+userId).value;
+    var officeChoice = document.getElementById('toggle-userId-'+userId).getAttribute('data-choiceid');
+    console.log(`office choice: ${officeChoice}`);
     
 
     // ajax post with the userId and whether or not the user was allowed
@@ -126,8 +134,10 @@ function deny_button_click(sender) {
     }
 
     // NSCC Addition
-    var officeChoice = document.getElementById('office-select-'+userId).value;
-
+    console.log(`userid: ${userId}`);
+    var officeChoice = document.getElementById('toggle-userId-'+userId).getAttribute('data-choiceid');
+    console.log(`office choice: ${officeChoice}`);
+    
     // ajax post with the userId and whether or not the user was allowed
     $.ajax({
 

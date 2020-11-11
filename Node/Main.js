@@ -139,10 +139,6 @@ function init() {
         // if the number of days in the setup file is set to 0, no files should be deleted
         // var days = parsed.console_output_folder_lifetime_days+'d';
         var days = parsed.console_output_folder_lifetime_days;
-        if (days == '0d') {
-            days = null;
-        }
-        console.log(days);
 
         // adds logger for programmer logs
         winston.loggers.add('logger', {

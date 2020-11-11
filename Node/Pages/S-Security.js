@@ -405,24 +405,16 @@ function genHTML(data, asJson, callback) {
             <div class='button-like'>
                 <h2 class="label text-center">Select Office being Visited:</h2>
                 <div class="sidenav-open">
-                    <select id="office-select-${record.userId}">
-                        <option value="0">None</option>
-                        <option value="ADM">Admissions</option>
-                        <option value="ADVR">Advising</option>
-                        <option value="BUS">Business</option>
-                        <option value="FINA">Financial Aid</option>
-                        <option value="REG">Registrar</option>
-                    </select>
 
-                    <button name="toggle" onclick="toggleNav('nav-userId-${record.userId}')" data-choiceId="0" id="toggle-userId-${record.userId}" class="selected">Toggle Nav</button>
+                    <button name="toggle" onclick="toggleNav('nav-userId-${record.userId}')" data-choiceId="0" id="toggle-userId-${record.userId}" class="unselected">None</button>
 
                     <div id="nav-userId-${record.userId}" class="dropdown-closed">
-                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="0" id="None-userId-${record.userId}" class="selected">None</button>
-                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="ADM" id="ADM-userId-${record.userId}" class="">Admissions</button>
-                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="ADVR" id="ADVR-userId-${record.userId}" class="">Advising</button>
-                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="BUS" id="BUS-userId-${record.userId}" class="">Business</button>
-                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="FINA" id="FINA-userId-${record.userId}" class="">Financial Aid</button>
-                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="REG" id="REG-userId-${record.userId}" class="">Registrar</button>
+                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="0" id="None-userId-${record.userId}" class="selected dropdown-option">None</button>
+                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="ADM" id="ADM-userId-${record.userId}" class=" dropdown-option">Admissions</button>
+                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="ADVR" id="ADVR-userId-${record.userId}" class=" dropdown-option">Advising</button>
+                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="BUS" id="BUS-userId-${record.userId}" class=" dropdown-option">Business</button>
+                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="FINA" id="FINA-userId-${record.userId}" class=" dropdown-option">Financial Aid</button>
+                        <button name="office-userId-${record.userId}" onclick="office_click(this,'${record.userId}')" data-choiceId="REG" id="REG-userId-${record.userId}" class=" dropdown-option">Registrar</button>
                     </div>
                 </div>
             </div>`;
@@ -450,7 +442,7 @@ function genHTML(data, asJson, callback) {
                 </div>
             </div>
             ${visitingOfficeHTML}
-            <button id="submit-userId-${record.userId}" onclick="deny_button_click(this)" class="ready">Submit</button>`;
+            <button id="submit-userId-${record.userId}" onclick="deny_button_click(this,'${record.userId}')" class="ready">Submit</button>`;
         }
         else if (record.type == 2) {
             //Special HTML for a normal user
