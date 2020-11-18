@@ -45,6 +45,9 @@ const mailer = require('./Utils/Mailer');
 // Utility file to enable encryptions between clients and the server
 const encryption = require('./Utils/CryptoServer');
 
+// Utility for authentication
+const auth = require('./Utils/AuthMan');
+
 
 //*************************** Create and Configure express Node.JS application ********************************
 //Create express Node.JS application
@@ -195,6 +198,8 @@ function init() {
                 })
             ]
         }));
+
+        auth.init(parsed.enable_authentication, parsed.authentication_useranme, parsed.authentication_password);
 
         const options = {
             key: fs.readFileSync(parsed.key_path),

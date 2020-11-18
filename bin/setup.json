@@ -13,5 +13,9 @@
     "console_output_folder"                 :"./bin/",
     "console_output_folder_lifetime_days"   :"3",
 
-    "error_email"   : "nsccsignin@gmail.com"
+    "error_email"   : "nsccsignin@gmail.com",
+
+    "enable_authentication" : "true",
+    "authentication_useranme" : "foo",
+    "authentication_password" : "bar"
 }

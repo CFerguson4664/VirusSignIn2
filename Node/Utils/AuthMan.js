@@ -10,6 +10,27 @@ const sodium = require('libsodium-wrappers')
 //Require the database module
 const SQL = require('./GeneralSql');
 
+// creds for axios auth
+var creds = undefined;
+
+exports.init = function(isAuth, username,password) {
+    console.log(`auth?: ${isAuth}`);
+    if (isAuth=='true') {
+        console.log(`authenticating`);
+        creds = {
+            auth: {
+                username: username,
+                password: password
+            }
+        }
+    }
+}
+
+exports.getCreds = function() {
+    return creds;
+}
+
+
 function hash(password,callback) {
     var hashed = sodium.crypto_pwhash_str(password,
         sodium.crypto_pwhash_OPSLIMIT_MODERATE,
