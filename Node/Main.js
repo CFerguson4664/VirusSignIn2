@@ -45,6 +45,9 @@ const mailer = require('./Utils/Mailer');
 // Utility file to enable encryptions between clients and the server
 const encryption = require('./Utils/CryptoServer');
 
+// Utility for authentication
+const auth = require('./Utils/AuthMan');
+
 
 //*************************** Create and Configure express Node.JS application ********************************
 //Create express Node.JS application
@@ -63,7 +66,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); 
 
 // Make all files in the public folder accessable to clients
-app.use(express.static('../Public')); 
+// app.use(express.static('../Public')); 
+app.use(express.static('C:/signin-app/Public')); //Makes all files in the public folder accessable to clients
 
 // If a client connects over http redirect them to https
 app.use(function(req, res, next) { 
@@ -73,7 +77,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-// app.use(express.static('C:/signin-app/Public')); //Makes all files in the public folder accessable to clients
+
 
 
 // Import the pages of the application 
@@ -128,8 +132,8 @@ app.use(function (err,req,res,next) {
 
 
 function init() {
-    // fs.readFile('C:/signin-app/bin/setup.json', function(err,content) {
-    fs.readFile('../bin/setup.json', function(err,content) {
+    fs.readFile('C:/signin-app/bin/setup.json', function(err,content) {
+    //fs.readFile('../bin/setup.json', function(err,content) {
         if (err) return console.log('Error loading setup file:\n' + err);
         var parsed = JSON.parse(content);
         
@@ -139,10 +143,6 @@ function init() {
         // if the number of days in the setup file is set to 0, no files should be deleted
         // var days = parsed.console_output_folder_lifetime_days+'d';
         var days = parsed.console_output_folder_lifetime_days;
-        if (days == '0d') {
-            days = null;
-        }
-        console.log(days);
 
         // adds logger for programmer logs
         winston.loggers.add('logger', {
@@ -199,6 +199,8 @@ function init() {
                 })
             ]
         }));
+
+        auth.init(parsed.enable_authentication, parsed.authentication_useranme, parsed.authentication_password);
 
         const options = {
             key: fs.readFileSync(parsed.key_path),

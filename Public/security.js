@@ -31,6 +31,33 @@ function button_click(sender) {
     sender.className = "selected";
 }
 
+function toggleNav(navId) {
+    var nav = document.getElementById(navId);
+
+    if(nav.className == "dropdown-open") {
+        nav.className = "dropdown-closed";
+    }
+    else {
+        nav.className = "dropdown-open";
+    }
+}
+
+function office_click(sender,userId) {
+    // set the office that was clicked to be selected css
+    var dropdowns = document.getElementsByName('office-userId-'+userId);
+    for (var i = 0; i < dropdowns.length; i++) {
+        dropdowns[i].className = "unselected  dropdown-option";
+    }
+    sender.className = "selected dropdown-option";
+
+    var toggle = document.getElementById('toggle-userId-' + userId);
+    toggle.innerHTML = sender.innerHTML;
+    toggle.setAttribute('data-choiceId', sender.getAttribute('data-choiceId'));
+
+    var nav = document.getElementById('nav-userId-' + userId);
+    nav.className = "dropdown-closed";
+}
+
 // function to handle when a submit button is clicked
 function submit_button_click(sender) {
     // parse out the userId text from the id
@@ -41,15 +68,19 @@ function submit_button_click(sender) {
     // initialize entryAllowed so no else statement is needed
     var entryAllowed = false;
 
-    var buttons = document.getElementsByName('allowed-userId-'+userId)
+    var buttons = document.getElementsByName('allowed-userId-'+userId);
 
     for (let i = 0; i < buttons.length; i++) {
         if (buttons[i].getAttribute('data-choiceId') == 1 && buttons[i].className == "selected") {
-            // set entryAllowed to true
-            entryAllowed = true;
+            // set entryAllowed to 1
+            entryAllowed = 1;
         }
     }
     // if selected button is yes  
+
+    // NSCC Addition
+    var officeChoice = document.getElementById('toggle-userId-'+userId).getAttribute('data-choiceid');
+    console.log(`office choice: ${officeChoice}`);
     
 
     // ajax post with the userId and whether or not the user was allowed
@@ -64,7 +95,9 @@ function submit_button_click(sender) {
         data: {
             // parse the userId number from the userId string
             userId  : userId,
-            allowed : entryAllowed
+            allowed : entryAllowed,
+            // NSCC Addition
+            office  : officeChoice
         },
 
         //The response from the server; result is the data sent back from server; i.e. html code
@@ -100,6 +133,11 @@ function deny_button_click(sender) {
         }
     }
 
+    // NSCC Addition
+    console.log(`userid: ${userId}`);
+    var officeChoice = document.getElementById('toggle-userId-'+userId).getAttribute('data-choiceid');
+    console.log(`office choice: ${officeChoice}`);
+    
     // ajax post with the userId and whether or not the user was allowed
     $.ajax({
 
@@ -112,7 +150,9 @@ function deny_button_click(sender) {
         data: {
             // parse the userId number from the userId string
             userId  : userId.substring(userId.indexOf('-')+1,userId.length),
-            allowed : entryAllowed
+            allowed : entryAllowed,
+            // NSCC Addition
+            office  : officeChoice
         },
 
         //The response from the server; result is the data sent back from server; i.e. html code

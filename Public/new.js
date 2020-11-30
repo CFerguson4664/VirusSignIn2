@@ -50,11 +50,11 @@ function checkNNumber() {
         nnumber = document.getElementById('nnumber').value;
 
         // set up regex to test if nnumber is valid
-        // var regEx = new RegExp('^[N,n][0-9]{8}$');
+        var regEx = new RegExp('^[N,n][0-9]{8}$');
 
         // test nNumber and return result
-        // return regEx.test(nnumber);
-        return nnumber != '';
+        return regEx.test(nnumber);
+        // return nnumber != '';
     }
     else
     {
@@ -196,7 +196,7 @@ $(document).ready(function ()  {
         }
         if(!checkNNumber())
         {
-            document.getElementById('nnerror').innerHTML = `<h2 class="red text-center">This ID is invalid</h2>`;
+            document.getElementById('nnerror').innerHTML = `<h2 class="red text-center">This N-number is invalid</h2>`;
             checkAll()
         }
         else

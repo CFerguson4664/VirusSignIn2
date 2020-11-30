@@ -50,11 +50,11 @@ function checkNNumber() {
         nnumber = document.getElementById('nnumber').value;
 
         // set up regex to test if nnumber is valid
-        // var regEx = new RegExp('^[N,n][0-9]{8}$');
+        var regEx = new RegExp('^[N,n][0-9]{8}$');
 
         // test nNumber and return result
-        // return regEx.test(nnumber);
-        return nnumber != '';
+        return regEx.test(nnumber);
+        // return nnumber != '';
     }
     else
     {
