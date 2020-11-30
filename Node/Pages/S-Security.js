@@ -621,31 +621,33 @@ function getUserInfo(userId,callback) {
 var getNSCCNNumber = async (nNumber,office) => {
     try {
         // url for nscc
-        // var response = await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin?NNUM=${nNumber}&OFFICE=${office}`, creds)
+        var response = await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin?NNUM=${nNumber}&OFFICE=${office}`, auth.getCreds())
+        
         // url for development
-        var response = await axios.get(`http://localhost:8080/api/signin?NNUM=${nNumber}&OFFICE=${office}`, auth.getCreds());
-        console.log(response.data);
+        // var response = await axios.get(`https://localhost:8080/api/signin?NNUM=${nNumber}&OFFICE=${office}`, auth.getCreds());
+        
+        //console.log(response.data);
         return response;
     } catch (error) {
         // !! change this to custom logger
-        console.error(error);
+        //console.error(error);
     }
 }
 
 var getNSCCName = async (fname,lname,office) => {
     try {
         // url for nscc
-        // var response = await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin?GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`,creds);
+        var response = await axios.get(`http://dsintranet.ad.int.northweststate.edu/api/signin?GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`, auth.getCreds());
         
         // url for development
-        var response = await axios.get(`http://localhost:8080/api/signin?GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`, auth.getCreds());
+        //var response = await axios.get(`https://localhost:8080/api/signin?GFNAME=${fname}&GLNAME=${lname}&OFFICE=${office}`, auth.getCreds());
         
-        console.log(response.data);
+        //console.log(response.data);
         return response;
     
     } catch (error) {
         // !! change this to custom logger
-        console.error(error);
+        //console.error(error);
     }
 }
 

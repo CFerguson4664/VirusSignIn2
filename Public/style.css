@@ -342,19 +342,28 @@ i {
 .sidenav-closed {
     text-align:center;
     height: 0px;
-    width: 98%; /* 0 width - change this with JavaScript */
+    width: 0%; /* 0 width - change this with JavaScript */
+    position: static; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 55; /* Stay at the top */
+    left: 10;
     background-color: #e4e4e4; /* Black*/
-    overflow-y: hidden; /* Disable horizontal scroll */
+    overflow-x: hidden; /* Disable horizontal scroll */
     color:white;
     margin:0px;
 }
 
 .sidenav-open {
     text-align:center;
-    width: 98%; /* 0 width - change this with JavaScript */
+    width: 100%; /* 0 width - change this with JavaScript */
+    position: static; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 55; /* Stay at the top */
+    left: 10;
     background-color: #e4e4e4; /* Black*/
-    overflow-y: hidden; /* Disable horizontal scroll */
+    overflow-x: hidden; /* Disable horizontal scroll */
     border:2px solid #121212;
+    margin-top:25px;
     color:white;
     border-radius:25px;
     padding:10px;

@@ -14,9 +14,7 @@ const SQL = require('./GeneralSql');
 var creds = undefined;
 
 exports.init = function(isAuth, username,password) {
-    console.log(`auth?: ${isAuth}`);
     if (isAuth=='true') {
-        console.log(`authenticating`);
         creds = {
             auth: {
                 username: username,

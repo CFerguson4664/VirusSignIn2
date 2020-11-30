@@ -66,7 +66,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); 
 
 // Make all files in the public folder accessable to clients
-app.use(express.static('../Public')); 
+// app.use(express.static('../Public')); 
+app.use(express.static('C:/signin-app/Public')); //Makes all files in the public folder accessable to clients
 
 // If a client connects over http redirect them to https
 app.use(function(req, res, next) { 
@@ -76,7 +77,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-// app.use(express.static('C:/signin-app/Public')); //Makes all files in the public folder accessable to clients
+
 
 
 // Import the pages of the application 
@@ -131,8 +132,8 @@ app.use(function (err,req,res,next) {
 
 
 function init() {
-    // fs.readFile('C:/signin-app/bin/setup.json', function(err,content) {
-    fs.readFile('../bin/setup.json', function(err,content) {
+    fs.readFile('C:/signin-app/bin/setup.json', function(err,content) {
+    //fs.readFile('../bin/setup.json', function(err,content) {
         if (err) return console.log('Error loading setup file:\n' + err);
         var parsed = JSON.parse(content);
         
